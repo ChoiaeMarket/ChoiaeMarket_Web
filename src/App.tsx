@@ -4,7 +4,7 @@ import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
 import CreateAccount from "./routes/create-account";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import LoadingScreen from "./components/loading-screen";
 import { useEffect, useState } from "react";
@@ -40,9 +40,15 @@ const GlobalStyles = createGlobalStyle`
     box-sizing:border-box;
   }
   body{
-    background-color: black;
+    background-color: #181A20;
     color: white;
   }
+`;
+
+const Wrapper = styled.div`
+  /* height: 100vh; */
+  display: flex;
+  justify-content: center;
 `;
 
 function App() {
@@ -55,10 +61,10 @@ function App() {
     init();
   }, []);
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
       {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
-    </>
+    </Wrapper>
   );
 }
 

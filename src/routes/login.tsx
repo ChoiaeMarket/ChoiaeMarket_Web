@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 326px;
-  margin: 44px 0px 50px;
+  padding: 44px 0px 50px;
 `;
 
 const TitleBox = styled.div`
@@ -53,13 +53,13 @@ const Form = styled.form`
     font-size: 18px;
     line-height: 26px;
     letter-spacing: -0.025em;
+    box-shadow: 0 0 0 1px #252932;
     background-color: #f89e86;
     color: #ffffff;
     transition: background-color 0.2s;
     cursor: pointer;
     &:hover {
       background-color: #f9b19e;
-      /* opacity: 0.8; */
     }
   }
 `;
@@ -72,7 +72,7 @@ const Div = styled.div`
   color: #9ea3b2;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ hasValue: boolean }>`
   width: 100%;
   height: 60px;
   border: 1px solid #252932;
@@ -84,6 +84,8 @@ const Input = styled.input`
   line-height: 22px;
   letter-spacing: -0.025em;
   color: #ffffff;
+  box-shadow: ${(props) =>
+    props.hasValue ? " 0 0 0 1px #9ea3b2" : " 0 0 0 1px #252932"};
   background-color: #252932;
   outline: none;
   &::placeholder {
@@ -95,7 +97,7 @@ const Input = styled.input`
   }
   /* 자동완성이 될 때 배경색 변경 */
   &:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #f89e86;
+    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #9ea3b2;
     -webkit-text-fill-color: #ffffff !important;
     caret-color: #ffffff !important;
   }
@@ -184,7 +186,7 @@ const SocialLogin = styled.div`
   }
 `;
 
-const CreateAccountBox = styled.div`
+const JoinBox = styled.div`
   margin: 178px 0 0;
   font-weight: 400;
   font-size: 14px;
@@ -193,7 +195,7 @@ const CreateAccountBox = styled.div`
   color: #9ea3b2;
 `;
 
-const CreateAccount = styled.a`
+const Join = styled.a`
   padding-left: 12px;
   font-weight: 600;
   text-decoration: underline;
@@ -246,6 +248,7 @@ export default function Login() {
           placeholder="이메일을 입력해 주세요"
           type="email"
           required
+          hasValue={email.length > 0}
         />
         <Div>비밀번호</Div>
         <Input
@@ -255,8 +258,9 @@ export default function Login() {
           placeholder="비밀번호를 입력해 주세요"
           type="password"
           required
+          hasValue={password.length > 0}
         />
-        <Input type="submit" value="로그인" />
+        <Input type="submit" value="로그인" hasValue={false} />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
       <CheckBox
@@ -281,10 +285,10 @@ export default function Login() {
           <img src={googleLogo} alt="Google" />
         </SocialLogin>
       </SocialLoginBox>
-      <CreateAccountBox>
+      <JoinBox>
         아직 회원이 아니신가요?
-        <CreateAccount href="/create-account">회원가입</CreateAccount>
-      </CreateAccountBox>
+        <Join href="/join">회원가입</Join>
+      </JoinBox>
     </Wrapper>
   );
 }

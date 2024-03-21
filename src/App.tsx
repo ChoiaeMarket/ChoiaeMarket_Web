@@ -1,13 +1,14 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import styled, { createGlobalStyle } from "styled-components";
+import reset from "styled-reset";
+import { useEffect, useState } from "react";
 import Layout from "./components/layout";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
-import CreateAccount from "./routes/create-account";
-import styled, { createGlobalStyle } from "styled-components";
-import reset from "styled-reset";
+import Join from "./routes/join";
 import LoadingScreen from "./components/loading-screen";
-import { useEffect, useState } from "react";
+import Register from "./routes/register";
 
 const router = createBrowserRouter([
   {
@@ -29,8 +30,12 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/create-account",
-    element: <CreateAccount />,
+    path: "/join",
+    element: <Join />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ]);
 
@@ -40,15 +45,19 @@ const GlobalStyles = createGlobalStyle`
     box-sizing:border-box;
   }
   body{
-    background-color: #181A20;
+    background-color: #252932;
     color: white;
   }
 `;
 
 const Wrapper = styled.div`
-  /* height: 100vh; */
+  height: 100%;
+  max-width: 390px;
+  border: 1px solid #35383f;
+  background-color: #181a20;
   display: flex;
   justify-content: center;
+  margin: 0 auto;
 `;
 
 function App() {

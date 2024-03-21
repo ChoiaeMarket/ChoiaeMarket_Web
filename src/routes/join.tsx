@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 326px;
-  margin: 44px 0px 50px;
+  padding: 44px 0px 50px;
 `;
 
 const TitleBox = styled.div`
@@ -57,7 +57,6 @@ const Form = styled.form`
     cursor: pointer;
     &:hover {
       background-color: #f9b19e;
-      /* opacity: 0.8; */
     }
   }
 `;
@@ -70,7 +69,7 @@ const Div = styled.div`
   color: #9ea3b2;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ hasValue: boolean }>`
   width: 100%;
   height: 60px;
   border: 1px solid #252932;
@@ -82,6 +81,8 @@ const Input = styled.input`
   line-height: 22px;
   letter-spacing: -0.025em;
   color: #ffffff;
+  box-shadow: ${(props) =>
+    props.hasValue ? " 0 0 0 1px #9ea3b2" : " 0 0 0 1px #252932"};
   background-color: #252932;
   outline: none;
   &::placeholder {
@@ -93,7 +94,7 @@ const Input = styled.input`
   }
   /* 자동완성이 될 때 배경색 변경 */
   &:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #f89e86;
+    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #9ea3b2;
     -webkit-text-fill-color: #ffffff !important;
     caret-color: #ffffff !important;
   }
@@ -147,7 +148,7 @@ const Login = styled.a`
   cursor: pointer;
 `;
 
-export default function CreateAccount() {
+export default function Join() {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -192,6 +193,7 @@ export default function CreateAccount() {
           placeholder="이름을 입력해 주세요"
           type="text"
           required
+          hasValue={name.length > 0}
         />
         <Div>이메일</Div>
         <Input
@@ -201,6 +203,7 @@ export default function CreateAccount() {
           placeholder="이메일을 입력해 주세요"
           type="email"
           required
+          hasValue={email.length > 0}
         />
         <Div>비밀번호</Div>
         <Input
@@ -210,8 +213,9 @@ export default function CreateAccount() {
           placeholder="비밀번호를 입력해 주세요"
           type="password"
           required
+          hasValue={password.length > 0}
         />
-        <Input type="submit" value="회원가입" />
+        <Input type="submit" value="회원가입" hasValue={false} />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
       <SocialLoginBox>

@@ -75,17 +75,29 @@ const Div = styled.div`
 const Input = styled.input`
   width: 100%;
   height: 60px;
+  border: 1px solid #252932;
   border-radius: 16px;
   padding: 19px;
   margin: 8px 0 20px;
-  border: none;
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
   letter-spacing: -0.025em;
+  color: #ffffff;
   background-color: #252932;
+  outline: none;
   &::placeholder {
     color: #777c89;
+  }
+  &:focus {
+    box-shadow: 0 0 0 1px #f89e86;
+    background-color: rgba(248, 158, 134, 0.1);
+  }
+  /* 자동완성이 될 때 배경색 변경 */
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #f89e86;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
   }
 `;
 
@@ -271,7 +283,7 @@ export default function Login() {
       </SocialLoginBox>
       <CreateAccountBox>
         아직 회원이 아니신가요?
-        <CreateAccount href="/login">회원가입</CreateAccount>
+        <CreateAccount href="/create-account">회원가입</CreateAccount>
       </CreateAccountBox>
     </Wrapper>
   );

@@ -1,3 +1,7 @@
 export default function Home() {
-  return <h1>Home!</h1>;
+  const logOut = () => {
+    // 로그아웃
+    console.log("로그아웃");
+  };
+  return <button onClick={logOut}>로그아웃</button>;
 }

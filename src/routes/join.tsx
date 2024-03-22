@@ -1,5 +1,6 @@
 import { useState } from "react";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { styled } from "styled-components";
 import back from "../assets/icon/back.png";
 import kakaoLogo from "../assets/icon/kakao.png";
 import naverLogo from "../assets/icon/naver.png";
@@ -101,8 +102,10 @@ const Input = styled.input<{ hasValue: boolean }>`
 `;
 
 const Error = styled.span`
+  top: 100px;
   font-weight: 600;
   color: tomato;
+  position: absolute;
 `;
 
 const SocialLoginBox = styled.div`
@@ -149,13 +152,14 @@ const Login = styled.a`
 `;
 
 export default function Join() {
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const goBack = () => {
-    window.history.back(); // 뒤로 가는 동작을 수행
+    navigate(-1); // 뒤로 가는 동작을 수행
   };
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -171,11 +175,18 @@ export default function Join() {
   };
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 계정 생성
-
-    // 유저 이름 생성
-
-    // 메인 리디렉션
+    setError("");
+    if (isLoading || name === "" || email === "" || password === "") return; // 미입력 방지
+    try {
+      // props.abc.value; // 강제 에러 발생
+      // 계정 생성
+      // 유저 이름 생성
+      // 메인 리디렉션
+      navigate("/");
+    } catch (e: any) {
+      console.log(e.message);
+      setError("다른 이메일을 입력해 주세요");
+    }
     console.log(name, email, password);
   };
   return (

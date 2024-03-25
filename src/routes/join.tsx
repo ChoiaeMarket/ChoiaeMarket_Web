@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { styled } from "styled-components";
 import back from "../assets/icon/back.png";
 import kakaoLogo from "../assets/icon/kakao.png";
 import naverLogo from "../assets/icon/naver.png";
@@ -51,7 +50,7 @@ export default function Join() {
       // 계정 생성
       // 유저 이름 생성
       // 메인 리디렉션
-      navigate("/");
+      navigate("/register");
     } catch (e: any) {
       console.log(e.message);
       setError("다른 이메일을 입력해 주세요");

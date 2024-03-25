@@ -3,15 +3,8 @@ import styled from "styled-components";
 import back from "../assets/icon/back.png";
 import profile from "../assets/icon/profile.png";
 import edit from "../assets/icon/edit.png";
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 326px;
-  padding: 44px 0px 50px;
-`;
+import { useNavigate } from "react-router-dom";
+import { Wrapper, Error, Back, Title } from "../components/auth-comonents";
 
 const TitleBox = styled.div`
   width: 100%;
@@ -19,23 +12,6 @@ const TitleBox = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
-`;
-
-const Back = styled.img`
-  width: 28px;
-  height: 28px;
-  position: absolute;
-  left: 0;
-  cursor: pointer;
-`;
-
-const Title = styled.h1`
-  text-align: center;
-  height: 100%;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 56px;
-  letter-spacing: -0.025em;
 `;
 
 const ProfileBox = styled.div`
@@ -177,6 +153,7 @@ const HomeButton = styled.a`
 `;
 
 export default function Register() {
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
@@ -209,7 +186,18 @@ export default function Register() {
   };
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setError("");
+    if (isLoading || name === "" || email === "" || tel === "") return; // 미입력 방지
+    try {
+      // props.abc.value; // 강제 에러 발생
+      // 계정 생성
+      // 유저 이름 생성
+      // 메인 리디렉션
+      navigate("/");
+    } catch (e: any) {
+      console.log(e.message);
+      setError("다른 이메일을 입력해 주세요");
+    }
     console.log(name, nickname, email, tel, gender);
   };
   return (
@@ -298,6 +286,7 @@ export default function Register() {
           <Input type="submit" value="입력완료" hasValue={false} />
         </InputBox>
       </Form>
+      {error !== "" ? <Error>{error}</Error> : null}
     </Wrapper>
   );
 }

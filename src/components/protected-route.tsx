@@ -7,6 +7,7 @@ export default function ProtectedRoute({
 }) {
   //   const user = isUserLogin; // 유저의 로그인 여부(User | null)
   const user = "abc";
+  // const user = null;
   console.log(user);
 
   if (user === null) {

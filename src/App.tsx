@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import { useEffect, useState } from "react";
-import Layout from "./components/layout";
+import Layout from "./components/navigation-bar";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
@@ -10,23 +10,40 @@ import Join from "./routes/join";
 import LoadingScreen from "./components/loading-screen";
 import Register from "./routes/register";
 import ProtectedRoute from "./components/protected-route";
+import Cart from "./routes/cart";
+import Chat from "./routes/chat";
+import Mypage from "./routes/mypage";
+
+const Protect = (component: JSX.Element) => (
+  <ProtectedRoute>
+    {component}
+    <Layout />
+  </ProtectedRoute>
+);
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
-    ),
     children: [
       {
         path: "",
-        element: <Home />,
+        element: Protect(<Home />),
+      },
+      {
+        path: "cart",
+        element: Protect(<Cart />),
+      },
+      {
+        path: "chat",
+        element: Protect(<Chat />),
+      },
+      {
+        path: "mypage",
+        element: Protect(<Mypage />),
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: Protect(<Profile />),
       },
     ],
   },
@@ -68,7 +85,7 @@ const Wrapper = styled.div`
 function App() {
   const [isLoading, setLoading] = useState(true);
   const init = async () => {
-    setTimeout(() => setLoading(false), 2000); // 로딩 기다리기
+    setTimeout(() => setLoading(false), 1000); // 로딩 기다리기
     // setLoading(false);
   };
   useEffect(() => {

@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
+  position: fixed;
+  bottom: 0;
   width: 390px;
   height: 68px;
   border-radius: 12px 12px 0 0;

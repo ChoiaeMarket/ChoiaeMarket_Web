@@ -7,109 +7,20 @@ import checkWhite from "../assets/icon/checkWhite.png";
 import kakaoLogo from "../assets/icon/kakaoColor.png";
 import naverLogo from "../assets/icon/naverColor.png";
 import googleLogo from "../assets/icon/googleColor.png";
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 326px;
-  padding: 44px 0px 50px;
-`;
-
-const TitleBox = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-`;
-
-const Back = styled.img`
-  width: 28px;
-  height: 28px;
-  position: absolute;
-  left: 0;
-  cursor: pointer;
-`;
-
-const Title = styled.h1`
-  text-align: center;
-  height: 100%;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 56px;
-  letter-spacing: -0.025em;
-`;
-
-const Form = styled.form`
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  & > input[type="submit"] {
-    margin: 12px 0 48px;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 26px;
-    letter-spacing: -0.025em;
-    box-shadow: 0 0 0 1px #252932;
-    background-color: #f89e86;
-    color: #ffffff;
-    transition: background-color 0.2s;
-    cursor: pointer;
-    &:hover {
-      background-color: #f9b19e;
-    }
-  }
-`;
-
-const Div = styled.div`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  letter-spacing: -0.025em;
-  color: #9ea3b2;
-`;
-
-const Input = styled.input<{ hasValue: boolean }>`
-  width: 100%;
-  height: 60px;
-  border: 1px solid #252932;
-  border-radius: 16px;
-  padding: 19px;
-  margin: 8px 0 20px;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  letter-spacing: -0.025em;
-  color: #ffffff;
-  box-shadow: ${(props) =>
-    props.hasValue ? " 0 0 0 1px #9ea3b2" : " 0 0 0 1px #252932"};
-  background-color: #252932;
-  outline: none;
-  &::placeholder {
-    color: #777c89;
-  }
-  &:focus {
-    box-shadow: 0 0 0 1px #f89e86;
-    background-color: rgba(248, 158, 134, 0.1);
-  }
-  /* 자동완성이 될 때 배경색 변경 */
-  &:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #9ea3b2;
-    -webkit-text-fill-color: #ffffff !important;
-    caret-color: #ffffff !important;
-  }
-`;
-
-const Error = styled.span`
-  top: 100px;
-  font-weight: 600;
-  color: tomato;
-  position: absolute;
-`;
+import {
+  Back,
+  Div,
+  Error,
+  Form,
+  Input,
+  SocialLogin,
+  SocialLoginBox,
+  Switcher as OriginalSwitcher,
+  SwitcherLink,
+  Title,
+  Menu,
+  Wrapper,
+} from "../components/auth-comonents";
 
 const Div2 = styled.div`
   display: flex;
@@ -163,47 +74,8 @@ const FindAccount = styled.a`
   color: #9ea3b2;
 `;
 
-const SocialLoginBox = styled.div`
-  display: flex;
-  width: 264px;
-  justify-content: space-between;
-`;
-
-const SocialLogin = styled.div`
-  width: 80px;
-  height: 60px;
-  border-radius: 16px;
-  border: solid 1px #35383f;
-  background-color: #1f222a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #3b3f4a;
-  }
-  & img {
-    width: 24px;
-    height: 24px;
-  }
-`;
-
-const JoinBox = styled.div`
+const Switcher = styled(OriginalSwitcher)`
   margin: 178px 0 0;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  letter-spacing: -0.025em;
-  color: #9ea3b2;
-`;
-
-const Join = styled.a`
-  padding-left: 12px;
-  font-weight: 600;
-  text-decoration: underline;
-  color: #f89e86;
-  cursor: pointer;
 `;
 
 export default function Login() {
@@ -231,10 +103,9 @@ export default function Login() {
     setError("");
     if (isLoading || email === "" || password === "") return; // 미입력 방지
     try {
+      setLoading(true);
+      // await (email, password)// 로그인 요청
       // props.abc.value; // 강제 에러 발생
-      // 계정 생성
-      // 유저 이름 생성
-      // 메인 리디렉션
       navigate("/");
     } catch (e: any) {
       console.log(e.message);
@@ -246,10 +117,10 @@ export default function Login() {
   };
   return (
     <Wrapper>
-      <TitleBox>
+      <Menu>
         <Back src={back} alt="뒤로가기" onClick={goBack} />
         <Title>로그인</Title>
-      </TitleBox>
+      </Menu>
       <Form onSubmit={onSubmit}>
         <Div>이메일</Div>
         <Input
@@ -296,10 +167,10 @@ export default function Login() {
           <img src={googleLogo} alt="Google" />
         </SocialLogin>
       </SocialLoginBox>
-      <JoinBox>
+      <Switcher>
         아직 회원이 아니신가요?
-        <Join href="/join">회원가입</Join>
-      </JoinBox>
+        <SwitcherLink to="/join">회원가입</SwitcherLink>
+      </Switcher>
     </Wrapper>
   );
 }

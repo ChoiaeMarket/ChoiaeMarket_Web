@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -71,7 +71,7 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
-const ProductType = styled.div`
+const Type = styled.div`
   width: 390px;
   height: 32px;
   border-bottom: 1px solid #626877;
@@ -98,14 +98,53 @@ const ProductItem = styled.span`
   cursor: pointer;
 `;
 
+const ProductImg = styled.img``;
+const ProductType = styled.div``;
+const ProductName = styled.div``;
+const ProductPrice = styled.div``;
+
 export default function Idol() {
   const { src } = useParams<{ src: string }>(); // useParams를 통해 현재 주소의 src 값을 가져옴
   const [selectedType, setSelectedType] = useState("전체"); // 선택된 아이템의 인덱스를 추적
+  const [product, setProduct] = useState<any>([
+    {
+      type: "MD",
+      name: "OFFICIAL FANLIGHT",
+      price: 30000,
+    },
+    {
+      type: "시즌그리팅",
+      name: "2024 SEASON'S GREETINGS CLEAR PHOTO CARD",
+      price: 4000,
+    },
+    {
+      type: "시즌그리팅",
+      name: "2024 SEASON'S GREETINGS RANDOM TRADING CARD",
+      price: 3000,
+    },
+    { type: "MD", name: "Be There For Me - BALL CAP SET", price: 25000 },
+  ]);
+
   // 타입 클릭 이벤트
   const handleClick = (type: string) => {
     console.log("type: ", type);
     setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
   };
+
+  // 선택된 타입에 대한 API 호출
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`your-api-url/${selectedType}`);
+        const data = await response.json();
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData(); // 함수 호출
+  }, [selectedType]); // 선택된 타입이 변경될 때마다 호출
 
   const productTypes = [
     "전체",
@@ -118,6 +157,7 @@ export default function Idol() {
     "팬클럽",
     "기타",
   ];
+
   return (
     <Wrapper>
       <CoverImgBox
@@ -218,7 +258,7 @@ export default function Idol() {
           </MenuItem>
         </MenuItem>
       </Menu>
-      <ProductType>
+      <Type>
         {productTypes.map((type) => (
           <ProductItem
             key={type}
@@ -232,7 +272,20 @@ export default function Idol() {
             {type}
           </ProductItem>
         ))}
-      </ProductType>
+      </Type>
+      <div>
+        <h2>{selectedType}에 대한 데이터</h2>
+        <ul>
+          {product.map((item: any, index: number) => (
+            <li key={index}>
+              <ProductImg></ProductImg>
+              <ProductType>{item.type}</ProductType>
+              <ProductName>{item.name}</ProductName>
+              <ProductPrice>{item.price}</ProductPrice>
+            </li> // 데이터에 'name' 속성이 있다고 가정
+          ))}
+        </ul>
+      </div>
     </Wrapper>
   );
 }

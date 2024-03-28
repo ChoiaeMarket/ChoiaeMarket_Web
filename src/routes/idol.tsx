@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -16,6 +17,7 @@ const CoverImgBox = styled.div`
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
+
   &::before {
     content: "";
     position: absolute;
@@ -34,6 +36,18 @@ const CoverImg = styled.img`
   position: relative;
 `;
 
+const CoverGradient = styled.div`
+  width: inherit;
+  height: inherit;
+  position: absolute;
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(24, 26, 32, 0.3) 0%,
+    rgba(0, 0, 0, 0) 20%
+  );
+`;
+
 const Menu = styled.div`
   width: inherit;
   display: flex;
@@ -49,7 +63,6 @@ const Title = styled.h1`
   font-size: 20px;
   line-height: 56px;
   letter-spacing: 0;
-  text-shadow: 0px 0px 40px #000;
 `;
 
 const MenuItem = styled.div`
@@ -58,8 +71,53 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
+const ProductType = styled.div`
+  width: 390px;
+  height: 32px;
+  border-bottom: 1px solid #626877;
+  margin-top: 32px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 30px; /* 각 ProductItem 사이의 간격 설정 */
+  overflow-x: auto; /* 가로 스크롤 */
+  white-space: nowrap; /* 자식 요소가 줄 바꿈되지 않도록 함 */
+  scrollbar-width: none; /* Firefox에 대한 스크롤바 숨김 */
+  -ms-overflow-style: none; /* IE 및 Edge에 대한 스크롤바 숨김 */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera에 대한 스크롤바 숨김 */
+  }
+`;
+
+const ProductItem = styled.span`
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 29px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+  cursor: pointer;
+`;
+
 export default function Idol() {
   const { src } = useParams<{ src: string }>(); // useParams를 통해 현재 주소의 src 값을 가져옴
+  const [selectedType, setSelectedType] = useState("전체"); // 선택된 아이템의 인덱스를 추적
+  // 타입 클릭 이벤트
+  const handleClick = (type: string) => {
+    console.log("type: ", type);
+    setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
+  };
+
+  const productTypes = [
+    "전체",
+    "앨범",
+    "콘서트",
+    "MD",
+    "콜라보",
+    "포토북",
+    "시즌그리팅",
+    "팬클럽",
+    "기타",
+  ];
   return (
     <Wrapper>
       <CoverImgBox
@@ -74,6 +132,7 @@ export default function Idol() {
             ).src = `src/assets/idol/logo/default.png`; // 대체 이미지 설정
           }}
         />
+        <CoverGradient />
       </CoverImgBox>
       <Menu>
         <MenuItem>
@@ -159,6 +218,21 @@ export default function Idol() {
           </MenuItem>
         </MenuItem>
       </Menu>
+      <ProductType>
+        {productTypes.map((type) => (
+          <ProductItem
+            key={type}
+            onClick={() => handleClick(type)} // 클릭 시 해당 타입의 인덱스를 상태에 저장
+            style={{
+              color: selectedType === type ? "#f89e86" : "#9ea3b2", // 선택된 타입에 따라 글자 색상 변경
+              borderBottom:
+                selectedType === type ? "2px solid #f89e86" : "none", // 선택된 타입에 따라 밑줄 스타일 변경
+            }}
+          >
+            {type}
+          </ProductItem>
+        ))}
+      </ProductType>
     </Wrapper>
   );
 }

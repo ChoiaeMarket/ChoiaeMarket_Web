@@ -108,10 +108,10 @@ export default function Login() {
       // props.abc.value; // 강제 에러 발생
       navigate("/");
     } catch (e: any) {
-      console.log(e.message);
+      console.log("login: ", e.message);
       setError("정보가 일치하지 않습니다");
     }
-    console.log(email, password, isChecked);
+    console.log("login: ", email, password, isChecked);
 
     // setChecked(false); // 체크 초기화
   };

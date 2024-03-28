@@ -195,10 +195,10 @@ export default function Register() {
       // 메인 리디렉션
       navigate("/");
     } catch (e: any) {
-      console.log(e.message);
+      console.log("register: ", e.message);
       setError("다른 이메일을 입력해 주세요");
     }
-    console.log(name, nickname, email, tel, gender);
+    console.log("register: ", name, nickname, email, tel, gender);
   };
   return (
     <Wrapper>

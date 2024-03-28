@@ -52,10 +52,10 @@ export default function Join() {
       // 메인 리디렉션
       navigate("/register");
     } catch (e: any) {
-      console.log(e.message);
+      console.log("join: ", e.message);
       setError("다른 이메일을 입력해 주세요");
     }
-    console.log(name, email, password);
+    console.log("join: ", name, email, password);
   };
   return (
     <Wrapper>

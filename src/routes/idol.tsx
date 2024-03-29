@@ -98,6 +98,57 @@ const TypeValue = styled.span`
   cursor: pointer;
 `;
 
+const DropdownButton = styled.button`
+  background-color: #181a20;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+  color: white;
+  margin: 12px 0;
+  margin-left: auto;
+  border: none;
+  cursor: pointer;
+`;
+
+// isOpen 속성이 없는 HTMLDivElement에 대해 props 정의
+interface DropdownContentProps {
+  isOpen?: boolean;
+}
+
+const DropdownBackground = styled.div<DropdownContentProps>`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  width: 390px;
+  height: inherit;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const DropdownContent = styled.div<DropdownContentProps>`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: fixed;
+  bottom: 0;
+  width: 390px;
+  height: 204px;
+  border-radius: 12px 12px 0 0;
+  background-color: #f9f9f9;
+  z-index: 2;
+`;
+
+const Dropdown = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 68px;
+  letter-spacing: -0.025em;
+  color: black;
+  border-bottom: 1px solid #dfdfdf;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  &:hover {
+    background-color: #f1f1f1;
+  }
+`;
+
 const ProdoctList = styled.ul`
   width: 390px;
   display: flex;
@@ -151,7 +202,10 @@ const ProductPrice = styled.div`
 
 export default function Idol() {
   const { src } = useParams<{ src: string }>(); // useParams를 통해 현재 주소의 src 값을 가져옴
-  const [selectedType, setSelectedType] = useState("전체"); // 선택된 아이템의 인덱스를 추적
+  const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
+  const [selectedType, setSelectedType] = useState("전체"); // 선택된 상품 타입
+  const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
+  const [selectedSort, setSelectedSort] = useState("인기순"); // 선택된 상품 정렬
   const [product, setProduct] = useState<any>([
     {
       type: "MD",
@@ -171,41 +225,7 @@ export default function Idol() {
     { type: "MD", name: "Be There For Me - BALL CAP SET", price: 25000 },
   ]);
 
-  // 타입 클릭 이벤트
-  const handleClick = (type: string) => {
-    console.log("type: ", type);
-    setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
-  };
-
-  // useNavigate 훅을 사용하여 navigate 함수 가져오기
-  const navigate = useNavigate();
-
-  // Prodoct 클릭 시 상세 정보 페이지로 이동하는 함수
-  const handleProductClick = (productName: string) => {
-    navigate(`/idol/${src}/${productName}`); // 경로 변경
-  };
-
-  // 페이지가 처음 로드될 때 API 호출
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`your-api-url`);
-        const data = await response.json();
-        setProduct(data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchData();
-  }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
-
-  // 타입에 따른 제품 필터링
-  const filteredProducts =
-    selectedType === "전체"
-      ? product
-      : product.filter((item: any) => item.type === selectedType);
-
+  // 상품 타입 종류
   const productTypes = [
     "전체",
     "앨범",
@@ -217,6 +237,49 @@ export default function Idol() {
     "팬클럽",
     "기타",
   ];
+
+  // 페이지가 처음 로드될 때 상품 API 호출
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`your-api-url`);
+        const data = await response.json();
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
+
+  // 상품 타입 메뉴 선택시 함수
+  const handleClick = (type: string) => {
+    console.log("type: ", type);
+    setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
+  };
+
+  // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
+  const handleProductClick = (productName: string) => {
+    navigate(`/idol/${src}/${productName}`); // 경로 변경
+  };
+
+  // 상품 타입에 따른 제품 필터링
+  const filteredProducts =
+    selectedType === "전체"
+      ? product
+      : product.filter((item: any) => item.type === selectedType);
+
+  // 상품 정렬 드롭다운 메뉴 open 유무 토글
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // 상품 정렬 드론다운 하위 메뉴 선택시 함수
+  const handleSortClick = (sort: string) => {
+    console.log("sort: ", sort);
+    setSelectedSort(sort); // 선택 값 저장
+    setIsOpen(false); // 드롭다운 닫기
+  };
 
   return (
     <Wrapper>
@@ -333,31 +396,65 @@ export default function Idol() {
           </TypeValue>
         ))}
       </Type>
-      <div>
-        <h2>{selectedType}에 대한 데이터</h2>
-        <ProdoctList>
-          {filteredProducts.map((item: any, index: number) => (
-            <Prodoct
-              key={index}
-              onClick={() => handleProductClick(item.name)} // 클릭 시 상세 정보 페이지로 이동
-            >
-              <ProductImg
-                src={`/src/assets/idol/product/${src}/${item.name}.png`}
-                alt={item.name}
-                onError={(e) => {
-                  (
-                    e.target as HTMLImageElement
-                  ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
-                }}
+      <DropdownButton onClick={toggleDropdown}>
+        {selectedSort}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="10"
+          viewBox="0 0 20 10"
+          fill="none"
+        >
+          <g clip-path="url(#clip0_18_387)">
+            <path
+              d="M14 3C12.4379 4.5621 11.5621 5.4379 10 7L6 3"
+              stroke="white"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+          <defs>
+            <clipPath id="clip0_18_387">
+              <rect
+                width="10"
+                height="20"
+                fill="white"
+                transform="translate(0 10) rotate(-90)"
               />
-              <ProductType>{item.type}</ProductType>
-              <ProductName>{item.name}</ProductName>
-              <ProductPrice>\ {item.price.toLocaleString()}</ProductPrice>{" "}
-              {/* 가격을 세 자리 단위로 끊어서 출력 */}
-            </Prodoct>
-          ))}
-        </ProdoctList>
-      </div>
+            </clipPath>
+          </defs>
+        </svg>
+      </DropdownButton>
+      <DropdownBackground isOpen={isOpen} />
+      <DropdownContent isOpen={isOpen}>
+        <Dropdown onClick={() => handleSortClick("최신순")}>최신순</Dropdown>
+        <Dropdown onClick={() => handleSortClick("저가순")}>저가순</Dropdown>
+        <Dropdown onClick={() => handleSortClick("찜 많은 순")}>
+          찜 많은 순
+        </Dropdown>
+      </DropdownContent>
+      <ProdoctList>
+        {filteredProducts.map((item: any, index: number) => (
+          <Prodoct
+            key={index}
+            onClick={() => handleProductClick(item.name)} // 클릭 시 상세 정보 페이지로 이동
+          >
+            <ProductImg
+              src={`/src/assets/idol/product/${src}/${item.name}.png`}
+              alt={item.name}
+              onError={(e) => {
+                (
+                  e.target as HTMLImageElement
+                ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+              }}
+            />
+            <ProductType>{item.type}</ProductType>
+            <ProductName>{item.name}</ProductName>
+            <ProductPrice>\ {item.price.toLocaleString()}</ProductPrice>{" "}
+            {/* 가격을 세 자리 단위로 끊어서 출력 */}
+          </Prodoct>
+        ))}
+      </ProdoctList>
     </Wrapper>
   );
 }

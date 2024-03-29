@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -79,7 +79,7 @@ const Type = styled.div`
   padding: 0 30px;
   display: flex;
   align-items: center;
-  gap: 30px; /* 각 ProductItem 사이의 간격 설정 */
+  gap: 30px; /* 각 TypeValue 사이의 간격 설정 */
   overflow-x: auto; /* 가로 스크롤 */
   white-space: nowrap; /* 자식 요소가 줄 바꿈되지 않도록 함 */
   scrollbar-width: none; /* Firefox에 대한 스크롤바 숨김 */
@@ -89,7 +89,7 @@ const Type = styled.div`
   }
 `;
 
-const ProductItem = styled.span`
+const TypeValue = styled.span`
   font-weight: 400;
   font-size: 14px;
   line-height: 29px;
@@ -98,10 +98,56 @@ const ProductItem = styled.span`
   cursor: pointer;
 `;
 
-const ProductImg = styled.img``;
-const ProductType = styled.div``;
-const ProductName = styled.div``;
-const ProductPrice = styled.div``;
+const ProdoctList = styled.ul`
+  width: 390px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const Prodoct = styled.li`
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #3b3f4a;
+  }
+`;
+
+const ProductImg = styled.img`
+  width: 190px;
+  height: 190px;
+`;
+
+const ProductType = styled.div`
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+  color: #777c89;
+  margin: 8px 5px 0 5px;
+`;
+
+const ProductName = styled.div`
+  width: 180px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+  margin: 4px 5px 0 5px;
+`;
+
+const ProductPrice = styled.div`
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  margin: 8px 5px 0 5px;
+`;
 
 export default function Idol() {
   const { src } = useParams<{ src: string }>(); // useParams를 통해 현재 주소의 src 값을 가져옴
@@ -131,11 +177,19 @@ export default function Idol() {
     setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
   };
 
-  // 선택된 타입에 대한 API 호출
+  // useNavigate 훅을 사용하여 navigate 함수 가져오기
+  const navigate = useNavigate();
+
+  // Prodoct 클릭 시 상세 정보 페이지로 이동하는 함수
+  const handleProductClick = (productName: string) => {
+    navigate(`/idol/${src}/${productName}`); // 경로 변경
+  };
+
+  // 페이지가 처음 로드될 때 API 호출
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`your-api-url/${selectedType}`);
+        const response = await fetch(`your-api-url`);
         const data = await response.json();
         setProduct(data);
       } catch (error) {
@@ -143,8 +197,14 @@ export default function Idol() {
       }
     };
 
-    fetchData(); // 함수 호출
-  }, [selectedType]); // 선택된 타입이 변경될 때마다 호출
+    fetchData();
+  }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
+
+  // 타입에 따른 제품 필터링
+  const filteredProducts =
+    selectedType === "전체"
+      ? product
+      : product.filter((item: any) => item.type === selectedType);
 
   const productTypes = [
     "전체",
@@ -169,7 +229,7 @@ export default function Idol() {
           onError={(e) => {
             (
               e.target as HTMLImageElement
-            ).src = `src/assets/idol/logo/default.png`; // 대체 이미지 설정
+            ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
           }}
         />
         <CoverGradient />
@@ -260,7 +320,7 @@ export default function Idol() {
       </Menu>
       <Type>
         {productTypes.map((type) => (
-          <ProductItem
+          <TypeValue
             key={type}
             onClick={() => handleClick(type)} // 클릭 시 해당 타입의 인덱스를 상태에 저장
             style={{
@@ -270,21 +330,33 @@ export default function Idol() {
             }}
           >
             {type}
-          </ProductItem>
+          </TypeValue>
         ))}
       </Type>
       <div>
         <h2>{selectedType}에 대한 데이터</h2>
-        <ul>
-          {product.map((item: any, index: number) => (
-            <li key={index}>
-              <ProductImg></ProductImg>
+        <ProdoctList>
+          {filteredProducts.map((item: any, index: number) => (
+            <Prodoct
+              key={index}
+              onClick={() => handleProductClick(item.name)} // 클릭 시 상세 정보 페이지로 이동
+            >
+              <ProductImg
+                src={`/src/assets/idol/product/${src}/${item.name}.png`}
+                alt={item.name}
+                onError={(e) => {
+                  (
+                    e.target as HTMLImageElement
+                  ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+                }}
+              />
               <ProductType>{item.type}</ProductType>
               <ProductName>{item.name}</ProductName>
-              <ProductPrice>{item.price}</ProductPrice>
-            </li> // 데이터에 'name' 속성이 있다고 가정
+              <ProductPrice>\ {item.price.toLocaleString()}</ProductPrice>{" "}
+              {/* 가격을 세 자리 단위로 끊어서 출력 */}
+            </Prodoct>
           ))}
-        </ul>
+        </ProdoctList>
       </div>
     </Wrapper>
   );

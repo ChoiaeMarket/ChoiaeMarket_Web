@@ -129,7 +129,6 @@ const DropdownContent = styled.div<DropdownContentProps>`
   position: fixed;
   bottom: 0;
   width: 390px;
-  height: 204px;
   border-radius: 12px 12px 0 0;
   background-color: #f9f9f9;
   z-index: 2;
@@ -205,25 +204,62 @@ export default function Idol() {
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [selectedType, setSelectedType] = useState("전체"); // 선택된 상품 타입
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
-  const [selectedSort, setSelectedSort] = useState("인기순"); // 선택된 상품 정렬
+  const [isSorted, setIsSorted] = useState(false); // 상품 정렬 완료 여부
+  const [selectedSort, setSelectedSort] = useState("최신순"); // 선택된 상품 정렬
   const [product, setProduct] = useState<any>([
+    // 초기 상품 목록
     {
       type: "MD",
       name: "OFFICIAL FANLIGHT",
       price: 30000,
+      likes: 78,
     },
     {
       type: "시즌그리팅",
       name: "2024 SEASON'S GREETINGS CLEAR PHOTO CARD",
       price: 4000,
+      likes: 10,
     },
     {
       type: "시즌그리팅",
       name: "2024 SEASON'S GREETINGS RANDOM TRADING CARD",
       price: 3000,
+      likes: 35,
     },
-    { type: "MD", name: "Be There For Me - BALL CAP SET", price: 25000 },
+    {
+      type: "MD",
+      name: "Be There For Me - BALL CAP SET",
+      price: 25000,
+      likes: 55,
+    },
   ]);
+  const [sortedProduct, setSortedProduct] = useState<any>([
+    // 초기 상품 목록
+    {
+      type: "MD",
+      name: "OFFICIAL FANLIGHT",
+      price: 30000,
+      likes: 78,
+    },
+    {
+      type: "시즌그리팅",
+      name: "2024 SEASON'S GREETINGS CLEAR PHOTO CARD",
+      price: 4000,
+      likes: 10,
+    },
+    {
+      type: "시즌그리팅",
+      name: "2024 SEASON'S GREETINGS RANDOM TRADING CARD",
+      price: 3000,
+      likes: 35,
+    },
+    {
+      type: "MD",
+      name: "Be There For Me - BALL CAP SET",
+      price: 25000,
+      likes: 55,
+    },
+  ]); // 정렬된 상품 목록
 
   // 상품 타입 종류
   const productTypes = [
@@ -245,6 +281,7 @@ export default function Idol() {
         const response = await fetch(`your-api-url`);
         const data = await response.json();
         setProduct(data);
+        setSortedProduct(data);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -263,11 +300,11 @@ export default function Idol() {
     navigate(`/idol/${src}/${productName}`); // 경로 변경
   };
 
-  // 상품 타입에 따른 제품 필터링
+  // 상품 타입 필터링
   const filteredProducts =
     selectedType === "전체"
-      ? product
-      : product.filter((item: any) => item.type === selectedType);
+      ? sortedProduct
+      : sortedProduct.filter((item: any) => item.type === selectedType);
 
   // 상품 정렬 드롭다운 메뉴 open 유무 토글
   const toggleDropdown = () => {
@@ -278,8 +315,23 @@ export default function Idol() {
   const handleSortClick = (sort: string) => {
     console.log("sort: ", sort);
     setSelectedSort(sort); // 선택 값 저장
+    setIsSorted(false); // 정렬 시작
     setIsOpen(false); // 드롭다운 닫기
   };
+
+  // 상품 정렬
+  if (isSorted === false) {
+    if (selectedSort === "최신순") {
+      setSortedProduct([...product]);
+      setIsSorted(true); // 정렬 끝
+    } else if (selectedSort === "저가순") {
+      sortedProduct.sort((a: any, b: any) => a.price - b.price);
+      setIsSorted(true); // 정렬 끝
+    } else if (selectedSort === "찜 많은 순") {
+      sortedProduct.sort((a: any, b: any) => b.likes - a.likes);
+      setIsSorted(true); // 정렬 끝
+    }
+  }
 
   return (
     <Wrapper>

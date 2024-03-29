@@ -118,7 +118,8 @@ interface DropdownContentProps {
 
 const DropdownBackground = styled.div<DropdownContentProps>`
   display: ${(props) => (props.isOpen ? "block" : "none")};
-  position: absolute;
+  position: fixed;
+  top: 0;
   width: 390px;
   height: inherit;
   background-color: rgba(0, 0, 0, 0.5);

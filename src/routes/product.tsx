@@ -141,12 +141,13 @@ const Dropdown = styled.div`
 const ProdoctList = styled.ul`
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 20px;
 `;
 
 const Prodoct = styled.li`
-  width: 326px;
-  height: 100px;
+  width: 390px;
+  height: 140px;
+  padding: 32px 20px;
   display: flex;
   cursor: pointer;
   overflow: hidden;

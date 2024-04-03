@@ -250,7 +250,7 @@ export function Product() {
       name: "OFFICIAL FANLIGHT",
       title: "시즈니 필수템 판매중",
       content: "필요하시면 채팅주세요!",
-      id: "NNNCCT",
+      id: "엔시티즌",
       date: "2024-04-03T19:15:50",
       price: 30000,
       chats: 0,
@@ -264,8 +264,8 @@ export function Product() {
       name: "OFFICIAL FANLIGHT",
       title: "응원봉 판매",
       content: "응원봉 싸게 팝니당. 편하게 채팅해주세요.",
-      id: "NNNCCT",
-      date: "2024-04-03T19:15:50",
+      id: "시즈니",
+      date: "2024-04-03T10:15:50",
       price: 28000,
       chats: 1,
       likes: 4,
@@ -324,7 +324,7 @@ export function Product() {
       name: "OFFICIAL FANLIGHT",
       title: "시즈니 필수템 판매중",
       content: "필요하시면 채팅주세요!",
-      id: "NNNCCT",
+      id: "엔시티즌",
       date: "2024-04-03T19:15:50",
       price: 30000,
       chats: 0,
@@ -338,8 +338,8 @@ export function Product() {
       name: "OFFICIAL FANLIGHT",
       title: "응원봉 판매",
       content: "응원봉 싸게 팝니당. 편하게 채팅해주세요.",
-      id: "NNNCCT",
-      date: "2024-04-03T19:15:50",
+      id: "시즈니",
+      date: "2024-04-03T10:15:50",
       price: 28000,
       chats: 1,
       likes: 4,
@@ -410,8 +410,15 @@ export function Product() {
   }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
-  const handleProductClick = (productOrder: string) => {
-    navigate(`/idol/${idol}/${product}/${productOrder}`); // 경로 변경
+  const handleProductClick = (order: number) => {
+    const selectedProduct = sortedProducts.find(
+      (product: any) => product.order === order
+    );
+    if (selectedProduct) {
+      navigate(`/idol/${idol}/${product}/${order}`, {
+        state: { detail: selectedProduct }, // navigate 함수의 옵션으로 state를 사용하여 데이터 전달
+      });
+    }
   };
 
   // 상품 정렬 드롭다운 메뉴 open 유무 토글

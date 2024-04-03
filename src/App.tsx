@@ -15,6 +15,7 @@ import Chat from "./routes/chat";
 import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
 import { Product } from "./routes/product";
+import { Detail } from "./routes/detail";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "idol/:idol/:product", // idol별 상품페이지 동적 라우팅
         element: Protect(<Product />),
+      },
+      {
+        path: "idol/:idol/:product/:order", // idol별 상품 개별 판매페이지 동적 라우팅
+        element: Protect(<Detail />),
       },
     ],
   },

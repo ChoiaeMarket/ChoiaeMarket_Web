@@ -11,50 +11,13 @@ const Wrapper = styled.div`
   padding: 44px 0px 68px;
 `;
 
-const CoverImgBox = styled.div`
-  width: 390px;
-  height: 390px;
-  background-size: cover;
-  background-repeat: no-repeat;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    backdrop-filter: blur(10px);
-  }
-`;
-
-const CoverImg = styled.img`
-  width: inherit;
-  height: inherit;
-  object-fit: contain;
-  position: relative;
-`;
-
-const CoverGradient = styled.div`
-  width: inherit;
-  height: inherit;
-  position: absolute;
-  top: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(24, 26, 32, 0.3) 0%,
-    rgba(0, 0, 0, 0) 20%
-  );
-`;
-
 const Menu = styled.div`
   width: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
   justify-content: space-between;
-  position: absolute;
+  /* position: absolute; */
 `;
 
 const Title = styled.h1`
@@ -71,32 +34,57 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
-const Type = styled.div`
+const CoverImgBox = styled.div`
   width: 390px;
-  height: 32px;
-  border-bottom: 1px solid #626877;
-  margin-top: 32px;
-  padding: 0 30px;
+  height: 390px;
+  background-color: #ffffff;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: -0.025em;
+  color: #181a20;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 30px; /* 각 TypeValue 사이의 간격 설정 */
-  overflow-x: auto; /* 가로 스크롤 */
-  white-space: nowrap; /* 자식 요소가 줄 바꿈되지 않도록 함 */
-  scrollbar-width: none; /* Firefox에 대한 스크롤바 숨김 */
-  -ms-overflow-style: none; /* IE 및 Edge에 대한 스크롤바 숨김 */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera에 대한 스크롤바 숨김 */
-  }
 `;
 
-const TypeValue = styled.span`
+const CoverTitle = styled.div`
+  width: 326px;
+  height: 95px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CoverImg = styled.img`
+  width: 200px;
+  height: 200px;
+`;
+
+const CoverContentsBox = styled.div`
+  height: 95px;
+  display: flex;
+`;
+
+const CoverContents = styled.div`
+  width: 195px;
+  height: 95px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CoverContentTitle = styled.div`
   font-weight: 400;
-  font-size: 14px;
-  line-height: 29px;
+  font-size: 12px;
+  line-height: 16px;
   letter-spacing: -0.025em;
   color: #9ea3b2;
-  cursor: pointer;
 `;
+
+const CoverContent = styled.div``;
 
 const DropdownButton = styled.button`
   background-color: #181a20;
@@ -151,16 +139,15 @@ const Dropdown = styled.div`
 `;
 
 const ProdoctList = styled.ul`
-  width: 390px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 40px;
 `;
 
 const Prodoct = styled.li`
-  width: 190px;
+  width: 326px;
+  height: 100px;
   display: flex;
-  flex-direction: column;
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.2s;
@@ -170,41 +157,81 @@ const Prodoct = styled.li`
 `;
 
 const ProductImg = styled.img`
-  width: 190px;
-  height: 190px;
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
 `;
 
-const ProductType = styled.div`
+const ProductPrice = styled.div`
+  width: 214px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: 0;
+  margin: 0 0 8px 12px;
+`;
+
+const ProductTitle = styled.div`
+  width: 214px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+  margin: 0 0 24px 12px;
+  overflow: hidden; /* 텍스트가 넘칠 경우 생략 */
+  white-space: nowrap; /* 텍스트가 한 줄을 넘어갈 때 줄 바꿈 방지 */
+  text-overflow: ellipsis; /* 생략 부분에 ellipsis(...) 표시 */
+`;
+
+const ProductBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 0 12px;
+`;
+
+const ProductDate = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   letter-spacing: -0.025em;
   color: #777c89;
-  margin: 8px 5px 0 5px;
 `;
 
-const ProductName = styled.div`
-  width: 180px;
+const ProductInfo = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   letter-spacing: -0.025em;
   color: #9ea3b2;
-  margin: 4px 5px 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
 `;
 
-const ProductPrice = styled.div`
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0;
-  margin: 8px 5px 0 5px;
-`;
+function getTimeDifferenceString(previousDate: any) {
+  const currentDate = new Date();
+  const diff = currentDate.getTime() - previousDate.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-export default function Idol() {
-  const { idol } = useParams(); // useParams를 통해 현재 주소의 idol 값을 가져옴
+  if (days > 0) {
+    return `${days}일 전`;
+  } else if (hours > 0) {
+    return `${hours}시간 전`;
+  } else if (minutes > 0) {
+    return `${minutes}분 전`;
+  } else {
+    return `${seconds}초 전`;
+  }
+}
+
+export function Product() {
+  const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
-  const [selectedType, setSelectedType] = useState("전체"); // 선택된 상품 타입
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
   const [isSorted, setIsSorted] = useState(false); // 상품 정렬 완료 여부
   const [selectedSort, setSelectedSort] = useState("최신순"); // 선택된 상품 정렬
@@ -214,33 +241,41 @@ export default function Idol() {
       idol: "NCT",
       type: "MD",
       name: "OFFICIAL FANLIGHT",
-      price: 30000,
-      count: 150,
-      likes: 78,
-    },
-    {
-      idol: "NCT",
-      type: "시즌그리팅",
-      name: "2024 SEASON'S GREETINGS CLEAR PHOTO CARD",
-      price: 4000,
-      count: 15,
-      likes: 10,
-    },
-    {
-      idol: "NCT",
-      type: "시즌그리팅",
-      name: "2024 SEASON'S GREETINGS RANDOM TRADING CARD",
-      price: 3000,
-      count: 43,
-      likes: 35,
+      title: "NCT 응원봉",
+      content: "채팅 부탁드려요.",
+      id: "NNNCCT",
+      date: "2024-04-03T04:35:50",
+      price: 28000,
+      chats: 1,
+      likes: 7,
+      order: 3,
     },
     {
       idol: "NCT",
       type: "MD",
-      name: "Be There For Me - BALL CAP SET",
+      name: "OFFICIAL FANLIGHT",
+      title: "엔시티(nct) 응원봉 판매합니다~",
+      content: "하자 없습니다. 네고가능",
+      id: "오리조아",
+      date: "2024-04-01T04:35:50",
+      price: 31000,
+      chats: 0,
+      likes: 1,
+      order: 2,
+    },
+    {
+      idol: "NCT",
+      type: "MD",
+      name: "OFFICIAL FANLIGHT",
+      title: "엔시티 응원봉 택포",
+      content:
+        "딱 한 번 썼어요! 하자 전혀 없구요 배터리, 상자, 더스트백 다 포함해서 수요일에 배송 보내드려요~",
+      id: "홍튜브",
+      date: "2024-03-29T12:28:50",
       price: 25000,
-      count: 23,
-      likes: 55,
+      chats: 2,
+      likes: 13,
+      order: 1,
     },
   ]);
   const [sortedProducts, setSortedProducts] = useState<any>([
@@ -249,50 +284,44 @@ export default function Idol() {
       idol: "NCT",
       type: "MD",
       name: "OFFICIAL FANLIGHT",
-      price: 30000,
-      count: 150,
-      likes: 78,
-    },
-    {
-      idol: "NCT",
-      type: "시즌그리팅",
-      name: "2024 SEASON'S GREETINGS CLEAR PHOTO CARD",
-      price: 4000,
-      count: 15,
-      likes: 10,
-    },
-    {
-      idol: "NCT",
-      type: "시즌그리팅",
-      name: "2024 SEASON'S GREETINGS RANDOM TRADING CARD",
-      price: 3000,
-      count: 43,
-      likes: 35,
+      title: "NCT 응원봉",
+      content: "채팅 부탁드려요.",
+      id: "NNNCCT",
+      date: "2024-04-03T04:35:50",
+      price: 28000,
+      chats: 1,
+      likes: 7,
+      order: 3,
     },
     {
       idol: "NCT",
       type: "MD",
-      name: "Be There For Me - BALL CAP SET",
+      name: "OFFICIAL FANLIGHT",
+      title: "엔시티(nct) 응원봉 판매합니다~",
+      content: "하자 없습니다. 네고가능",
+      id: "오리조아",
+      date: "2024-04-01T04:35:50",
+      price: 31000,
+      chats: 0,
+      likes: 1,
+      order: 2,
+    },
+    {
+      idol: "NCT",
+      type: "MD",
+      name: "OFFICIAL FANLIGHT",
+      title: "엔시티 응원봉 택포",
+      content:
+        "딱 한 번 썼어요! 하자 전혀 없구요 배터리, 상자, 더스트백 다 포함해서 수요일에 배송 보내드려요~",
+      id: "홍튜브",
+      date: "2024-03-29T12:28:50",
       price: 25000,
-      count: 23,
-      likes: 55,
+      chats: 2,
+      likes: 13,
+      order: 1,
     },
   ]); // 정렬된 상품 목록
 
-  // 상품 타입 종류
-  const productsTypes = [
-    "전체",
-    "앨범",
-    "콘서트",
-    "MD",
-    "콜라보",
-    "포토북",
-    "시즌그리팅",
-    "팬클럽",
-    "기타",
-  ];
-
-  // 페이지가 처음 로드될 때 상품 API 호출
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -307,22 +336,10 @@ export default function Idol() {
     fetchData();
   }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
-  // 상품 타입 메뉴 선택시 함수
-  const handleClick = (type: string) => {
-    console.log("type: ", type);
-    setSelectedType(type); // 클릭한 아이템의 인덱스를 상태에 저장
-  };
-
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
-  const handleProductClick = (productName: string) => {
-    navigate(`/idol/${idol}/${productName}`); // 경로 변경
+  const handleProductClick = (productOrder: string) => {
+    navigate(`/idol/${idol}/${product}/${productOrder}`); // 경로 변경
   };
-
-  // 상품 타입 필터링
-  const filteredProducts =
-    selectedType === "전체"
-      ? sortedProducts
-      : sortedProducts.filter((item: any) => item.type === selectedType);
 
   // 상품 정렬 드롭다운 메뉴 open 유무 토글
   const toggleDropdown = () => {
@@ -353,20 +370,6 @@ export default function Idol() {
 
   return (
     <Wrapper>
-      <CoverImgBox
-        style={{ backgroundImage: `url("/src/assets/idol/cover/${idol}.jpg")` }}
-      >
-        <CoverImg
-          src={`/src/assets/idol/cover/${idol}.jpg`}
-          alt={idol}
-          onError={(e) => {
-            (
-              e.target as HTMLImageElement
-            ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
-          }}
-        />
-        <CoverGradient />
-      </CoverImgBox>
       <Menu>
         <MenuItem>
           <MenuItem style={{ marginRight: "12px" }}>
@@ -451,21 +454,28 @@ export default function Idol() {
           </MenuItem>
         </MenuItem>
       </Menu>
-      <Type>
-        {productsTypes.map((type) => (
-          <TypeValue
-            key={type}
-            onClick={() => handleClick(type)} // 클릭 시 해당 타입의 인덱스를 상태에 저장
-            style={{
-              color: selectedType === type ? "#f89e86" : "#9ea3b2", // 선택된 타입에 따라 글자 색상 변경
-              borderBottom:
-                selectedType === type ? "2px solid #f89e86" : "none", // 선택된 타입에 따라 밑줄 스타일 변경
-            }}
-          >
-            {type}
-          </TypeValue>
-        ))}
-      </Type>
+      <CoverImgBox>
+        <CoverTitle>{product}</CoverTitle>
+        <CoverImg
+          src={`/src/assets/idol/product/${idol}/${product}.png`}
+          alt={product}
+          onError={(e) => {
+            (
+              e.target as HTMLImageElement
+            ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+          }}
+        />
+        <CoverContentsBox>
+          <CoverContents>
+            <CoverContentTitle>평균거래내역</CoverContentTitle>
+            <CoverContent>30000원</CoverContent>
+          </CoverContents>
+          <CoverContents>
+            <CoverContentTitle>거래내역</CoverContentTitle>
+            <CoverContent>150건</CoverContent>
+          </CoverContents>
+        </CoverContentsBox>
+      </CoverImgBox>
       <DropdownButton onClick={toggleDropdown}>
         {selectedSort}
         <svg
@@ -504,24 +514,62 @@ export default function Idol() {
         </Dropdown>
       </DropdownContent>
       <ProdoctList>
-        {filteredProducts.map((item: any, index: number) => (
+        {sortedProducts.map((item: any, index: number) => (
           <Prodoct
             key={index}
-            onClick={() => handleProductClick(item.name)} // 클릭 시 상세 정보 페이지로 이동
+            onClick={() => handleProductClick(item.order)} // 클릭 시 상세 정보 페이지로 이동
           >
             <ProductImg
-              src={`/src/assets/idol/product/${idol}/${item.name}.png`}
+              src={`/src/assets/idol/product/${idol}/${item.name}/${item.order}.png`}
               alt={item.name}
               onError={(e) => {
                 (
                   e.target as HTMLImageElement
                 ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
               }}
-            />
-            <ProductType>{item.type}</ProductType>
-            <ProductName>{item.name}</ProductName>
-            <ProductPrice>\ {item.price.toLocaleString()}</ProductPrice>{" "}
-            {/* 가격을 세 자리 단위로 끊어서 출력 */}
+            />{" "}
+            <div>
+              <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>{" "}
+              {/* 가격을 세 자리 단위로 끊어서 출력 */}
+              <ProductTitle>{item.title}</ProductTitle>
+              <ProductBox>
+                <ProductDate>
+                  {getTimeDifferenceString(new Date(item.date))}
+                </ProductDate>
+                <ProductInfo>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M9.00002 14.2445H8.76817C7.93639 14.2063 7.12101 13.9675 6.38726 13.5443C6.38678 13.5441 6.3863 13.5438 6.38581 13.5435L6.19234 13.4307L5.92239 13.2733L5.62054 13.3541L4.28986 13.7105L4.64626 12.3809L4.72724 12.0788L4.56959 11.8087L4.45575 11.6136C4.45565 11.6135 4.45554 11.6133 4.45544 11.6131C3.99308 10.8172 3.75002 9.91155 3.75002 8.99727C3.75002 6.1024 6.103 3.75 9.00002 3.75C11.897 3.75 14.25 6.1024 14.25 8.99727C14.25 11.8921 11.897 14.2445 9.00002 14.2445Z"
+                      stroke="#9EA3B2"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  {item.chats}{" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M9.00001 14.4001L3.72458 9.33643C2.35847 8.02445 2.35847 5.89606 3.72458 4.58408C5.09068 3.2721 7.30894 3.2721 8.67505 4.58408L9.00001 4.8954L9.32495 4.58408C10.6911 3.2721 12.9093 3.2721 14.2754 4.58408C15.6415 5.89606 15.6415 8.02445 14.2754 9.33643L9.00001 14.4001Z"
+                      stroke="#9EA3B2"
+                      stroke-width="1.5"
+                      stroke-miterlimit="10"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  {item.likes}
+                </ProductInfo>
+              </ProductBox>
+            </div>
           </Prodoct>
         ))}
       </ProdoctList>

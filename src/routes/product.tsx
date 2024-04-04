@@ -60,6 +60,7 @@ const CoverTitle = styled.div`
 const CoverImg = styled.img`
   width: 200px;
   height: 200px;
+  object-fit: cover;
 `;
 
 const CoverContentsBox = styled.div`
@@ -161,6 +162,7 @@ const ProductImg = styled.img`
   width: 100px;
   height: 100px;
   border-radius: 5px;
+  object-fit: cover;
 `;
 
 const ProductPrice = styled.div`

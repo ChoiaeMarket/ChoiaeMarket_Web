@@ -146,7 +146,6 @@ const HomeButton = styled.a`
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s;
-  cursor: pointer;
   &:hover {
     background-color: #21242d;
   }

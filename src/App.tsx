@@ -16,6 +16,7 @@ import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
 import { Product } from "./routes/product";
 import { Detail } from "./routes/detail";
+import { Search } from "./routes/search";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "mypage",
         element: Protect(<Mypage />),
+      },
+      {
+        path: "search",
+        element: Protect(<Search />),
       },
       {
         path: "profile",

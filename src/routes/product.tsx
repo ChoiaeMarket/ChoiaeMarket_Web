@@ -139,12 +139,12 @@ const Dropdown = styled.div`
   }
 `;
 
-const ProdoctList = styled.ul`
+const ProductList = styled.ul`
   display: flex;
   flex-wrap: wrap;
 `;
 
-const Prodoct = styled.li`
+const Products = styled.li`
   width: 390px;
   height: 140px;
   padding: 20px 32px;
@@ -595,11 +595,11 @@ export function Product() {
           찜 많은 순
         </Dropdown>
       </DropdownContent>
-      <ProdoctList>
+      <ProductList>
         {sortedProducts
           .filter((product: any) => !product.sold) // sold가 false인 제품만 필터링
           .map((item: any, index: number) => (
-            <Prodoct
+            <Products
               key={index}
               onClick={() => handleProductClick(item.order)} // 클릭 시 상세 정보 페이지로 이동
             >
@@ -662,9 +662,9 @@ export function Product() {
                   </ProductInfos>
                 </ProductBox>
               </div>
-            </Prodoct>
+            </Products>
           ))}
-      </ProdoctList>
+      </ProductList>
     </Wrapper>
   );
 }

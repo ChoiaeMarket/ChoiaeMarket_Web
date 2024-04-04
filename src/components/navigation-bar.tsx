@@ -23,7 +23,7 @@ const MenuItem = styled.div`
   align-items: center;
 `;
 
-export default function Layout() {
+export default function NavigationBar() {
   return (
     <Wrapper>
       <Menu>

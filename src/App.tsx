@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import { useEffect, useState } from "react";
-import Layout from "./components/navigation-bar";
+import NavigationBar from "./components/navigation-bar";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
@@ -20,7 +20,7 @@ import { Detail } from "./routes/detail";
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
     {component}
-    <Layout />
+    <NavigationBar />
   </ProtectedRoute>
 );
 

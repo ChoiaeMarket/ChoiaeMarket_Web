@@ -207,20 +207,19 @@ export function Detail() {
   const handleLikeClick = () => {
     setLiked(!liked); // liked 상태 토글
 
-    // // liked 상태에 따라 새로운 API 요청 보내기
-    // try {
-    //   const response = await axios.get("your/api/endpoint", {
-    //     params: {
-    //       like: !liked, // 좋아요 상태 전달
-    //     },
-    //   });
-
-    //   // API로부터 받은 데이터 처리
-    //   console.log(response.data);
-    // } catch (error) {
-    //   // 오류 처리
-    //   console.error("Error fetching liked products:", error);
-    // }
+    // liked 상태에 따라 새로운 API 요청 보내기
+    try {
+      // const response = await axios.get("your/api/endpoint", {
+      //   params: {
+      //     like: !liked, // 좋아요 상태 전달
+      //   },
+      // });
+      // API로부터 받은 데이터 처리
+      // console.log(response.data);
+    } catch (error) {
+      // 오류 처리
+      console.error("Error fetching liked products:", error);
+    }
   };
 
   return (

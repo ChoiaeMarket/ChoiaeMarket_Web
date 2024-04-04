@@ -150,14 +150,14 @@ const Dropdown = styled.div`
   }
 `;
 
-const ProdoctList = styled.ul`
+const ProductList = styled.ul`
   width: 390px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 `;
 
-const Prodoct = styled.li`
+const Products = styled.li`
   width: 190px;
   display: flex;
   flex-direction: column;
@@ -503,9 +503,9 @@ export default function Idol() {
           찜 많은 순
         </Dropdown>
       </DropdownContent>
-      <ProdoctList>
+      <ProductList>
         {filteredProducts.map((item: any, index: number) => (
-          <Prodoct
+          <Products
             key={index}
             onClick={() => handleProductClick(item.name)} // 클릭 시 상세 정보 페이지로 이동
           >
@@ -522,9 +522,9 @@ export default function Idol() {
             <ProductName>{item.name}</ProductName>
             <ProductPrice>\ {item.price.toLocaleString()}</ProductPrice>{" "}
             {/* 가격을 세 자리 단위로 끊어서 출력 */}
-          </Prodoct>
+          </Products>
         ))}
-      </ProdoctList>
+      </ProductList>
     </Wrapper>
   );
 }

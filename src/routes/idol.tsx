@@ -102,7 +102,7 @@ const TypeValue = styled.span`
   cursor: pointer;
 `;
 
-const TypeButtonLeft = styled.button`
+const TypeButtonLeft = styled.div`
   width: 22px;
   height: 22px;
   background: none;
@@ -114,7 +114,7 @@ const TypeButtonLeft = styled.button`
   cursor: pointer;
 `;
 
-const TypeButtonRight = styled.button`
+const TypeButtonRight = styled.div`
   width: 22px;
   height: 22px;
   background: none;
@@ -126,7 +126,7 @@ const TypeButtonRight = styled.button`
   cursor: pointer;
 `;
 
-const DropdownButton = styled.button`
+const DropdownButton = styled.div`
   background-color: #181a20;
   font-weight: 400;
   font-size: 12px;

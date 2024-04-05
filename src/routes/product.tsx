@@ -622,7 +622,7 @@ export function Product() {
               onClick={() => handleProductClick(item.order)} // 클릭 시 상세 정보 페이지로 이동
             >
               <ProductImg
-                src={`/src/assets/idol/product/${idol}/${item.name}/${item.order}.png`}
+                src={`/src/assets/idol/product/${item.idol}/${item.name}/${item.order}.png`}
                 alt={item.name}
                 onError={(e) => {
                   (

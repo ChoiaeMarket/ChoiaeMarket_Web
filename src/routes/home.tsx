@@ -92,6 +92,10 @@ export default function Home() {
     navigate(`/idol/${src}`);
   };
 
+  const handleSearch = () => {
+    navigate("/search");
+  };
+
   return (
     <Wrapper>
       <Menu>
@@ -100,7 +104,7 @@ export default function Home() {
           <Title>최애마켓</Title>
         </MenuItem>
         <MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-const SEARCH_HISTORY_KEY = "searchHistory"; // 로컬 스토리지를 사용하여 검색 정보를 보존
+const SEARCH_HISTORY_KEY = "searchHistory"; // 로컬 스토리지를 사용하여 검색 정보 저장
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -83,30 +84,38 @@ const RecentSearches = styled.div`
   gap: 10px;
 `;
 
-const RecentWord = styled.div`
+const RecentWordBox = styled.div`
   width: fit-content;
   border-radius: 5px;
   border: 1px solid #9ea3b2;
+  display: flex;
+  align-items: center;
+`;
+
+const RecentWord = styled.button`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: -0.025em;
   color: #9ea3b2;
-  padding: 5px 10px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  background-color: initial;
+  border: 0;
+  cursor: pointer;
+  padding: 5px 5px 5px 10px;
 `;
 
 const DeleteButton = styled.button`
   padding: 0;
   border: 0;
   background-color: initial;
+  cursor: pointer;
+  padding: 10px 10px 10px 0;
   display: flex;
 `;
 
 export function Search() {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [error, setError] = useState("");
   const [history, setHistory] = useState<string[]>([]); // 검색 기록을 초기화
 
@@ -135,16 +144,19 @@ export function Search() {
     if (search === "") return; // 검색어 미입력 방지
     try {
       // props.abc.value; // 강제 에러 발생
-      // navigate("/"); // 검색 쿼리문 페이지
-      const updatedHistory = [...history, search]; // 여기서 검색 기록을 업데이트합니다.
+      const updatedHistory = [...history, search]; // 검색 기록 업데이트
       saveHistory(updatedHistory);
+      navigate(`/searchResult?q=${search}`); // 검색 쿼리문 페이지
     } catch (e: any) {
       console.log("search: ", e.message);
       setError("검색 오류");
     }
     console.log("search: ", search);
   };
-  console.log(history);
+
+  const handleRecentWord = (word: string) => {
+    navigate(`/searchResult?q=${word}`);
+  };
 
   const deleteSearch = (wordToDelete: string) => {
     const updatedHistory = history.filter((word) => word !== wordToDelete);
@@ -209,8 +221,9 @@ export function Search() {
           .slice()
           .reverse()
           .map((word: any) => (
-            <RecentWord>
-              {word}
+            <RecentWordBox key={word} onClick={() => handleRecentWord(word)}>
+              <RecentWord>{word}</RecentWord>
+
               <DeleteButton onClick={() => deleteSearch(word)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -231,7 +244,7 @@ export function Search() {
                   />
                 </svg>
               </DeleteButton>
-            </RecentWord>
+            </RecentWordBox>
           ))}
       </RecentSearches>
     </Wrapper>

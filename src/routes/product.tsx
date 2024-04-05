@@ -393,6 +393,10 @@ export function Product() {
     },
   ]); // 정렬된 상품 목록
 
+  const handleSearch = () => {
+    navigate("/search");
+  };
+
   const averagePrice = // 평균거래가격
     products.reduce((total: any, product: any) => total + product.price, 0) /
     products.length;
@@ -490,7 +494,7 @@ export function Product() {
         </MenuItem>
         <Title>{idol}</Title>
         <MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

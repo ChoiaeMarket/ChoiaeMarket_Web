@@ -307,6 +307,10 @@ export default function Idol() {
     fetchData();
   }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
+  const handleSearch = () => {
+    navigate("/search");
+  };
+
   // 상품 타입 메뉴 선택시 함수
   const handleClick = (type: string) => {
     console.log("type: ", type);
@@ -405,7 +409,7 @@ export default function Idol() {
         </MenuItem>
         <Title>{idol}</Title>
         <MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

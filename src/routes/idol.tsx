@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -71,6 +71,10 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
+const TypeBox = styled.div`
+  position: relative;
+`;
+
 const Type = styled.div`
   width: 390px;
   height: 32px;
@@ -95,6 +99,30 @@ const TypeValue = styled.span`
   line-height: 29px;
   letter-spacing: -0.025em;
   color: #9ea3b2;
+  cursor: pointer;
+`;
+
+const TypeButtonLeft = styled.button`
+  width: 22px;
+  height: 22px;
+  background: none;
+  padding: 0;
+  position: absolute;
+  top: 35px;
+  left: 32px;
+  border: none;
+  cursor: pointer;
+`;
+
+const TypeButtonRight = styled.button`
+  width: 22px;
+  height: 22px;
+  background: none;
+  padding: 0;
+  position: absolute;
+  top: 35px;
+  right: 32px;
+  border: none;
   cursor: pointer;
 `;
 
@@ -204,6 +232,8 @@ const ProductPrice = styled.div`
 export default function Idol() {
   const { idol } = useParams(); // useParams를 통해 현재 주소의 idol 값을 가져옴
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
+  const scrollType = useRef<HTMLDivElement>(null); // 상품 타입 스크롤 이동 버튼
+  const [currentScroll, setCurrentScroll] = useState(0); // 현재 스크롤 위치 저장
   const [selectedType, setSelectedType] = useState("전체"); // 선택된 상품 타입
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
   const [isSorted, setIsSorted] = useState(false); // 상품 정렬 완료 여부
@@ -309,6 +339,49 @@ export default function Idol() {
 
   const handleSearch = () => {
     navigate("/search");
+  };
+
+  // scroll 값이 변경될 때마다 값을 업데이트하는 함수
+  const handleScroll = () => {
+    if (scrollType.current) {
+      setCurrentScroll(scrollType.current.scrollLeft);
+    }
+  };
+
+  useEffect(() => {
+    // scroll 이벤트 리스너 등록
+    if (scrollType.current) {
+      scrollType.current.addEventListener("scroll", handleScroll);
+    }
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      if (scrollType.current) {
+        scrollType.current.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  // 왼쪽 버튼 클릭 시 스크롤 이동
+  const scrollLeft = () => {
+    if (scrollType.current) {
+      const scrollAmount = -124;
+      scrollType.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth", // 부드럽게 스크롤 이동
+      });
+    }
+  };
+
+  // 오른쪽 버튼 클릭 시 스크롤 이동
+  const scrollRight = () => {
+    if (scrollType.current) {
+      const scrollAmount = 124;
+      scrollType.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth", // 부드럽게 스크롤 이동
+      });
+    }
   };
 
   // 상품 타입 메뉴 선택시 함수
@@ -455,21 +528,63 @@ export default function Idol() {
           </MenuItem>
         </MenuItem>
       </Menu>
-      <Type>
-        {productsTypes.map((type) => (
-          <TypeValue
-            key={type}
-            onClick={() => handleClick(type)} // 클릭 시 해당 타입의 인덱스를 상태에 저장
-            style={{
-              color: selectedType === type ? "#f89e86" : "#9ea3b2", // 선택된 타입에 따라 글자 색상 변경
-              borderBottom:
-                selectedType === type ? "2px solid #f89e86" : "none", // 선택된 타입에 따라 밑줄 스타일 변경
-            }}
+      <TypeBox>
+        <Type ref={scrollType}>
+          {productsTypes.map((type) => (
+            <TypeValue
+              key={type}
+              onClick={() => handleClick(type)} // 클릭 시 해당 타입의 인덱스를 상태에 저장
+              style={{
+                color: selectedType === type ? "#f89e86" : "#9ea3b2", // 선택된 타입에 따라 글자 색상 변경
+                borderBottom:
+                  selectedType === type ? "2px solid #f89e86" : "none", // 선택된 타입에 따라 밑줄 스타일 변경
+              }}
+            >
+              {type}
+            </TypeValue>
+          ))}
+        </Type>
+        <TypeButtonLeft
+          onClick={scrollLeft}
+          style={{ display: currentScroll < 10 ? "none" : "block" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
           >
-            {type}
-          </TypeValue>
-        ))}
-      </Type>
+            <circle cx="11" cy="11" r="10.5" fill="#181A20" stroke="white" />
+            <path
+              d="M13 16L8 11L13 6"
+              stroke="white"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </TypeButtonLeft>
+        <TypeButtonRight
+          onClick={scrollRight}
+          style={{ display: currentScroll > 240 ? "none" : "block" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+          >
+            <circle cx="11" cy="11" r="10.5" fill="#181A20" stroke="white" />
+            <path
+              d="M9 6L14 11L9 16"
+              stroke="white"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </TypeButtonRight>
+      </TypeBox>
       <DropdownButton onClick={toggleDropdown}>
         {selectedSort}
         <svg

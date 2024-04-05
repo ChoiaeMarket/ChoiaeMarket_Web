@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -199,9 +199,14 @@ function getTimeDifferenceString(previousDate: any) {
 
 export function Detail() {
   const { idol, product, order } = useParams();
+  const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const location = useLocation();
   const detail = location.state && location.state.detail; // 전달된 상태 받기
   const [liked, setLiked] = useState(false); // 좋아요 버튼 활성 상태
+
+  const handleHome = () => {
+    navigate("/");
+  };
 
   // 좋아요 버튼 클릭을 처리하는 함수
   const handleLikeClick = () => {
@@ -243,7 +248,7 @@ export function Detail() {
               />
             </svg>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleHome} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

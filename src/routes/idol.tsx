@@ -341,6 +341,10 @@ export default function Idol() {
     navigate("/search");
   };
 
+  const handleHome = () => {
+    navigate("/");
+  };
+
   // scroll 값이 변경될 때마다 값을 업데이트하는 함수
   const handleScroll = () => {
     if (scrollType.current) {
@@ -463,7 +467,7 @@ export default function Idol() {
               />
             </svg>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleHome} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

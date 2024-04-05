@@ -114,6 +114,10 @@ export function Search() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<string[]>([]); // 검색 기록을 초기화
 
+  const handleHome = () => {
+    navigate("/");
+  };
+
   useEffect(() => {
     const savedHistory = localStorage.getItem(SEARCH_HISTORY_KEY);
     if (savedHistory) {
@@ -190,7 +194,7 @@ export function Search() {
               />
             </svg>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={handleHome} style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

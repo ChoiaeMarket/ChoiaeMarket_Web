@@ -88,12 +88,12 @@ const IdolName = styled.div`
 export default function Home() {
   const navigate = useNavigate();
 
-  const handleIdol = (src: string) => {
-    navigate(`/idol/${src}`);
-  };
-
   const handleSearch = () => {
     navigate("/search");
+  };
+
+  const handleIdol = (src: string) => {
+    navigate(`/idol/${src}`);
   };
 
   return (

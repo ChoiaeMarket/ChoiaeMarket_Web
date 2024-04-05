@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+const SEARCH_HISTORY_KEY = "searchHistory"; // 로컬 스토리지를 사용하여 검색 정보를 보존
+
 const Wrapper = styled.div`
+  min-height: 100vh;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -90,18 +93,34 @@ const RecentWord = styled.div`
   letter-spacing: -0.025em;
   color: #9ea3b2;
   padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+const DeleteButton = styled.button`
+  padding: 0;
+  border: 0;
+  background-color: initial;
+  display: flex;
 `;
 
 export function Search() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
-  const [recentWord, setRecentWord] = useState<any>([
-    "엔씨티",
-    "응원봉",
-    "SMCU",
-    "SMCU 엔씨티",
-    "lp",
-  ]);
+  const [history, setHistory] = useState<string[]>([]); // 검색 기록을 초기화
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem(SEARCH_HISTORY_KEY);
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  const saveHistory = (updatedHistory: string[]) => {
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updatedHistory));
+    setHistory(updatedHistory);
+  };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -113,15 +132,23 @@ export function Search() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    if (search === "") return; // 미입력 방지
+    if (search === "") return; // 검색어 미입력 방지
     try {
       // props.abc.value; // 강제 에러 발생
       // navigate("/"); // 검색 쿼리문 페이지
+      const updatedHistory = [...history, search]; // 여기서 검색 기록을 업데이트합니다.
+      saveHistory(updatedHistory);
     } catch (e: any) {
       console.log("search: ", e.message);
       setError("검색 오류");
     }
     console.log("search: ", search);
+  };
+  console.log(history);
+
+  const deleteSearch = (wordToDelete: string) => {
+    const updatedHistory = history.filter((word) => word !== wordToDelete);
+    saveHistory(updatedHistory);
   };
 
   return (
@@ -178,9 +205,34 @@ export function Search() {
       </Menu>
       <RecentSearches>
         최근 검색어
-        {recentWord.map((word) => (
-          <RecentWord>{word}</RecentWord>
-        ))}
+        {history
+          .slice()
+          .reverse()
+          .map((word: any) => (
+            <RecentWord>
+              {word}
+              <DeleteButton onClick={() => deleteSearch(word)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  <path
+                    d="M3.00001 10.5001L10.5 3.00001M3.00001 10.5001L10.5 3.00001"
+                    stroke="#9EA3B2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M2.9999 3.00001L10.5 10.5M2.9999 3.00001L10.5 10.5"
+                    stroke="#9EA3B2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </DeleteButton>
+            </RecentWord>
+          ))}
       </RecentSearches>
     </Wrapper>
   );

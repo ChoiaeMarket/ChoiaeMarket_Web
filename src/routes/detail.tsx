@@ -204,6 +204,12 @@ export function Detail() {
   const detail = location.state && location.state.detail; // 전달된 상태 받기
   const [liked, setLiked] = useState(false); // 좋아요 버튼 활성 상태
 
+  // 이전 페이지 이동
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
   };
@@ -231,7 +237,10 @@ export function Detail() {
     <Wrapper>
       <Menu>
         <MenuItem>
-          <MenuItem style={{ marginRight: "12px" }}>
+          <MenuItem
+            onClick={handleBack}
+            style={{ marginRight: "12px", cursor: "pointer" }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

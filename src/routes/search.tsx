@@ -114,6 +114,12 @@ export function Search() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<string[]>([]); // 검색 기록을 초기화
 
+  // 이전 페이지 이동
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
   };
@@ -177,7 +183,10 @@ export function Search() {
     <Wrapper>
       <Menu>
         <MenuItem>
-          <MenuItem style={{ marginRight: "12px" }}>
+          <MenuItem
+            onClick={handleBack}
+            style={{ marginRight: "12px", cursor: "pointer" }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

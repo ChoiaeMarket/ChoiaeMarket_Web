@@ -393,12 +393,19 @@ export function Product() {
     },
   ]); // 정렬된 상품 목록
 
-  const handleSearch = () => {
-    navigate("/search");
+  // 이전 페이지 이동
+  const handleBack = () => {
+    navigate(-1);
   };
 
+  // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
+  };
+
+  // 검색 페이지 이동
+  const handleSearch = () => {
+    navigate("/search");
   };
 
   const averagePrice = // 평균거래가격
@@ -462,7 +469,10 @@ export function Product() {
     <Wrapper>
       <Menu>
         <MenuItem>
-          <MenuItem style={{ marginRight: "12px" }}>
+          <MenuItem
+            onClick={handleBack}
+            style={{ marginRight: "12px", cursor: "pointer" }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

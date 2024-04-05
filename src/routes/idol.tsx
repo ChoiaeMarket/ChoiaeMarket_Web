@@ -337,12 +337,19 @@ export default function Idol() {
     fetchData();
   }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
-  const handleSearch = () => {
-    navigate("/search");
+  // 이전 페이지 이동
+  const handleBack = () => {
+    navigate(-1);
   };
 
+  // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
+  };
+
+  // 검색 페이지 이동
+  const handleSearch = () => {
+    navigate("/search");
   };
 
   // scroll 값이 변경될 때마다 값을 업데이트하는 함수
@@ -450,7 +457,10 @@ export default function Idol() {
       </CoverImgBox>
       <Menu>
         <MenuItem>
-          <MenuItem style={{ marginRight: "12px" }}>
+          <MenuItem
+            onClick={handleBack}
+            style={{ marginRight: "12px", cursor: "pointer" }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

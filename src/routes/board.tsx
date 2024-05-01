@@ -238,7 +238,7 @@ function getTimeDifferenceString(previousDate: any) {
   }
 }
 
-export function Product() {
+export function Board() {
   const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무

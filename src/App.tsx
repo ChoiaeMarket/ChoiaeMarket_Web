@@ -14,10 +14,12 @@ import Cart from "./routes/cart";
 import Chat from "./routes/chat";
 import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
-import { Product } from "./routes/product";
+import { Board } from "./routes/board";
+import { BoardItem } from "./routes/boardItem";
 import { Detail } from "./routes/detail";
 import { Search } from "./routes/search";
 import { SearchResult } from "./routes/searchResult";
+import { latestBoardListMock } from "./mocks";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -64,7 +66,18 @@ const router = createBrowserRouter([
       },
       {
         path: "idol/:idol/:product", // idol별 상품페이지 동적 라우팅
-        element: Protect(<Product />),
+        element: Protect(<Board />),
+      },
+      {
+        // 임시 주소
+        path: "idol/:idol/board", // idol별 상품페이지 board 리스트 아이템 동적 라우팅
+        element: Protect(
+          <div>
+            {latestBoardListMock.map((boardListItem) => (
+              <BoardItem boardListItem={boardListItem} />
+            ))}
+          </div>
+        ),
       },
       {
         path: "idol/:idol/:product/:order", // idol별 상품 개별 판매페이지 동적 라우팅

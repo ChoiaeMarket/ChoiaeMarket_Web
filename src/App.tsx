@@ -109,6 +109,11 @@ const router = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
+  // 404 페이지 라우팅 설정
+  {
+    path: "*",
+    element: <h1>404 Not Found</h1>,
+  },
 ]);
 
 const GlobalStyles = createGlobalStyle`

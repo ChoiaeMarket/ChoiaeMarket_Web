@@ -3,7 +3,7 @@ export default interface ProductListItem {
   idol: string;
   type: string;
   name: string;
-  image: string;
+  image: string | null;
   priceAvg: number;
   soldCount: number;
   favoriteCount: number;

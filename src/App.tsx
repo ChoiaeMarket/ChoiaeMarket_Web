@@ -14,12 +14,13 @@ import Cart from "./routes/cart";
 import Chat from "./routes/chat";
 import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
+import { ProductItem } from "./components/product-item";
 import { Board } from "./routes/board";
-import { BoardItem } from "./routes/boardItem";
+import { BoardItem } from "./components/board-item";
 import { Detail } from "./routes/detail";
 import { Search } from "./routes/search";
 import { SearchResult } from "./routes/searchResult";
-import { latestBoardListMock } from "./mocks";
+import { BoardListMock, ProductListMock } from "./mocks";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -65,15 +66,26 @@ const router = createBrowserRouter([
         element: Protect(<Idol />),
       },
       {
+        // 임시 주소
+        path: "idol/list", // idol별 메인페이지 product 리스트 아이템 동적 라우팅
+        element: Protect(
+          <div>
+            {ProductListMock.map((productListItem) => (
+              <ProductItem productListItem={productListItem} />
+            ))}
+          </div>
+        ),
+      },
+      {
         path: "idol/:idol/:product", // idol별 상품페이지 동적 라우팅
         element: Protect(<Board />),
       },
       {
         // 임시 주소
-        path: "idol/:idol/board", // idol별 상품페이지 board 리스트 아이템 동적 라우팅
+        path: "idol/:idol/list", // idol별 상품페이지 board 리스트 아이템 동적 라우팅
         element: Protect(
           <div>
-            {latestBoardListMock.map((boardListItem) => (
+            {BoardListMock.map((boardListItem) => (
               <BoardItem boardListItem={boardListItem} />
             ))}
           </div>

@@ -21,6 +21,11 @@ import {
   Menu,
   Wrapper,
 } from "../components/auth-comonents";
+import { SignInRequestDto } from "../apis/request/auth";
+import { signInRequest } from "../apis";
+import { SignInResponseDto } from "../apis/response/auth";
+import { ResponseDto } from "../apis/response";
+import { useCookies } from "react-cookie";
 
 const Div2 = styled.div`
   display: flex;
@@ -79,12 +84,15 @@ const Switcher = styled(OriginalSwitcher)`
 `;
 
 export default function Login() {
+  const MAIN_PATH = () => "/";
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isChecked, setChecked] = useState(false);
+  const [cookies, setCookies] = useCookies();
+
   const goBack = () => {
     navigate(-1); // 뒤로 가는 동작을 수행
   };
@@ -98,15 +106,56 @@ export default function Login() {
       setPassword(value);
     }
   };
+
+  // sign in response 처리 함수
+  const signInResponse = (
+    responseBody: SignInResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      setError("네트워크 이상입니다.");
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      setError("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code === "SF" || code === "VF") {
+      setError("정보가 일치하지 않습니다");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      setLoading(false);
+      return;
+    }
+
+    const { token, expirationTime } = responseBody as SignInResponseDto;
+    const now = new Date().getTime();
+    const expires = new Date(now + expirationTime * 1000);
+
+    setCookies("accessToken", token, { expires, path: "MAIN_PATH()" });
+    navigate(MAIN_PATH());
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("로그인 클릭1");
     e.preventDefault();
+    console.log("로그인 클릭2");
     setError("");
+    console.log("로그인 클릭3");
+    console.log(isLoading);
     if (isLoading || email === "" || password === "") return; // 미입력 방지
+    console.log("로그인 클릭4");
     try {
+      console.log("try");
       setLoading(true);
-      // await (email, password)// 로그인 요청
+      // await(email, password); // 로그인 요청
       // props.abc.value; // 강제 에러 발생
-      navigate("/");
+      //////      로그인 버튼 클릭 이벤트 처리      //////
+      const requestBody: SignInRequestDto = { email, password };
+      signInRequest(requestBody).then(signInResponse);
+      //////////////////////////////////////////////////
+      // navigate("/");
     } catch (e: any) {
       console.log("login: ", e.message);
       setError("정보가 일치하지 않습니다");

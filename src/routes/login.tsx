@@ -140,7 +140,6 @@ export default function Login() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    console.log(isLoading);
     if (isLoading || email === "" || password === "") return; // 미입력 방지
     try {
       setLoading(true);

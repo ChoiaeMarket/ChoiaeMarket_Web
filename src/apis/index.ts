@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SignInRequestDto, SignUpRequestDto } from "./request/auth";
-import { SignInResponseDto } from "./response/auth";
+import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
 import { ResponseDto } from "./response";
 
 const DOMAIN = "http://localhost:4000";
@@ -25,4 +25,21 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
   return result;
 };
 
-export const signUpRequest = async (requestBody: SignUpRequestDto) => {};
+export const signUpRequest = async (requestBody: SignUpRequestDto) => {
+  const result = await axios
+    .post(SIGN_UP_URL(), {
+      ...requestBody,
+      gender: requestBody.gender === "0" ? 0 : 1, // 성별 → 숫자
+      agreed_personal: requestBody.agreedPersonal ? 1 : 0, // 개인정보 동의 여부 → 숫자
+    })
+    .then((response) => {
+      const responseBody: SignUpResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response.data) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};

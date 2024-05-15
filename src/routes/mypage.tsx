@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import logo from "../assets/logo/logoWhite.png";
 import { useNavigate } from "react-router-dom";
+import useLoginUserStore from "../stores/login-user.store";
+import { useCookies } from "react-cookie";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -39,6 +41,9 @@ const MenuItem = styled.div`
 
 export default function Mypage() {
   const navigate = useNavigate();
+  const { loginUser } = useLoginUserStore();
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+  const { setLoginUser, resetLoginUser } = useLoginUserStore();
 
   const handleSearch = () => {
     navigate("/search");
@@ -46,6 +51,8 @@ export default function Mypage() {
 
   const logOut = () => {
     // 로그아웃
+    removeCookie("accessToken"); // 쿠키에서 accessToken 삭제
+    resetLoginUser(); // 상태 초기화
     console.log("로그아웃");
   };
 
@@ -104,6 +111,9 @@ export default function Mypage() {
           </MenuItem>
         </MenuItem>
       </Menu>
+      <h1>이메일 : {loginUser ? loginUser.email : "error"}</h1>
+      <h1>아이디 : {loginUser ? loginUser.nickname : "error"}</h1>
+      <h1>프로필사진 : {loginUser ? loginUser.profileImage : "error"}</h1>
       <button onClick={logOut}>로그아웃</button>
     </Wrapper>
   );

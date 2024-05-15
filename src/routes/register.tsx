@@ -3,7 +3,7 @@ import styled from "styled-components";
 import back from "../assets/icon/back.png";
 import profile from "../assets/icon/profile.png";
 import edit from "../assets/icon/edit.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Wrapper, Error, Back, Title } from "../components/auth-comonents";
 
 const TitleBox = styled.div`
@@ -153,12 +153,14 @@ const HomeButton = styled.a`
 
 export default function Register() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setLoading] = useState(false);
-  const [name, setName] = useState("");
+  const { name, email, password } = location.state;
+  // const [name, setName] = useState("");
+  // const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
-  const [email, setEmail] = useState("");
   const [tel, setTel] = useState("");
-  const [gender, setGender] = useState("female");
+  const [gender, setGender] = useState("1"); // 0: male, 1: female
   const [error, setError] = useState("");
   const goBack = () => {
     window.history.back(); // 뒤로 가는 동작을 수행
@@ -171,12 +173,12 @@ export default function Register() {
     const {
       target: { name, value },
     } = e;
-    if (name === "name") {
-      setName(value);
-    } else if (name === "nickname") {
+    // if (name === "name") {
+    //   setName(value);
+    // } else if (name === "email") {
+    //   setEmail(value);
+    if (name === "nickname") {
       setNickname(value);
-    } else if (name === "email") {
-      setEmail(value);
     } else if (name === "tel") {
       setTel(value);
     } else if (name === "gender") {
@@ -221,21 +223,21 @@ export default function Register() {
         />
         <Input
           onChange={onChange}
-          name="nickname"
-          value={nickname}
-          placeholder="프로필명을 입력해 주세요"
-          type="text"
-          required
-          hasValue={nickname.length > 0}
-        />
-        <Input
-          onChange={onChange}
           name="email"
           value={email}
           placeholder="이메일을 입력해 주세요"
           type="email"
           required
           hasValue={email.length > 0}
+        />
+        <Input
+          onChange={onChange}
+          name="nickname"
+          value={nickname}
+          placeholder="프로필명을 입력해 주세요"
+          type="text"
+          required
+          hasValue={nickname.length > 0}
         />
         <Input
           onChange={onChange}
@@ -250,32 +252,32 @@ export default function Register() {
           <input
             type="radio"
             name="gender"
-            value="female"
+            value="1"
             id="female"
             onChange={onChange}
             style={{ display: "none" }}
           />
           <Gender
             htmlFor="female"
-            onClick={() => setGender("female")}
+            onClick={() => setGender("1")}
             isFemale
-            isSelected={gender === "female"}
+            isSelected={gender === "1"}
           >
             여성
           </Gender>
           <input
             type="radio"
             name="gender"
-            value="male"
+            value="0"
             id="male"
             onChange={onChange}
             style={{ display: "none" }}
           />
           <Gender
             htmlFor="male"
-            onClick={() => setGender("male")}
+            onClick={() => setGender("0")}
             isMale
-            isSelected={gender === "male"}
+            isSelected={gender === "0"}
           >
             남성
           </Gender>

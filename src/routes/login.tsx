@@ -138,23 +138,17 @@ export default function Login() {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("로그인 클릭1");
     e.preventDefault();
-    console.log("로그인 클릭2");
     setError("");
-    console.log("로그인 클릭3");
     console.log(isLoading);
     if (isLoading || email === "" || password === "") return; // 미입력 방지
-    console.log("로그인 클릭4");
     try {
-      console.log("try");
       setLoading(true);
       // await(email, password); // 로그인 요청
       // props.abc.value; // 강제 에러 발생
-      //////      로그인 버튼 클릭 이벤트 처리      //////
+      // 로그인 버튼 클릭 이벤트 처리
       const requestBody: SignInRequestDto = { email, password };
       signInRequest(requestBody).then(signInResponse);
-      //////////////////////////////////////////////////
       // navigate("/");
     } catch (e: any) {
       console.log("login: ", e.message);

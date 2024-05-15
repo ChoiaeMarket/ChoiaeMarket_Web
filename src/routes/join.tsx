@@ -50,7 +50,7 @@ export default function Join() {
       // 계정 생성
       // 유저 이름 생성
       // 메인 리디렉션
-      navigate("/register");
+      navigate("/register", { state: { name, email, password } });
     } catch (e: any) {
       console.log("join: ", e.message);
       setError("다른 이메일을 입력해 주세요");

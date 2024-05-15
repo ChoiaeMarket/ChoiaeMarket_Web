@@ -5,6 +5,10 @@ import profile from "../assets/icon/profile.png";
 import edit from "../assets/icon/edit.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Wrapper, Error, Back, Title } from "../components/auth-comonents";
+import { SignUpRequestDto } from "../apis/request/auth";
+import { signUpRequest } from "../apis";
+import { SignUpResponseDto } from "../apis/response/auth";
+import { ResponseDto } from "../apis/response";
 
 const TitleBox = styled.div`
   width: 100%;
@@ -152,6 +156,7 @@ const HomeButton = styled.a`
 `;
 
 export default function Register() {
+  const LOGIN_PATH = () => "/login";
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setLoading] = useState(false);
@@ -161,6 +166,7 @@ export default function Register() {
   const [nickname, setNickname] = useState("");
   const [tel, setTel] = useState("");
   const [gender, setGender] = useState("1"); // 0: male, 1: female
+  const agreedPersonal = true;
   const [error, setError] = useState("");
   const goBack = () => {
     window.history.back(); // 뒤로 가는 동작을 수행
@@ -185,6 +191,32 @@ export default function Register() {
       setGender(value);
     }
   };
+
+  // sign up response 처리 함수
+  const signUpResponse = (
+    responseBody: SignUpResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      setError("네트워크 이상입니다.");
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      setError("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code === "SF" || code === "VF") {
+      setError("정보가 일치하지 않습니다");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      setLoading(false);
+      return;
+    }
+
+    navigate(LOGIN_PATH());
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -192,9 +224,19 @@ export default function Register() {
     try {
       // props.abc.value; // 강제 에러 발생
       // 계정 생성
+      const requestBody: SignUpRequestDto = {
+        name,
+        password,
+        email,
+        nickname,
+        tel,
+        gender,
+        agreedPersonal,
+      };
+      signUpRequest(requestBody).then(signUpResponse);
       // 유저 이름 생성
       // 메인 리디렉션
-      navigate("/");
+      // navigate("/");
     } catch (e: any) {
       console.log("register: ", e.message);
       setError("다른 이메일을 입력해 주세요");

@@ -11,6 +11,7 @@ import LoadingScreen from "./components/loading-screen";
 import Register from "./routes/register";
 import ProtectedRoute from "./components/protected-route";
 import Cart from "./routes/cart";
+import Upload from "./routes/upload";
 import Chat from "./routes/chat";
 import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: Protect(<Cart />),
+      },
+      {
+        path: "upload",
+        element: Protect(<Upload />),
       },
       {
         path: "chat",

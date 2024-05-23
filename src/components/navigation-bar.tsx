@@ -16,7 +16,7 @@ const Menu = styled.div`
 `;
 
 const MenuItem = styled.div`
-  width: 97.5px;
+  width: 78px;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -68,6 +68,56 @@ export default function NavigationBar() {
                 fill={
                   location.pathname.startsWith("/cart") ? "#f89e86" : "#999999"
                 }
+              />
+            </svg>
+          </MenuItem>
+        </Link>
+        <Link to="/upload">
+          <MenuItem>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <rect
+                x="5"
+                y="11"
+                width="14"
+                height="2"
+                rx="1"
+                fill={
+                  location.pathname.startsWith("/upload")
+                    ? "#f89e86"
+                    : "#999999"
+                }
+              />
+              <rect
+                x="13"
+                y="5"
+                width="14"
+                height="2"
+                rx="1"
+                transform="rotate(90 13 5)"
+                fill={
+                  location.pathname.startsWith("/upload")
+                    ? "#f89e86"
+                    : "#999999"
+                }
+              />
+              <rect
+                x="1"
+                y="1"
+                width="22"
+                height="22"
+                rx="3"
+                stroke={
+                  location.pathname.startsWith("/upload")
+                    ? "#f89e86"
+                    : "#999999"
+                }
+                stroke-width="2"
               />
             </svg>
           </MenuItem>

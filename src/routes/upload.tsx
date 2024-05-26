@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import logo from "../assets/logo/logoWhite.png";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import idolList from "../components/idolList";
 
 const Wrapper = styled.div`
@@ -48,6 +48,7 @@ const ImageBoxWrapper = styled.div`
 `;
 
 const ImageBox = styled.div<{ active: boolean }>`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,6 +58,35 @@ const ImageBox = styled.div<{ active: boolean }>`
   background-color: ${(props) => (props.active ? "#252932" : "#181a20")};
   border-radius: 16px;
   color: #777c89;
+  cursor: pointer;
+`;
+
+const Overlay = styled.div<{ onClick: () => void }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+`;
+
+const DeleteButton = styled.div`
+  color: #f89e86;
+  font-size: 30px;
+  cursor: pointer;
+`;
+
+const ImageBoxWithOverlay = styled(ImageBox)`
+  &:hover ${Overlay} {
+    opacity: 1;
+  }
 `;
 
 const CountWrapper = styled.span``;
@@ -242,7 +272,7 @@ const Input = styled.input<{ hasValue: boolean }>`
 
 const TextArea = styled.textarea<{ hasValue: boolean }>`
   width: 100%;
-  height: 120px;
+  min-height: 150px;
   border: 1px solid #252932;
   border-radius: 16px;
   padding: 19px;
@@ -285,7 +315,7 @@ export default function Upload() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<{ url: string; name: string }[]>([]);
   const [imageCount, setImageCount] = useState(0);
   const [idol, setIdol] = useState("아이돌");
   const [type, setType] = useState("카테고리");
@@ -296,10 +326,53 @@ export default function Upload() {
   const [isOpenIdol, setIsOpenIdol] = useState(false);
   const [isOpenType, setIsOpenType] = useState(false);
   const [isOpenName, setIsOpenName] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
+  const textAreaRef = useRef<HTMLTextAreaElement>(null); // 상세내용 칸 높이를 자동 조정
 
   const handleSearch = () => {
     navigate("/search");
   };
+
+  // 사진 추가 이벤트
+  const handleImageBoxClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      if (imageCount >= 4) {
+        alert("최대 4장까지 이미지를 선택할 수 있습니다.");
+        return;
+      }
+
+      const selectedFile = event.target.files[0];
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setImage((prevFiles) => [
+        ...prevFiles,
+        { url: imageUrl, name: selectedFile.name },
+      ]);
+      setImageCount((prevCount) => prevCount + 1);
+    }
+  };
+
+  const handleDeleteImage = (index: number) => {
+    setImage((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setImageCount((prevCount) => prevCount - 1);
+  };
+
+  // 상세내용 칸 높이를 자동 조정
+  const handleResizeHeight = () => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    handleResizeHeight();
+  }, [content]);
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -309,6 +382,7 @@ export default function Upload() {
       setTitle(value);
     } else if (name === "content") {
       setContent(value);
+      handleResizeHeight();
     } else if (name === "price") {
       setPrice(value);
     }
@@ -352,7 +426,7 @@ export default function Upload() {
       console.log("upload: ", e.message);
       setError("다른 값을 입력해 주세요");
     }
-    console.log("upload: ", idol, type, name, title, content, price);
+    console.log("upload: ", idol, type, name, title, content, price, image);
   };
 
   // idol 드롭다운 메뉴 open 유무 토글
@@ -446,7 +520,11 @@ export default function Upload() {
       <H1>상품 사진</H1>
       <ImageBoxWrapper>
         {[...Array(5)].map((_, index) => (
-          <ImageBox key={index} active={index < imageCount + 1}>
+          <ImageBoxWithOverlay
+            key={index}
+            active={index < imageCount + 1}
+            onClick={index === 0 ? handleImageBoxClick : undefined} // 0번째 인덱스에만 클릭 이벤트 추가
+          >
             {index === 0 && (
               <>
                 <svg
@@ -484,9 +562,32 @@ export default function Upload() {
                 </CountWrapper>
               </>
             )}
-          </ImageBox>
+            {index > 0 && index <= imageCount && image[index - 1] && (
+              <>
+                <img
+                  src={image[index - 1].url}
+                  alt={image[index - 1].name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "16px",
+                    objectFit: "cover",
+                  }}
+                />
+                <Overlay onClick={() => handleDeleteImage(index - 1)}>
+                  <DeleteButton>✕</DeleteButton>
+                </Overlay>
+              </>
+            )}
+          </ImageBoxWithOverlay>
         ))}
       </ImageBoxWrapper>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       <H1>상품 분류</H1>
       <DropdownButtonWrapper>
         <DropdownButton onClick={toggleDropdownIdol} hasValue={idol}>
@@ -669,6 +770,7 @@ export default function Upload() {
           hasValue={title.length > 0}
         />
         <TextArea
+          ref={textAreaRef}
           onChange={onChange}
           name="content"
           value={content}

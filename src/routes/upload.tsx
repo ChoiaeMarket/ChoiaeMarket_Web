@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import logo from "../assets/logo/logoWhite.png";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import idolList from "../components/idolList";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -148,6 +149,45 @@ const Dropdown = styled.div`
   }
 `;
 
+const IdolBox = styled.div`
+  width: 326px;
+  height: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 19px;
+  margin: 12px 32px;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const IdolItem = styled.div`
+  width: 50px;
+  margin: 12px 0;
+  text-align: center;
+  cursor: pointer;
+`;
+
+const IdolLogo = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+`;
+
+const IdolName = styled.div`
+  width: 50px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+  margin-top: 8px;
+  color: black;
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -200,6 +240,45 @@ const Input = styled.input<{ hasValue: boolean }>`
   }
 `;
 
+const TextArea = styled.textarea<{ hasValue: boolean }>`
+  width: 100%;
+  height: 120px;
+  border: 1px solid #252932;
+  border-radius: 16px;
+  padding: 19px;
+  margin: 0 0 20px;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  box-shadow: ${(props) =>
+    props.hasValue ? "0 0 0 1px #9ea3b2" : "0 0 0 1px #252932"};
+  background-color: #252932;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &::placeholder {
+    color: #777c89;
+  }
+  &:focus {
+    box-shadow: 0 0 0 1px #f89e86;
+    background-color: rgba(248, 158, 134, 0.1);
+  }
+  /* 자동완성이 될 때 배경색 변경 */
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #9ea3b2;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+  }
+`;
+
 const InputBox = styled.div``;
 
 export default function Upload() {
@@ -222,10 +301,10 @@ export default function Upload() {
     navigate("/search");
   };
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { name, value },
-    } = e;
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     if (name === "title") {
       setTitle(value);
     } else if (name === "content") {
@@ -234,6 +313,11 @@ export default function Upload() {
       setPrice(value);
     }
   };
+
+  // idol 값이 변경될때 마다 name 값이 "상품명"으로 초기화
+  useEffect(() => {
+    setName("상품명");
+  }, [idol]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -495,24 +579,22 @@ export default function Upload() {
       </DropdownButton>
       <DropdownBackground isOpen={isOpenIdol} />
       <DropdownContent isOpen={isOpenIdol}>
-        <Dropdown onClick={() => handleSortClickIdol("앨범")}>앨범</Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("콘서트")}>
-          콘서트
-        </Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("MD")}>MD</Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("콜라보")}>
-          콜라보
-        </Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("포토북")}>
-          포토북
-        </Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("시즌그리팅")}>
-          시즌그리팅
-        </Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("팬클럽")}>
-          팬클럽
-        </Dropdown>
-        <Dropdown onClick={() => handleSortClickIdol("기타")}>기타</Dropdown>
+        <IdolBox>
+          {idolList.map(({ src, name }) => (
+            <IdolItem key={src} onClick={() => handleSortClickIdol(name)}>
+              <IdolLogo
+                src={`src/assets/idol/logo/${src}.png`}
+                alt={name}
+                onError={(e) => {
+                  (
+                    e.target as HTMLImageElement
+                  ).src = `src/assets/idol/logo/default.png`; // 대체 이미지 설정
+                }}
+              />
+              <IdolName>{name}</IdolName>
+            </IdolItem>
+          ))}
+        </IdolBox>
       </DropdownContent>
       <DropdownBackground isOpen={isOpenType} />
       <DropdownContent isOpen={isOpenType}>
@@ -586,12 +668,11 @@ export default function Upload() {
           required
           hasValue={title.length > 0}
         />
-        <Input
+        <TextArea
           onChange={onChange}
           name="content"
           value={content}
           placeholder="상세 설명을 입력해 주세요"
-          type="text"
           required
           hasValue={content.length > 0}
         />

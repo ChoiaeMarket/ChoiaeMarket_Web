@@ -2,7 +2,12 @@ import styled from "styled-components";
 import logo from "../assets/logo/logoWhite.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
 import idolList from "../components/idolList";
+import { fileUploadRequest, postBoardRequest } from "../apis";
+import { PostBoardRequestDto } from "../apis/request/board";
+import { PostBoardResponseDto } from "../apis/response/board";
+import { ResponseDto } from "../apis/response";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -312,10 +317,11 @@ const TextArea = styled.textarea<{ hasValue: boolean }>`
 const InputBox = styled.div``;
 
 export default function Upload() {
+  const MAIN_PATH = () => "/";
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [image, setImage] = useState<{ url: string; name: string }[]>([]);
+  const [boardImageList, setBoardImageList] = useState<string[]>([]);
   const [imageCount, setImageCount] = useState(0);
   const [idol, setIdol] = useState("아이돌");
   const [type, setType] = useState("카테고리");
@@ -328,38 +334,11 @@ export default function Upload() {
   const [isOpenName, setIsOpenName] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
   const textAreaRef = useRef<HTMLTextAreaElement>(null); // 상세내용 칸 높이를 자동 조정
+  const [cookies, setCookies] = useCookies();
+  const accessToken = cookies.accessToken;
 
   const handleSearch = () => {
     navigate("/search");
-  };
-
-  // 사진 추가 이벤트
-  const handleImageBoxClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      if (imageCount >= 4) {
-        alert("최대 4장까지 이미지를 선택할 수 있습니다.");
-        return;
-      }
-
-      const selectedFile = event.target.files[0];
-      const imageUrl = URL.createObjectURL(selectedFile);
-      setImage((prevFiles) => [
-        ...prevFiles,
-        { url: imageUrl, name: selectedFile.name },
-      ]);
-      setImageCount((prevCount) => prevCount + 1);
-    }
-  };
-
-  const handleDeleteImage = (index: number) => {
-    setImage((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    setImageCount((prevCount) => prevCount - 1);
   };
 
   // 상세내용 칸 높이를 자동 조정
@@ -393,6 +372,70 @@ export default function Upload() {
     setName("상품명");
   }, [idol]);
 
+  // 사진 추가 이벤트
+  const handleImageBoxClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files && event.target.files.length > 0) {
+      if (imageCount >= 4) {
+        alert("최대 4장까지 이미지를 선택할 수 있습니다.");
+        return;
+      }
+
+      const selectedFile = event.target.files[0];
+      const data = new FormData();
+      data.append("file", selectedFile);
+
+      const url = await fileUploadRequest(data);
+      if (url) {
+        setBoardImageList((prevUrls) => [...prevUrls, url]);
+        setImageCount((prevCount) => prevCount + 1);
+      }
+      console.log(url);
+    }
+  };
+
+  const handleDeleteImage = (index: number) => {
+    setBoardImageList((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setImageCount((prevCount) => prevCount - 1);
+  };
+
+  // post board response 처리 함수
+  const postBoardResponse = (
+    responseBody: PostBoardResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      setError("네트워크 이상입니다.");
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code === "AF" || code === "NU") {
+      navigate(MAIN_PATH());
+      console.log(code);
+    }
+    if (code === "VF") {
+      alert("제목과 내용은 필수입니다.");
+    }
+    if (code !== "SU") {
+      return;
+    }
+
+    navigate(MAIN_PATH());
+  };
+
+  // price를 Int로 변환
+  const priceAsNumber = parseInt(price);
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -408,17 +451,16 @@ export default function Upload() {
       return; // 미입력 방지
     try {
       // props.abc.value; // 강제 에러 발생
-      // 계정 생성
-      // const requestBody: SignUpRequestDto = {
-      //   name,
-      //   password,
-      //   email,
-      //   nickname,
-      //   tel,
-      //   gender,
-      //   agreedPersonal,
-      // };
-      // signUpRequest(requestBody).then(signUpResponse);
+      const requestBody: PostBoardRequestDto = {
+        idol,
+        type,
+        name,
+        boardImageList,
+        title,
+        content,
+        price: priceAsNumber,
+      };
+      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
       // 유저 이름 생성
       // 메인 리디렉션
       // navigate("/");
@@ -426,7 +468,16 @@ export default function Upload() {
       console.log("upload: ", e.message);
       setError("다른 값을 입력해 주세요");
     }
-    console.log("upload: ", idol, type, name, title, content, price, image);
+    console.log(
+      "upload: ",
+      idol,
+      type,
+      name,
+      title,
+      content,
+      price,
+      boardImageList
+    );
   };
 
   // idol 드롭다운 메뉴 open 유무 토글
@@ -562,11 +613,10 @@ export default function Upload() {
                 </CountWrapper>
               </>
             )}
-            {index > 0 && index <= imageCount && image[index - 1] && (
+            {index > 0 && index <= imageCount && boardImageList[index - 1] && (
               <>
                 <img
-                  src={image[index - 1].url}
-                  alt={image[index - 1].name}
+                  src={boardImageList[index - 1]}
                   style={{
                     width: "100%",
                     height: "100%",

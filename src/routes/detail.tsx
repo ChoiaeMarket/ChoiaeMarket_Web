@@ -5,6 +5,7 @@ import useLoginUserStore from "../stores/login-user.store";
 import styled from "styled-components";
 import { Board } from "types/interface";
 import {
+  deleteBoardRequest,
   getBoardRequest,
   getFavoriteRequest,
   putFavoriteRequest,
@@ -12,6 +13,7 @@ import {
 import { ResponseDto } from "../apis/response";
 import GetBoardResponseDto from "../apis/response/board/get-board.response.dto";
 import {
+  DeleteBoardResponseDto,
   GetFavoriteResponseDto,
   PutFavoriteResponseDto,
 } from "../apis/response/board";
@@ -318,6 +320,8 @@ export function Detail() {
   ) => {
     if (!responseBody) return;
     const { code } = responseBody;
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
     if (code !== "SU") return;
 
     const { favorite } = responseBody as GetFavoriteResponseDto;
@@ -339,6 +343,23 @@ export function Detail() {
     if (code !== "SU") return;
 
     if (!boardNumber) return;
+  };
+
+  // delete board response 처리 함수
+  const deleteBoardResponse = (
+    responseBody: DeleteBoardResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "VF") alert("잘못된 접근입니다.");
+    if (code === "NU") alert("존재하지 않는 유저입니다.");
+    if (code === "NB") alert("존재하지 않는 게시물입니다.");
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "NP") alert("권한이 없습니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
+
+    navigate("/");
   };
 
   // 이전 페이지 이동
@@ -365,10 +386,12 @@ export function Detail() {
 
   // 게시물 삭제 클릭 이벤트
   const onDeleteButtonClickHandler = () => {
-    if (!board || !loginUser) return;
+    if (!boardNumber || !board || !loginUser || !cookies.accessToken) return;
     if (loginUser.email !== board.writerEmail) return;
-    // Todo: Elete Request
-    navigate("/"); // 현재 경로 + /update
+
+    deleteBoardRequest(boardNumber, cookies.accessToken).then(
+      deleteBoardResponse
+    );
   };
 
   // 사진 이전 버튼 클릭 이벤트
@@ -414,7 +437,7 @@ export function Detail() {
         getFavoriteResponse
       );
     }
-  }, [boardNumber]);
+  }, [boardNumber, isFavorite]);
 
   // 게시물이 존재하지 않으면 return
   if (!board) return <></>;

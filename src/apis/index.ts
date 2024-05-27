@@ -4,7 +4,11 @@ import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
 import { ResponseDto } from "./response";
 import { GetSignInUserResponseDto } from "./response/user";
 import { PostBoardRequestDto } from "./request/board";
-import { PostBoardResponseDto, PutFavoriteResponseDto } from "./response/board";
+import {
+  DeleteBoardResponseDto,
+  PostBoardResponseDto,
+  PutFavoriteResponseDto,
+} from "./response/board";
 import GetBoardResponseDto from "./response/board/get-board.response.dto";
 import GetFavoriteResponseDto from "./response/board/get-favorite.response.dto";
 
@@ -60,6 +64,8 @@ const GET_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
 const PUT_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
+const DELETE_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
 
 export const getBoardRequest = async (boardNumber: number | string) => {
   const result = await axios
@@ -120,6 +126,24 @@ export const putFavoriteRequest = async (
     .put(PUT_FAVORITE_URL(boardNumber), {}, authorization(accessToken))
     .then((response) => {
       const responseBody: PutFavoriteResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.reponse.data;
+      return responseBody;
+    });
+  return result;
+};
+
+export const deleteBoardRequest = async (
+  boardNumber: number | string,
+  accessToken: string
+) => {
+  const result = await axios
+    .delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
+    .then((response) => {
+      const responseBody: DeleteBoardResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {

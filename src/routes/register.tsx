@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import back from "../assets/icon/back.png";
 import profile from "../assets/icon/profile.png";
@@ -6,7 +6,7 @@ import edit from "../assets/icon/edit.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Wrapper, Error, Back, Title } from "../components/auth-comonents";
 import { SignUpRequestDto } from "../apis/request/auth";
-import { signUpRequest } from "../apis";
+import { fileUploadRequest, signUpRequest } from "../apis";
 import { SignUpResponseDto } from "../apis/response/auth";
 import { ResponseDto } from "../apis/response";
 
@@ -23,13 +23,13 @@ const ProfileBox = styled.div`
   position: relative;
 `;
 
-const ProfileImage = styled.img.attrs({
-  src: profile, // 이미지 소스 설정
-  alt: "프로필 이미지", // 대체 텍스트 설정
-})`
+const ProfileImage = styled.div<{ src: string }>`
   width: 120px;
   height: 120px;
   border-radius: 50%;
+  background-image: url(${(props) => props.src});
+  background-size: cover;
+  background-position: center;
 `;
 
 const EditIcon = styled.img.attrs({
@@ -163,18 +163,40 @@ export default function Register() {
   const { name, email, password } = location.state;
   // const [name, setName] = useState("");
   // const [email, setEmail] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
+  const [profileImage, setProgileImage] = useState(profile);
   const [nickname, setNickname] = useState("");
   const [tel, setTel] = useState("");
   const [gender, setGender] = useState("1"); // 0: male, 1: female
   const agreedPersonal = true;
   const [error, setError] = useState("");
+
   const goBack = () => {
     window.history.back(); // 뒤로 가는 동작을 수행
   };
-  // EditIcon 클릭 시 이벤트 핸들러 추가
-  const handleEditClick = () => {
-    // 여기에 드라이브를 열어 이미지를 선택할 수 있는 이벤트 연결
+
+  // EditIcon 사진 추가 이벤트
+  const handleImageBoxClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
+
+  // handleFileChange 함수에서 URL 생성 및 상태 업데이트
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedFile = event.target.files[0];
+      const data = new FormData();
+      data.append("file", selectedFile);
+
+      const url = await fileUploadRequest(data);
+      setProgileImage(url!);
+      console.log(url);
+    }
+  };
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value },
@@ -232,6 +254,7 @@ export default function Register() {
         tel,
         gender,
         agreedPersonal,
+        profileImage,
       };
       signUpRequest(requestBody).then(signUpResponse);
       // 유저 이름 생성
@@ -241,8 +264,9 @@ export default function Register() {
       console.log("register: ", e.message);
       setError("다른 이메일을 입력해 주세요");
     }
-    console.log("register: ", name, nickname, email, tel, gender);
+    console.log("register: ", name, nickname, email, tel, gender, profileImage);
   };
+
   return (
     <Wrapper>
       <TitleBox>
@@ -250,8 +274,14 @@ export default function Register() {
         <Title>프로필 설정</Title>
       </TitleBox>
       <ProfileBox>
-        <ProfileImage />
-        <EditIcon onClick={handleEditClick} />
+        <ProfileImage src={profileImage} />
+        <EditIcon onClick={handleImageBoxClick} />
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
       </ProfileBox>
       <Form onSubmit={onSubmit}>
         <Input

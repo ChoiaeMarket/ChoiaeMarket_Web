@@ -39,6 +39,13 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
+const ProfileImage = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
 export default function Mypage() {
   const navigate = useNavigate();
   const { loginUser } = useLoginUserStore();
@@ -113,7 +120,14 @@ export default function Mypage() {
       </Menu>
       <h1>이메일 : {loginUser ? loginUser.email : "error"}</h1>
       <h1>아이디 : {loginUser ? loginUser.nickname : "error"}</h1>
-      <h1>프로필사진 : {loginUser ? loginUser.profileImage : "error"}</h1>
+      <h1>
+        프로필사진 :{" "}
+        {loginUser ? (
+          <ProfileImage src={loginUser.profileImage!} alt="프로필 이미지" />
+        ) : (
+          "error"
+        )}
+      </h1>
       <button onClick={logOut}>로그아웃</button>
     </Wrapper>
   );

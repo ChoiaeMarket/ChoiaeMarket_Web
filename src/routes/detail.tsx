@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import useLoginUserStore from "../stores/login-user.store";
 import styled from "styled-components";
 import { Board } from "types/interface";
-import { getBoardRequest } from "../apis";
+import {
+  getBoardRequest,
+  getFavoriteRequest,
+  putFavoriteRequest,
+} from "../apis";
 import { ResponseDto } from "../apis/response";
 import GetBoardResponseDto from "../apis/response/board/get-board.response.dto";
+import {
+  GetFavoriteResponseDto,
+  PutFavoriteResponseDto,
+} from "../apis/response/board";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -268,6 +277,7 @@ export function Detail() {
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const { pathname } = useLocation();
   const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+  const [cookies, setCookies] = useCookies();
   const [board, setBoard] = useState<Board | null>(null);
   const [isWriter, setWriter] = useState<boolean>(false); // 작성자 여부 상태
   const [showMore, setShowMore] = useState<boolean>(false); // 수정, 삭제 버튼 상태
@@ -300,6 +310,35 @@ export function Detail() {
     setWriter(isWriter);
     console.log("loginUser: " + loginUser.email);
     console.log("boardWriter: " + board.writerEmail);
+  };
+
+  // get favorite response 처리 함수
+  const getFavoriteResponse = (
+    responseBody: GetFavoriteResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code !== "SU") return;
+
+    const { favorite } = responseBody as GetFavoriteResponseDto;
+    console.log("Is Favorite: ", favorite);
+    setIsFavorite(favorite);
+  };
+
+  // put favorite response 처리 함수
+  const putFavoriteResponse = (
+    responseBody: PutFavoriteResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "VF") alert("잘못된 접근입니다.");
+    if (code === "NU") alert("존재하지 않는 유저입니다.");
+    if (code === "NB") alert("존재하지 않는 게시물입니다.");
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
+
+    if (!boardNumber) return;
   };
 
   // 이전 페이지 이동
@@ -354,6 +393,10 @@ export function Detail() {
 
   // 좋아요 버튼 클릭을 처리하는 함수
   const onFavoriteClickHandler = () => {
+    if (!boardNumber || !loginUser || !cookies.accessToken) return;
+    putFavoriteRequest(boardNumber, cookies.accessToken).then(
+      putFavoriteResponse
+    );
     setIsFavorite(!isFavorite);
   };
 
@@ -364,6 +407,13 @@ export function Detail() {
       return;
     }
     getBoardRequest(boardNumber).then(getBoardResopnse);
+
+    // favorite 상태 체크 추가
+    if (loginUser && cookies.accessToken) {
+      getFavoriteRequest(boardNumber, cookies.accessToken).then(
+        getFavoriteResponse
+      );
+    }
   }, [boardNumber]);
 
   // 게시물이 존재하지 않으면 return

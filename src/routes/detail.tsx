@@ -1,9 +1,11 @@
-import { BoardMock } from "../mocks";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useLoginUserStore from "../stores/login-user.store";
 import styled from "styled-components";
 import { Board } from "types/interface";
+import { getBoardRequest } from "../apis";
+import { ResponseDto } from "../apis/response";
+import GetBoardResponseDto from "../apis/response/board/get-board.response.dto";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -265,13 +267,40 @@ export function Detail() {
   const { idol, product, boardNumber } = useParams(); // 게시물 path variable 상태
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const { pathname } = useLocation();
+  const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+  const [board, setBoard] = useState<Board | null>(null);
+  const [isWriter, setWriter] = useState<boolean>(false); // 작성자 여부 상태
+  const [showMore, setShowMore] = useState<boolean>(false); // 수정, 삭제 버튼 상태
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // get board response 처리 함수
+  const getBoardResopnse = (
+    responseBody: GetBoardResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "NB") alert("존재하지 않는 게시물입니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
+    if (code !== "SU") {
+      navigate("/");
+      return;
+    }
 
-  const [board, setBoard] = useState<Board | null>(null);
-  const [showMore, setShowMore] = useState<boolean>(false);
-  const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+    const board: Board = { ...(responseBody as GetBoardResponseDto) };
+    setBoard(board);
+
+    if (!loginUser) {
+      setWriter(false);
+      return;
+    }
+
+    // 사용자의 이미일과 게시물 작성자 이메일이 동일 여부 확인
+    const isWriter = loginUser.email === board.writerEmail;
+    setWriter(isWriter);
+    console.log("loginUser: " + loginUser.email);
+    console.log("boardWriter: " + board.writerEmail);
+  };
 
   // 이전 페이지 이동
   const handleBack = () => {
@@ -330,7 +359,11 @@ export function Detail() {
 
   // 게시물 번호 path variavle이 바뀔때 마다 게시물 불러오기
   useEffect(() => {
-    setBoard(BoardMock);
+    if (!boardNumber) {
+      navigate("/");
+      return;
+    }
+    getBoardRequest(boardNumber).then(getBoardResopnse);
   }, [boardNumber]);
 
   // 게시물이 존재하지 않으면 return
@@ -378,6 +411,9 @@ export function Detail() {
         </MenuItem>
         <Title>{idol}</Title>
         <MenuItem>
+          {!isWriter && (
+            <MenuItem style={{ width: "24px", marginRight: "12px" }}></MenuItem>
+          )}
           <MenuItem style={{ cursor: "pointer" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -425,120 +461,122 @@ export function Detail() {
               </defs>
             </svg>
           </MenuItem>
-          <MenuItem
-            style={{ marginLeft: "12px", cursor: "pointer" }}
-            onClick={onMoreButtonClickHandler}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
+          {isWriter && (
+            <MenuItem
+              style={{ marginLeft: "12px", cursor: "pointer" }}
+              onClick={onMoreButtonClickHandler}
             >
-              <g filter="url(#filter0_b_19_808)">
-                <ellipse
-                  cx="12.2"
-                  cy="5.2"
-                  rx="1.2"
-                  ry="1.2"
-                  transform="rotate(90 12.2 5.2)"
-                  fill="white"
-                />
-              </g>
-              <g filter="url(#filter1_b_19_808)">
-                <ellipse
-                  cx="12.2"
-                  cy="12.4"
-                  rx="1.2"
-                  ry="1.2"
-                  transform="rotate(90 12.2 12.4)"
-                  fill="white"
-                />
-              </g>
-              <g filter="url(#filter2_b_19_808)">
-                <ellipse
-                  cx="12.2"
-                  cy="19.5999"
-                  rx="1.2"
-                  ry="1.2"
-                  transform="rotate(90 12.2 19.5999)"
-                  fill="white"
-                />
-              </g>
-              <defs>
-                <filter
-                  id="filter0_b_19_808"
-                  x="-8.99997"
-                  y="-16"
-                  width="42.4"
-                  height="42.3999"
-                  filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
-                >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                  <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
-                  <feComposite
-                    in2="SourceAlpha"
-                    operator="in"
-                    result="effect1_backgroundBlur_19_808"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <g filter="url(#filter0_b_19_808)">
+                  <ellipse
+                    cx="12.2"
+                    cy="5.2"
+                    rx="1.2"
+                    ry="1.2"
+                    transform="rotate(90 12.2 5.2)"
+                    fill="white"
                   />
-                  <feBlend
-                    mode="normal"
-                    in="SourceGraphic"
-                    in2="effect1_backgroundBlur_19_808"
-                    result="shape"
+                </g>
+                <g filter="url(#filter1_b_19_808)">
+                  <ellipse
+                    cx="12.2"
+                    cy="12.4"
+                    rx="1.2"
+                    ry="1.2"
+                    transform="rotate(90 12.2 12.4)"
+                    fill="white"
                   />
-                </filter>
-                <filter
-                  id="filter1_b_19_808"
-                  x="-8.99997"
-                  y="-8.80005"
-                  width="42.4"
-                  height="42.3999"
-                  filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
-                >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                  <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
-                  <feComposite
-                    in2="SourceAlpha"
-                    operator="in"
-                    result="effect1_backgroundBlur_19_808"
+                </g>
+                <g filter="url(#filter2_b_19_808)">
+                  <ellipse
+                    cx="12.2"
+                    cy="19.5999"
+                    rx="1.2"
+                    ry="1.2"
+                    transform="rotate(90 12.2 19.5999)"
+                    fill="white"
                   />
-                  <feBlend
-                    mode="normal"
-                    in="SourceGraphic"
-                    in2="effect1_backgroundBlur_19_808"
-                    result="shape"
-                  />
-                </filter>
-                <filter
-                  id="filter2_b_19_808"
-                  x="-8.99997"
-                  y="-1.6001"
-                  width="42.4"
-                  height="42.3999"
-                  filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
-                >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                  <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
-                  <feComposite
-                    in2="SourceAlpha"
-                    operator="in"
-                    result="effect1_backgroundBlur_19_808"
-                  />
-                  <feBlend
-                    mode="normal"
-                    in="SourceGraphic"
-                    in2="effect1_backgroundBlur_19_808"
-                    result="shape"
-                  />
-                </filter>
-              </defs>
-            </svg>
-          </MenuItem>
+                </g>
+                <defs>
+                  <filter
+                    id="filter0_b_19_808"
+                    x="-8.99997"
+                    y="-16"
+                    width="42.4"
+                    height="42.3999"
+                    filterUnits="userSpaceOnUse"
+                    color-interpolation-filters="sRGB"
+                  >
+                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
+                    <feComposite
+                      in2="SourceAlpha"
+                      operator="in"
+                      result="effect1_backgroundBlur_19_808"
+                    />
+                    <feBlend
+                      mode="normal"
+                      in="SourceGraphic"
+                      in2="effect1_backgroundBlur_19_808"
+                      result="shape"
+                    />
+                  </filter>
+                  <filter
+                    id="filter1_b_19_808"
+                    x="-8.99997"
+                    y="-8.80005"
+                    width="42.4"
+                    height="42.3999"
+                    filterUnits="userSpaceOnUse"
+                    color-interpolation-filters="sRGB"
+                  >
+                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
+                    <feComposite
+                      in2="SourceAlpha"
+                      operator="in"
+                      result="effect1_backgroundBlur_19_808"
+                    />
+                    <feBlend
+                      mode="normal"
+                      in="SourceGraphic"
+                      in2="effect1_backgroundBlur_19_808"
+                      result="shape"
+                    />
+                  </filter>
+                  <filter
+                    id="filter2_b_19_808"
+                    x="-8.99997"
+                    y="-1.6001"
+                    width="42.4"
+                    height="42.3999"
+                    filterUnits="userSpaceOnUse"
+                    color-interpolation-filters="sRGB"
+                  >
+                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feGaussianBlur in="BackgroundImageFix" stdDeviation="10" />
+                    <feComposite
+                      in2="SourceAlpha"
+                      operator="in"
+                      result="effect1_backgroundBlur_19_808"
+                    />
+                    <feBlend
+                      mode="normal"
+                      in="SourceGraphic"
+                      in2="effect1_backgroundBlur_19_808"
+                      result="shape"
+                    />
+                  </filter>
+                </defs>
+              </svg>
+            </MenuItem>
+          )}
         </MenuItem>
       </Menu>
       {showMore && (

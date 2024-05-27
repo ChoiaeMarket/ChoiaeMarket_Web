@@ -1,4 +1,4 @@
-import { BoardMock } from "../mocks";
+import { BoardMock } from "mocks";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -44,7 +44,6 @@ const More = styled.div`
   flex-direction: column;
   background-color: rgb(24, 26, 32, 0.9);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 2;
 `;
 
 const MoreItem = styled.div`
@@ -62,44 +61,10 @@ const MoreItem = styled.div`
   }
 `;
 
-const CoverImgBox = styled.div`
-  display: flex;
-  width: 390px;
-  height: 390px;
-  overflow: hidden;
-  position: relative;
-`;
-
 const CoverImg = styled.img`
   width: 390px;
   height: 390px;
   object-fit: cover;
-  flex-shrink: 0;
-  transition: transform 0.5s ease;
-`;
-
-const ArrowButton = styled.button`
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  border: none;
-  border-radius: 50px;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 1;
-  padding: 10px;
-`;
-
-const PrevButton = styled(ArrowButton)`
-  left: 10px;
-`;
-
-const NextButton = styled(ArrowButton)`
-  right: 10px;
 `;
 
 const Contents = styled.div`
@@ -263,14 +228,13 @@ function getTimeDifferenceString(previousDate: any) {
 export function Detail() {
   const { idol, product, order } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
-  const { pathname } = useLocation();
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const location = useLocation();
+  const detail = location.state && location.state.detail; // 전달된 상태 받기
+  const [liked, setLiked] = useState(false); // 좋아요 버튼 활성 상태
 
   const [board, setBoard] = useState<Board | null>(null);
   const [showMore, setShowMore] = useState<boolean>(false);
-  const { boardNumber } = useParams(); // 게시물 번호 path variable 상태
+  // const { boardNumber } = useParams(); // 게시물 번호 path variable 상태
   // const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
 
   // 이전 페이지 이동
@@ -283,58 +247,43 @@ export function Detail() {
     navigate("/");
   };
 
-  // more 버튼 클릭 이벤트 처리
-  const onMoreButtonClickHandler = () => {
-    setShowMore(!showMore);
-  };
-
-  // 게시물 수정 클릭 이벤트
-  const onUpdateButtonClickHandler = () => {
-    // if (!board || !loginUser) return;
-    // if (loginUser.email !== board.writerEmail) return;
-    navigate(`${pathname}/update`); // 현재 경로 + /update
-  };
-
-  // 게시물 삭제 클릭 이벤트
-  const onDeleteButtonClickHandler = () => {
-    // if (!board || !loginUser) return;
-    // if (loginUser.email !== board.writerEmail) return;
-    // Todo: Elete Request
-    navigate("/"); // 현재 경로 + /update
-  };
-
-  // 사진 이전 버튼 클릭 이벤트
-  const handlePrevClick = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex > 0 ? prevIndex - 1 : board!.boardImageList.length - 1
-    );
-  };
-
-  // 사진 다음 버튼 클릭 이벤트
-  const handleNextClick = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex < board!.boardImageList.length - 1 ? prevIndex + 1 : 0
-    );
-  };
-
   // 닉네임 버튼 클릭 이벤트 처리
   const onNicknameClickHandler = () => {
     if (!board) return;
     navigate(`/user/${board.writerEmail}`);
   };
 
+  // more 버튼 클릭 이벤트 처리
+  const onMoreButtonClickHandler = () => {
+    setShowMore(!showMore);
+  };
+
   // 좋아요 버튼 클릭을 처리하는 함수
-  const onFavoriteClickHandler = () => {
-    setIsFavorite(!isFavorite);
+  const handleLikeClick = () => {
+    setLiked(!liked); // liked 상태 토글
+
+    // liked 상태에 따라 새로운 API 요청 보내기
+    try {
+      // const response = await axios.get("your/api/endpoint", {
+      //   params: {
+      //     like: !liked, // 좋아요 상태 전달
+      //   },
+      // });
+      // API로부터 받은 데이터 처리
+      // console.log(response.data);
+    } catch (error) {
+      // 오류 처리
+      console.error("Error fetching liked products:", error);
+    }
   };
 
   // 게시물 번호 path variavle이 바뀔때 마다 게시물 불러오기
-  useEffect(() => {
-    setBoard(BoardMock);
-  }, [boardNumber]);
+  // useEffect(() => {
+  //   setBoard(BoardMock);
+  // }, [boardNumber]);
 
   // 게시물이 존재하지 않으면 return
-  if (!board) return <></>;
+  // if (!board) return <></>;
   return (
     <Wrapper>
       <Menu>
@@ -543,42 +492,30 @@ export function Detail() {
       </Menu>
       {showMore && (
         <More>
-          <MoreItem onClick={onUpdateButtonClickHandler}>수정</MoreItem>
-          <MoreItem onClick={onDeleteButtonClickHandler}>삭제</MoreItem>
+          <MoreItem>수정</MoreItem>
+          <MoreItem>삭제</MoreItem>
         </More>
       )}
-      <CoverImgBox>
-        {board.boardImageList.length > 0 ? (
-          board.boardImageList.map((image, index) => (
-            <CoverImg
-              src={image}
-              key={image}
-              style={{
-                transform: `translateX(-${currentImageIndex * 100}%)`,
-              }}
-            />
-          ))
-        ) : (
-          <CoverImg src="/src/assets/idol/logo/default.png" alt="default" />
-        )}
-        {board.boardImageList.length > 1 && (
-          <>
-            <PrevButton onClick={handlePrevClick}>&lt;</PrevButton>
-            <NextButton onClick={handleNextClick}>&gt;</NextButton>
-          </>
-        )}
-      </CoverImgBox>
+      <CoverImg
+        src={`/src/assets/idol/product/${idol}/${product}/${order}.png`}
+        alt={product}
+        onError={(e) => {
+          (
+            e.target as HTMLImageElement
+          ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+        }}
+      />
       <Contents>
         <ContentTypeDate>
-          <div>{board?.type}</div>
+          <div>{detail.type}</div>
           <div>·</div>
-          <div>{getTimeDifferenceString(new Date(board!.writeDatetime))}</div>
+          <div>{getTimeDifferenceString(new Date(detail.date))}</div>
         </ContentTypeDate>
         <ContentBox>
           <div>
-            <ContentPrice>{board?.price.toLocaleString()}원</ContentPrice>
+            <ContentPrice>{detail.price.toLocaleString()}원</ContentPrice>
             {/* 가격을 세 자리 단위로 끊어서 출력 */}
-            <ContentTitle>{board!.title}</ContentTitle>
+            <ContentTitle>{detail.title}</ContentTitle>
           </div>
           <ContentChatLikes>
             <ContentChatLike>
@@ -595,7 +532,7 @@ export function Detail() {
                   stroke-width="1.5"
                 />
               </svg>
-              {board.chatCount}
+              {detail.chats}
             </ContentChatLike>
             <ContentChatLike>
               <svg
@@ -613,22 +550,23 @@ export function Detail() {
                   stroke-linejoin="round"
                 />
               </svg>
-              {board.favoriteCount}
+              {detail.likes}
             </ContentChatLike>
           </ContentChatLikes>
         </ContentBox>
-        <Content>{board!.content}</Content>
+        <Content>{detail.content}</Content>
         <Seller>
           <Sellerimg
-            src={
-              board?.writerProfileImage
-                ? board?.writerProfileImage
-                : `/src/assets/member/default.png` // 대체 이미지 설정
-            }
+            src={`/src/assets/member/${detail.id}.png`}
             alt={product}
+            onError={(e) => {
+              (
+                e.target as HTMLImageElement
+              ).src = `/src/assets/member/default.png`; // 대체 이미지 설정
+            }}
           />
           <SellerIdRating>
-            <SellerId>{board?.writerNickname}</SellerId>
+            <SellerId>{detail.id}</SellerId>
             <SellerRating>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -648,7 +586,7 @@ export function Detail() {
         </Seller>
       </Contents>
       <LikeChatBox>
-        <LikeButton onClick={onFavoriteClickHandler}>
+        <LikeButton onClick={handleLikeClick}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="28"
@@ -658,8 +596,8 @@ export function Detail() {
           >
             <path
               d="M14 22L6.46368 14.4983C4.51211 12.5546 4.51211 9.40143 6.46368 7.45775C8.41526 5.51408 11.5842 5.51408 13.5358 7.45775L14 7.91897L14.4642 7.45775C16.4158 5.51408 19.5847 5.51408 21.5363 7.45775C23.4879 9.40143 23.4879 12.5546 21.5363 14.4983L14 22Z"
-              fill={isFavorite ? "#F89E86" : "#9EA3B2"} // 좋아요 상태에 따라 색상 변경
-              stroke={isFavorite ? "#F89E86" : "#9EA3B2"} // 좋아요 상태에 따라 색상 변경
+              fill={liked ? "#F89E86" : "#9EA3B2"} // 좋아요 상태에 따라 색상 변경
+              stroke={liked ? "#F89E86" : "#9EA3B2"} // 좋아요 상태에 따라 색상 변경
               stroke-width="2"
               stroke-miterlimit="10"
               stroke-linejoin="round"
@@ -668,7 +606,7 @@ export function Detail() {
         </LikeButton>
         <ChatButton>채팅하기</ChatButton>
       </LikeChatBox>
-      <div>{board.sold}</div>
+      <div>{detail.sold}</div>
     </Wrapper>
   );
 }

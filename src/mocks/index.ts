@@ -1,3 +1,4 @@
+import BoardMock from "./board.mock";
 import BoardListMock from "./board-list.mock";
 import ProductListMock from "./product-list.mock";
-export { BoardListMock, ProductListMock };
+export { BoardMock, BoardListMock, ProductListMock };

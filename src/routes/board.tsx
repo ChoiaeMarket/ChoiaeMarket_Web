@@ -257,7 +257,7 @@ export function Board() {
       price: 30000,
       chats: 0,
       likes: 2,
-      order: 5,
+      boardNumber: 5,
       sold: false,
     },
     {
@@ -271,7 +271,7 @@ export function Board() {
       price: 28000,
       chats: 1,
       likes: 4,
-      order: 4,
+      boardNumber: 4,
       sold: false,
     },
     {
@@ -285,7 +285,7 @@ export function Board() {
       price: 28000,
       chats: 1,
       likes: 7,
-      order: 3,
+      boardNumber: 3,
       sold: false,
     },
     {
@@ -299,7 +299,7 @@ export function Board() {
       price: 31000,
       chats: 0,
       likes: 1,
-      order: 2,
+      boardNumber: 2,
       sold: false,
     },
     {
@@ -314,7 +314,7 @@ export function Board() {
       price: 29000,
       chats: 2,
       likes: 13,
-      order: 1,
+      boardNumber: 1,
       sold: false,
     },
   ]);
@@ -331,7 +331,7 @@ export function Board() {
       price: 30000,
       chats: 0,
       likes: 2,
-      order: 5,
+      boardNumber: 5,
       sold: false,
     },
     {
@@ -345,7 +345,7 @@ export function Board() {
       price: 28000,
       chats: 1,
       likes: 4,
-      order: 4,
+      boardNumber: 4,
       sold: false,
     },
     {
@@ -359,7 +359,7 @@ export function Board() {
       price: 28000,
       chats: 1,
       likes: 7,
-      order: 3,
+      boardNumber: 3,
       sold: false,
     },
     {
@@ -373,7 +373,7 @@ export function Board() {
       price: 31000,
       chats: 0,
       likes: 1,
-      order: 2,
+      boardNumber: 2,
       sold: false,
     },
     {
@@ -388,7 +388,7 @@ export function Board() {
       price: 29000,
       chats: 2,
       likes: 13,
-      order: 1,
+      boardNumber: 1,
       sold: false,
     },
   ]); // 정렬된 상품 목록
@@ -427,12 +427,12 @@ export function Board() {
   }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
-  const handleProductClick = (order: number) => {
+  const handleProductClick = (boardNumber: number) => {
     const selectedProduct = sortedProducts.find(
-      (product: any) => product.order === order
+      (product: any) => product.boardNumber === boardNumber
     );
     if (selectedProduct) {
-      navigate(`/idol/${idol}/${product}/${order}`, {
+      navigate(`/idol/${idol}/${product}/${boardNumber}`, {
         state: { detail: selectedProduct }, // navigate 함수의 옵션으로 state를 사용하여 데이터 전달
       });
     }
@@ -619,10 +619,10 @@ export function Board() {
           .map((item: any, index: number) => (
             <Products
               key={index}
-              onClick={() => handleProductClick(item.order)} // 클릭 시 상세 정보 페이지로 이동
+              onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동
             >
               <ProductImg
-                src={`/src/assets/idol/product/${item.idol}/${item.name}/${item.order}.png`}
+                src={`/src/assets/idol/product/${item.idol}/${item.name}/${item.boardNumber}.png`}
                 alt={item.name}
                 onError={(e) => {
                   (

@@ -97,7 +97,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "idol/:idol/:product/:order", // idol별 상품 개별 판매페이지 동적 라우팅
+        path: "idol/:idol/:product/:boardNumber", // idol별 상품 개별 판매페이지 동적 라우팅
         element: Protect(<Detail />),
       },
     ],

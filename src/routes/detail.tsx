@@ -1,6 +1,7 @@
 import { BoardMock } from "../mocks";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import useLoginUserStore from "../stores/login-user.store";
 import styled from "styled-components";
 import { Board } from "types/interface";
 
@@ -261,7 +262,7 @@ function getTimeDifferenceString(previousDate: any) {
 }
 
 export function Detail() {
-  const { idol, product, order } = useParams();
+  const { idol, product, boardNumber } = useParams(); // 게시물 path variable 상태
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const { pathname } = useLocation();
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
@@ -270,8 +271,7 @@ export function Detail() {
 
   const [board, setBoard] = useState<Board | null>(null);
   const [showMore, setShowMore] = useState<boolean>(false);
-  const { boardNumber } = useParams(); // 게시물 번호 path variable 상태
-  // const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+  const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
 
   // 이전 페이지 이동
   const handleBack = () => {
@@ -290,15 +290,15 @@ export function Detail() {
 
   // 게시물 수정 클릭 이벤트
   const onUpdateButtonClickHandler = () => {
-    // if (!board || !loginUser) return;
-    // if (loginUser.email !== board.writerEmail) return;
+    if (!board || !loginUser) return;
+    if (loginUser.email !== board.writerEmail) return;
     navigate(`${pathname}/update`); // 현재 경로 + /update
   };
 
   // 게시물 삭제 클릭 이벤트
   const onDeleteButtonClickHandler = () => {
-    // if (!board || !loginUser) return;
-    // if (loginUser.email !== board.writerEmail) return;
+    if (!board || !loginUser) return;
+    if (loginUser.email !== board.writerEmail) return;
     // Todo: Elete Request
     navigate("/"); // 현재 경로 + /update
   };

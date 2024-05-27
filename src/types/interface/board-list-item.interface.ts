@@ -3,7 +3,7 @@ export default interface BoardListItem {
   idol: string;
   type: string;
   name: string;
-  boardImageList: string | null;
+  boardImageList: string[];
   title: string;
   content: string;
   price: number;

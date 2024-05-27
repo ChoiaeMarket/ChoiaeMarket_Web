@@ -18,7 +18,7 @@ const boradMock: Board = {
   favoriteCount: 2,
   sold: false,
   writeDatetime: "2024-05-27 19:48:13",
-  writerEmail: "hong@a.a",
+  writerEmail: "ab@ab.ab",
   writerNickname: "hong23",
   writerProfileImage: null,
 };

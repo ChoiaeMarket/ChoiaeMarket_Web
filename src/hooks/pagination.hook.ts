@@ -32,11 +32,12 @@ const usePagination = <T>(countPerPage: number) => {
   };
 
   // 보여줄 페이지 리스트 추출 함수
+  // 5 : 한 번에 보여줄 페이지 섹션의 개수
   const setViewPage = () => {
-    const FIRST_INDEX = 10 * (currentSection - 1);
+    const FIRST_INDEX = 5 * (currentSection - 1);
     const LAST_INDEX =
-      totalPageList.length > 10 * currentSection
-        ? 10 * currentSection
+      totalPageList.length > 5 * currentSection
+        ? 5 * currentSection
         : totalPageList.length;
     const viewPageList = totalPageList.slice(FIRST_INDEX, LAST_INDEX);
     setViewPageList(viewPageList);

@@ -1,3 +1,4 @@
+import Pagination from "../components/pagination";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -683,6 +684,7 @@ export function Board() {
             </Products>
           ))}
       </ProductList>
+      <Pagination />
     </Wrapper>
   );
 }

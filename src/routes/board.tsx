@@ -1,3 +1,4 @@
+import { usePagination } from "../hooks";
 import Pagination from "../components/pagination";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -394,6 +395,20 @@ export function Board() {
     },
   ]); // 정렬된 상품 목록
 
+  ///////////////// 임시 작성
+  const {
+    currentPage,
+    currentSection,
+    viewList,
+    viewPageList,
+    totalSection,
+    setCurrentPage,
+    setCurrentSection,
+    setTotalList,
+  } = usePagination<productList>(10); // 페이지네이션 관련 상태
+  const [totalBoardCount, setTotalBoardCount] = useState<number>(0); // 전체 게시물 개수 상태
+  //////////////////////
+
   // 이전 페이지 이동
   const handleBack = () => {
     navigate(-1);
@@ -684,7 +699,14 @@ export function Board() {
             </Products>
           ))}
       </ProductList>
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        currentSection={currentSection}
+        setCurrentPage={setCurrentPage}
+        setCurrentSection={setCurrentSection}
+        viewPageList={viewPageList}
+        totalSection={totalSection}
+      />
     </Wrapper>
   );
 }

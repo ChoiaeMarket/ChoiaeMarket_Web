@@ -15,6 +15,7 @@ import Upload from "./routes/upload";
 import Chat from "./routes/chat";
 import Mypage from "./routes/mypage";
 import Idol from "./routes/idol";
+import Update from "./routes/update";
 import { ProductItem } from "./components/product-item";
 import { Board } from "./routes/board";
 import { BoardItem } from "./components/board-item";
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
       {
         path: "idol/:idol/:product/:boardNumber", // idol별 상품 개별 판매페이지 동적 라우팅
         element: Protect(<Detail />),
+      },
+      {
+        path: "idol/:idol/:product/:boardNumber/update", // idol별 상품 개별 판매페이지 동적 라우팅
+        element: Protect(<Update />),
       },
     ],
   },

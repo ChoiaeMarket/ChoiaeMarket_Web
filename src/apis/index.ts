@@ -3,9 +3,10 @@ import { SignInRequestDto, SignUpRequestDto } from "./request/auth";
 import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
 import { ResponseDto } from "./response";
 import { GetSignInUserResponseDto } from "./response/user";
-import { PostBoardRequestDto } from "./request/board";
+import { PatchBoardRequestDto, PostBoardRequestDto } from "./request/board";
 import {
   DeleteBoardResponseDto,
+  PatchBoardResponseDto,
   PostBoardResponseDto,
   PutFavoriteResponseDto,
 } from "./response/board";
@@ -59,9 +60,11 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
 
 const GET_BOARD_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}`;
-const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
 const GET_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
+const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
+const PATCH_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
 const PUT_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
 const DELETE_BOARD_URL = (boardNumber: number | string) =>
@@ -72,6 +75,24 @@ export const getBoardRequest = async (boardNumber: number | string) => {
     .get(GET_BOARD_URL(boardNumber))
     .then((response) => {
       const responseBody: GetBoardResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};
+
+export const getFavoriteRequest = async (
+  boardNumber: number | string,
+  accessToken: string
+) => {
+  const result = await axios
+    .get(GET_FAVORITE_URL(boardNumber), authorization(accessToken))
+    .then((response) => {
+      const responseBody: GetFavoriteResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
@@ -100,22 +121,26 @@ export const postBoardRequest = async (
   return result;
 };
 
-export const getFavoriteRequest = async (
+export const patchBoardRequest = async (
   boardNumber: number | string,
+  requestBody: PatchBoardRequestDto,
   accessToken: string
 ) => {
   const result = await axios
-    .get(GET_FAVORITE_URL(boardNumber), authorization(accessToken))
+    .patch(
+      PATCH_BOARD_URL(boardNumber),
+      requestBody,
+      authorization(accessToken)
+    )
     .then((response) => {
-      const responseBody: GetFavoriteResponseDto = response.data;
+      const responseBody: PatchBoardResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
+      const responseBody: ResponseDto = error.reponse.data;
       return responseBody;
     });
-  return result;
 };
 
 export const putFavoriteRequest = async (

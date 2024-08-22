@@ -141,6 +141,7 @@ export const patchBoardRequest = async (
       const responseBody: ResponseDto = error.reponse.data;
       return responseBody;
     });
+  return result;
 };
 
 export const putFavoriteRequest = async (

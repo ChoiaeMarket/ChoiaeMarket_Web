@@ -340,6 +340,7 @@ export default function Update() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null); // 상세내용 칸 높이를 자동 조정
   const [cookies, setCookies] = useCookies();
   const accessToken = cookies.accessToken;
+  const [isClickIdol, setIsClickIdol] = useState(false); // 첫 idol 값 변경시 name, type 초기화 방지
 
   const { boardNumber } = useParams(); // 게시물 번호 path variable 상태
   const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
@@ -374,6 +375,7 @@ export default function Update() {
     setTitle(title);
     setContent(content);
     setPrice(String(price));
+    setImageCount(boardImageList.length);
 
     // 로그인 유저가 없거나 로그인 이메일과 작성자 이메일이 다르면
     if (!loginUser || loginUser?.email !== writerEmail) {
@@ -412,9 +414,12 @@ export default function Update() {
     }
   };
 
-  // idol 값이 변경될때 마다 name 값이 "상품명"으로 초기화
+  // idol 값이 변경될때 마다 name, type 초기화
   useEffect(() => {
-    setName("상품명");
+    if (isClickIdol) {
+      setName("상품명");
+      setType("카테고리");
+    }
   }, [idol]);
 
   // 마운트 시 실행할 함수
@@ -544,6 +549,7 @@ export default function Update() {
   // idol 드롭다운 메뉴 open 유무 토글
   const toggleDropdownIdol = () => {
     setIsOpenIdol(!isOpenIdol);
+    setIsClickIdol(true);
   };
 
   // type 드롭다운 메뉴 open 유무 토글
@@ -795,12 +801,12 @@ export default function Update() {
           {idolList.map(({ src, name }) => (
             <IdolItem key={src} onClick={() => handleSortClickIdol(name)}>
               <IdolLogo
-                src={`src/assets/idol/logo/${src}.png`}
+                src={`/src/assets/idol/logo/${src}.png`}
                 alt={name}
                 onError={(e) => {
                   (
                     e.target as HTMLImageElement
-                  ).src = `src/assets/idol/logo/default.png`; // 대체 이미지 설정
+                  ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
                 }}
               />
               <IdolName>{name}</IdolName>

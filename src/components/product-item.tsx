@@ -19,11 +19,11 @@ export function ProductItem({ productListItem }: Props) {
   } = productListItem;
 
   // function : 네이게이트 함수
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   // event handler : 게시물 아이템 클릭 이벤트 처리 함수
   const onClickHandler = () => {
-    navigator(productNumber);
+    navigate(productNumber);
   };
 
   return (

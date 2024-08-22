@@ -367,9 +367,10 @@ export default function Upload() {
     }
   };
 
-  // idol 값이 변경될때 마다 name 값이 "상품명"으로 초기화
+  // idol 값이 변경될때 마다 name, type 초기화
   useEffect(() => {
     setName("상품명");
+    setType("카테고리");
   }, [idol]);
 
   // 사진 추가 이벤트
@@ -734,12 +735,12 @@ export default function Upload() {
           {idolList.map(({ src, name }) => (
             <IdolItem key={src} onClick={() => handleSortClickIdol(name)}>
               <IdolLogo
-                src={`src/assets/idol/logo/${src}.png`}
+                src={`/src/assets/idol/logo/${src}.png`}
                 alt={name}
                 onError={(e) => {
                   (
                     e.target as HTMLImageElement
-                  ).src = `src/assets/idol/logo/default.png`; // 대체 이미지 설정
+                  ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
                 }}
               />
               <IdolName>{name}</IdolName>

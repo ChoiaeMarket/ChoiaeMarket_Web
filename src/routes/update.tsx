@@ -4,11 +4,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import idolList from "../components/idolList";
-import { fileUploadRequest, getBoardRequest, postBoardRequest } from "../apis";
-import { PostBoardRequestDto } from "../apis/request/board";
+import { fileUploadRequest, getBoardRequest, patchBoardRequest } from "../apis";
+import { PatchBoardRequestDto } from "../apis/request/board";
 import {
   GetBoardResponseDto,
-  PostBoardResponseDto,
+  PatchBoardResponseDto,
 } from "../apis/response/board";
 import { ResponseDto } from "../apis/response";
 import useLoginUserStore from "../stores/login-user.store";
@@ -463,9 +463,9 @@ export default function Update() {
     setImageCount((prevCount) => prevCount - 1);
   };
 
-  // post board response 처리 함수
-  const postBoardResponse = (
-    responseBody: PostBoardResponseDto | ResponseDto | null
+  // patch board response 처리 함수
+  const patchBoardResponse = (
+    responseBody: PatchBoardResponseDto | ResponseDto | null
   ) => {
     if (!responseBody) {
       setError("네트워크 이상입니다.");
@@ -476,7 +476,7 @@ export default function Update() {
       alert("데이터베이스 오류입니다.");
       console.log(code);
     }
-    if (code === "AF" || code === "NU") {
+    if (code === "AF" || code === "NU" || code === "NB" || code === "NP") {
       navigate(MAIN_PATH());
       console.log(code);
     }
@@ -487,6 +487,7 @@ export default function Update() {
       return;
     }
 
+    if (!boardNumber) return;
     navigate(MAIN_PATH());
   };
 
@@ -508,7 +509,8 @@ export default function Update() {
       return; // 미입력 방지
     try {
       // props.abc.value; // 강제 에러 발생
-      const requestBody: PostBoardRequestDto = {
+      if (!boardNumber) return;
+      const requestBody: PatchBoardRequestDto = {
         idol,
         type,
         name,
@@ -517,7 +519,9 @@ export default function Update() {
         content,
         price: priceAsNumber,
       };
-      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+      patchBoardRequest(boardNumber, requestBody, accessToken).then(
+        patchBoardResponse
+      );
       // 유저 이름 생성
       // 메인 리디렉션
       // navigate("/");

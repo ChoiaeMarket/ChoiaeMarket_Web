@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import logo from "../assets/logo/logoWhite.png";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import idolList from "../components/idolList";
@@ -340,8 +340,6 @@ export default function Update() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null); // 상세내용 칸 높이를 자동 조정
   const [cookies, setCookies] = useCookies();
   const accessToken = cookies.accessToken;
-  const location = useLocation(); // 현재 주소
-  const prevLocation = location.pathname.split("/").slice(0, -1).join("/"); // 이전 주소 : location.pathname을 '/'로 분할한 후 배열에서 마지막 요소 제거
 
   const { boardNumber } = useParams(); // 게시물 번호 path variable 상태
   const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
@@ -490,7 +488,7 @@ export default function Update() {
     }
 
     if (!boardNumber) return;
-    navigate(prevLocation); // 이전 주소(게시물)로 이동
+    navigate(`/idol/${idol}/${name}/${boardNumber}`); // 수정된 게시물 페이지로 이동
   };
 
   // price를 Int로 변환

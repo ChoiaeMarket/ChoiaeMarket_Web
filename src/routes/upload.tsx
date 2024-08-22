@@ -430,7 +430,7 @@ export default function Upload() {
       return;
     }
 
-    navigate(MAIN_PATH());
+    navigate(`/idol/${idol}/${name}`); // 상품 페이지로 이동
   };
 
   // price를 Int로 변환

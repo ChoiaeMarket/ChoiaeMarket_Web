@@ -12,7 +12,7 @@ export function BoardItem({ boardListItem }: Props) {
     idol,
     type,
     name,
-    image,
+    boardImageList,
     title,
     content,
     price,
@@ -37,7 +37,7 @@ export function BoardItem({ boardListItem }: Props) {
       {idol}
       {type}
       {name}
-      {image}
+      {boardImageList}
       {title}
       {content}
       {price}

@@ -9,19 +9,20 @@ export function BoardItem({ boardListItem }: Props) {
   // properties
   const {
     boardNumber,
-    idol,
-    type,
-    name,
-    boardImageList,
+    // idol,
+    // type,
+    // name,
+    image,
     title,
-    content,
+    // content,
     price,
     chatCount,
     favoriteCount,
-    sold,
+    // sold,
     writeDatetime,
-    writerNickname,
-    writerProfileImage,
+    // writerNickname,
+    writerEmail,
+    // writerProfileImage,
   } = boardListItem;
 
   // function : 네이게이트 함수
@@ -34,19 +35,21 @@ export function BoardItem({ boardListItem }: Props) {
 
   return (
     <div onClick={onClickHandler}>
-      {idol}
-      {type}
-      {name}
-      {boardImageList}
+      {boardNumber}
+      {/* {idol} */}
+      {/* {type} */}
+      {/* {name} */}
+      {image}
       {title}
-      {content}
+      {/* {content} */}
       {price}
       {chatCount}
       {favoriteCount}
-      {sold}
+      {/* {sold} */}
       {writeDatetime}
-      {writerNickname}
-      {writerProfileImage}
+      {/* {writerNickname} */}
+      {writerEmail}
+      {/* {writerProfileImage} */}
     </div>
   );
 }

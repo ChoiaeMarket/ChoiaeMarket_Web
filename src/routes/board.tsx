@@ -249,163 +249,19 @@ export function Board() {
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
   const [isSorted, setIsSorted] = useState(false); // 상품 정렬 완료 여부
   const [selectedSort, setSelectedSort] = useState("최신순"); // 선택된 상품 정렬
-  const [products, setProducts] = useState<any>([
-    // 초기 상품 목록
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "시즈니 필수템 판매중",
-      content: "필요하시면 채팅주세요!",
-      id: "엔시티즌",
-      date: "2024-04-03T19:15:50",
-      price: 30000,
-      chats: 0,
-      likes: 2,
-      boardNumber: 5,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "응원봉 판매",
-      content: "응원봉 싸게 팝니당. 편하게 채팅해주세요.",
-      id: "시즈니",
-      date: "2024-04-03T10:15:50",
-      price: 28000,
-      chats: 1,
-      likes: 4,
-      boardNumber: 4,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "NCT 응원봉",
-      content: "채팅 부탁드려요.",
-      id: "NNNCCT",
-      date: "2024-04-03T04:35:50",
-      price: 28000,
-      chats: 1,
-      likes: 7,
-      boardNumber: 3,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티(nct) 응원봉 판매합니다~",
-      content: "하자 없습니다. 네고가능",
-      id: "오리조아",
-      date: "2024-04-01T04:35:50",
-      price: 31000,
-      chats: 0,
-      likes: 1,
-      boardNumber: 2,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티 응원봉 택포",
-      content:
-        "딱 한 번 썼어요! 하자 전혀 없구요 배터리, 상자, 더스트백 다 포함해서 수요일에 배송 보내드려요~",
-      id: "홍튜브",
-      date: "2024-03-29T12:28:50",
-      price: 29000,
-      chats: 2,
-      likes: 13,
-      boardNumber: 1,
-      sold: false,
-    },
-  ]);
-  const [sortedProducts, setSortedProducts] = useState<any>([
-    // 초기 상품 목록
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "시즈니 필수템 판매중",
-      content: "필요하시면 채팅주세요!",
-      id: "엔시티즌",
-      date: "2024-04-03T19:15:50",
-      price: 30000,
-      chats: 0,
-      likes: 2,
-      boardNumber: 5,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "응원봉 판매",
-      content: "응원봉 싸게 팝니당. 편하게 채팅해주세요.",
-      id: "시즈니",
-      date: "2024-04-03T10:15:50",
-      price: 28000,
-      chats: 1,
-      likes: 4,
-      boardNumber: 4,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "NCT 응원봉",
-      content: "채팅 부탁드려요.",
-      id: "NNNCCT",
-      date: "2024-04-03T04:35:50",
-      price: 28000,
-      chats: 1,
-      likes: 7,
-      boardNumber: 3,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티(nct) 응원봉 판매합니다~",
-      content: "하자 없습니다. 네고가능",
-      id: "오리조아",
-      date: "2024-04-01T04:35:50",
-      price: 31000,
-      chats: 0,
-      likes: 1,
-      boardNumber: 2,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티 응원봉 택포",
-      content:
-        "딱 한 번 썼어요! 하자 전혀 없구요 배터리, 상자, 더스트백 다 포함해서 수요일에 배송 보내드려요~",
-      id: "홍튜브",
-      date: "2024-03-29T12:28:50",
-      price: 29000,
-      chats: 2,
-      likes: 13,
-      boardNumber: 1,
-      sold: false,
-    },
-  ]); // 정렬된 상품 목록
 
   // const [top3BoardList, setTop3BoardList] = useState<BoardListItem[]>([]); // top3 게시물 리스트 상태
   const [currentBoardList, setCurrentBoardList] = useState<BoardListItem[]>([]); // 최신 게시물 리스트 상태
+  const [sortedcurrentBoardList, setSortedCurrentBoardList] = useState<
+    BoardListItem[]
+  >([]); // 정렬 사용시 최신 게시물 리스트 상태
   const [popularWordList, setPopularWordList] = useState<String[]>([]); // 인기 검색어 리스트 상태
 
   useEffect(() => {
     // 첫 마운트시 실행될 함수
     // setTop3BoardList(top3BoardListMock);
     setCurrentBoardList(BoardListMock);
+    setSortedCurrentBoardList(BoardListMock);
     setPopularWordList(["엔시티", "nct", "응원봉"]);
   }, []);
 
@@ -443,12 +299,14 @@ export function Board() {
   };
 
   const averagePrice = // 평균거래가격
-    products.reduce((total: any, product: any) => total + product.price, 0) /
-    products.length;
+    currentBoardList.reduce(
+      (total: any, product: any) => total + product.price,
+      0
+    ) / currentBoardList.length;
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    const selectedProduct = sortedProducts.find(
+    const selectedProduct = sortedcurrentBoardList.find(
       (product: any) => product.boardNumber === boardNumber
     );
     if (selectedProduct) {
@@ -474,13 +332,16 @@ export function Board() {
   // 상품 정렬
   if (isSorted === false) {
     if (selectedSort === "최신순") {
-      setSortedProducts([...products]);
+      setSortedCurrentBoardList([...currentBoardList]);
       setIsSorted(true); // 정렬 끝
     } else if (selectedSort === "저가순") {
-      sortedProducts.sort((a: any, b: any) => a.price - b.price);
+      sortedcurrentBoardList.sort((a: any, b: any) => a.price - b.price);
       setIsSorted(true); // 정렬 끝
+      console.log(sortedcurrentBoardList);
     } else if (selectedSort === "찜 많은 순") {
-      sortedProducts.sort((a: any, b: any) => b.likes - a.likes);
+      sortedcurrentBoardList.sort(
+        (a: any, b: any) => b.favoriteCount - a.favoriteCount
+      );
       setIsSorted(true); // 정렬 끝
     }
   }
@@ -634,74 +495,71 @@ export function Board() {
         </Dropdown>
       </DropdownContent>
       <ProductList>
-        {sortedProducts
-          .filter((product: any) => !product.sold) // sold가 false인 제품만 필터링
-          .map((item: any, index: number) => (
-            <Products
-              key={index}
-              onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동
-            >
-              <ProductImg
-                src={`/src/assets/idol/product/${item.idol}/${item.name}/${item.boardNumber}.png`}
-                alt={item.name}
-                onError={(e) => {
-                  (
-                    e.target as HTMLImageElement
-                  ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
-                }}
-              />{" "}
-              <div>
-                <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>{" "}
-                {/* 가격을 세 자리 단위로 끊어서 출력 */}
-                <ProductTitle>{item.title}</ProductTitle>
-                <ProductBox>
-                  <ProductDate>
-                    {getTimeDifferenceString(new Date(item.date))}
-                  </ProductDate>
-                  <ProductInfos>
-                    {item.chats !== 0 && ( // item.chats가 0이 아닌 경우에만 렌더링
-                      <ProductInfo>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.00002 14.2445H8.76817C7.93639 14.2063 7.12101 13.9675 6.38726 13.5443C6.38678 13.5441 6.3863 13.5438 6.38581 13.5435L6.19234 13.4307L5.92239 13.2733L5.62054 13.3541L4.28986 13.7105L4.64626 12.3809L4.72724 12.0788L4.56959 11.8087L4.45575 11.6136C4.45565 11.6135 4.45554 11.6133 4.45544 11.6131C3.99308 10.8172 3.75002 9.91155 3.75002 8.99727C3.75002 6.1024 6.103 3.75 9.00002 3.75C11.897 3.75 14.25 6.1024 14.25 8.99727C14.25 11.8921 11.897 14.2445 9.00002 14.2445Z"
-                            stroke="#9EA3B2"
-                            stroke-width="1.5"
-                          />
-                        </svg>
-                        {item.chats}
-                      </ProductInfo>
-                    )}
-                    {item.likes !== 0 && ( // item.likes가 0이 아닌 경우에만 렌더링
-                      <ProductInfo>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                        >
-                          <path
-                            d="M9.00001 14.4001L3.72458 9.33643C2.35847 8.02445 2.35847 5.89606 3.72458 4.58408C5.09068 3.2721 7.30894 3.2721 8.67505 4.58408L9.00001 4.8954L9.32495 4.58408C10.6911 3.2721 12.9093 3.2721 14.2754 4.58408C15.6415 5.89606 15.6415 8.02445 14.2754 9.33643L9.00001 14.4001Z"
-                            stroke="#9EA3B2"
-                            stroke-width="1.5"
-                            stroke-miterlimit="10"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                        {item.likes}
-                      </ProductInfo>
-                    )}
-                  </ProductInfos>
-                </ProductBox>
-              </div>
-            </Products>
-          ))}
+        {sortedcurrentBoardList.map((item: any, index: number) => (
+          <Products
+            key={index}
+            onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동
+          >
+            <ProductImg
+              src={item.image}
+              alt={item.name}
+              onError={(e) => {
+                (
+                  e.target as HTMLImageElement
+                ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+              }}
+            />{" "}
+            <div>
+              <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>{" "}
+              <ProductTitle>{item.title}</ProductTitle>
+              <ProductBox>
+                <ProductDate>
+                  {getTimeDifferenceString(new Date(item.writeDatetime))}
+                </ProductDate>
+                <ProductInfos>
+                  {item.chatCount !== 0 && ( // item.chatCount가 0이 아닌 경우에만 렌더링
+                    <ProductInfo>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <path
+                          d="M9.00002 14.2445H8.76817C7.93639 14.2063 7.12101 13.9675 6.38726 13.5443C6.38678 13.5441 6.3863 13.5438 6.38581 13.5435L6.19234 13.4307L5.92239 13.2733L5.62054 13.3541L4.28986 13.7105L4.64626 12.3809L4.72724 12.0788L4.56959 11.8087L4.45575 11.6136C4.45565 11.6135 4.45554 11.6133 4.45544 11.6131C3.99308 10.8172 3.75002 9.91155 3.75002 8.99727C3.75002 6.1024 6.103 3.75 9.00002 3.75C11.897 3.75 14.25 6.1024 14.25 8.99727C14.25 11.8921 11.897 14.2445 9.00002 14.2445Z"
+                          stroke="#9EA3B2"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                      {item.chatCount}
+                    </ProductInfo>
+                  )}
+                  {item.favoriteCount !== 0 && ( // item.favoriteCount가 0이 아닌 경우에만 렌더링
+                    <ProductInfo>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <path
+                          d="M9.00001 14.4001L3.72458 9.33643C2.35847 8.02445 2.35847 5.89606 3.72458 4.58408C5.09068 3.2721 7.30894 3.2721 8.67505 4.58408L9.00001 4.8954L9.32495 4.58408C10.6911 3.2721 12.9093 3.2721 14.2754 4.58408C15.6415 5.89606 15.6415 8.02445 14.2754 9.33643L9.00001 14.4001Z"
+                          stroke="#9EA3B2"
+                          stroke-width="1.5"
+                          stroke-miterlimit="10"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      {item.favoriteCount}
+                    </ProductInfo>
+                  )}
+                </ProductInfos>
+              </ProductBox>
+            </div>
+          </Products>
+        ))}
       </ProductList>
       <Pagination
         currentPage={currentPage}
@@ -712,9 +570,6 @@ export function Board() {
         totalSection={totalSection}
       />
       <>
-        {currentBoardList.map((boardListItem) => (
-          <BoardItem boardListItem={boardListItem} />
-        ))}
         {popularWordList.map((word) => (
           <div>{word}</div>
         ))}

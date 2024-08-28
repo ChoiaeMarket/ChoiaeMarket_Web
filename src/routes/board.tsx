@@ -1,8 +1,11 @@
-import { usePagination } from "../hooks";
-import Pagination from "../components/pagination";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Pagination from "../components/pagination";
+import { usePagination } from "../hooks";
+import { BoardListItem } from "types/interface";
+import { BoardItem } from "../components/board-item";
+import { BoardListMock } from "../mocks";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -395,6 +398,17 @@ export function Board() {
     },
   ]); // 정렬된 상품 목록
 
+  // const [top3BoardList, setTop3BoardList] = useState<BoardListItem[]>([]); // top3 게시물 리스트 상태
+  const [currentBoardList, setCurrentBoardList] = useState<BoardListItem[]>([]); // 최신 게시물 리스트 상태
+  const [popularWordList, setPopularWordList] = useState<String[]>([]); // 인기 검색어 리스트 상태
+
+  useEffect(() => {
+    // 첫 마운트시 실행될 함수
+    // setTop3BoardList(top3BoardListMock);
+    setCurrentBoardList(BoardListMock);
+    setPopularWordList(["엔시티", "nct", "응원봉"]);
+  }, []);
+
   ///////////////// 임시 작성
   const {
     currentPage,
@@ -408,6 +422,10 @@ export function Board() {
   } = usePagination<productList>(10); // 페이지네이션 관련 상태
   const [totalBoardCount, setTotalBoardCount] = useState<number>(0); // 전체 게시물 개수 상태
   //////////////////////
+
+  const getBoardListResopnse = () =>
+    // responseBody: GetBoardListResponseDto | ResponseDto | null
+    {};
 
   // 이전 페이지 이동
   const handleBack = () => {
@@ -427,20 +445,6 @@ export function Board() {
   const averagePrice = // 평균거래가격
     products.reduce((total: any, product: any) => total + product.price, 0) /
     products.length;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`your-api-url`);
-        const data = await response.json();
-        setProducts(data.filter((product: any) => !product.sold)); // sold가 false인 제품만 필터링
-        setSortedProducts(data.filter((product: any) => !product.sold)); // sold가 false인 제품만 필터링
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-    fetchData();
-  }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
@@ -707,6 +711,14 @@ export function Board() {
         viewPageList={viewPageList}
         totalSection={totalSection}
       />
+      <>
+        {currentBoardList.map((boardListItem) => (
+          <BoardItem boardListItem={boardListItem} />
+        ))}
+        {popularWordList.map((word) => (
+          <div>{word}</div>
+        ))}
+      </>
     </Wrapper>
   );
 }

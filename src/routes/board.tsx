@@ -6,6 +6,10 @@ import { usePagination } from "../hooks";
 import { BoardListItem } from "types/interface";
 import { BoardItem } from "../components/board-item";
 import { BoardListMock } from "../mocks";
+import { getBoardListRequest, getPopluarListRequest } from "../apis";
+import { GetBoardListResponseDto } from "../apis/response/board";
+import { ResponseDto } from "../apis/response";
+import { GetPopularListResponseDto } from "apis/response/search";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -249,24 +253,13 @@ export function Board() {
   const [isOpen, setIsOpen] = useState(false); // 상품 정렬 드롭다운 메뉴 open 유무
   const [isSorted, setIsSorted] = useState(false); // 상품 정렬 완료 여부
   const [selectedSort, setSelectedSort] = useState("최신순"); // 선택된 상품 정렬
+  const [averagePrice, setAveragePrice] = useState(0); // 평균가격
+  const [productCount, setProductCount] = useState(0); // 등록개수
 
-  // const [top3BoardList, setTop3BoardList] = useState<BoardListItem[]>([]); // top3 게시물 리스트 상태
-  const [currentBoardList, setCurrentBoardList] = useState<BoardListItem[]>([]); // 최신 게시물 리스트 상태
-  const [sortedcurrentBoardList, setSortedCurrentBoardList] = useState<
-    BoardListItem[]
-  >([]); // 정렬 사용시 최신 게시물 리스트 상태
-  const [popularWordList, setPopularWordList] = useState<string[]>([]); // 인기 검색어 리스트 상태
-
-  useEffect(() => {
-    // 첫 마운트시 실행될 함수
-    // setTop3BoardList(top3BoardListMock);
-    setCurrentBoardList(BoardListMock);
-    setSortedCurrentBoardList(BoardListMock);
-    setPopularWordList(["엔시티", "nct", "응원봉"]);
-  }, []);
-
-  ///////////////// 임시 작성
+  const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
+  const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
   const {
+    // 페이지네이션 관련 상태
     currentPage,
     currentSection,
     viewList,
@@ -275,13 +268,62 @@ export function Board() {
     setCurrentPage,
     setCurrentSection,
     setTotalList,
-  } = usePagination<productList>(10); // 페이지네이션 관련 상태
-  const [totalBoardCount, setTotalBoardCount] = useState<number>(0); // 전체 게시물 개수 상태
-  //////////////////////
+  } = usePagination<BoardListItem>(countPerPage, numberOfSection);
 
-  const getBoardListResopnse = () =>
-    // responseBody: GetBoardListResponseDto | ResponseDto | null
-    {};
+  const [LatestTotalList, setLatestTotalList] = useState<BoardListItem[]>([]); // 정렬 사용시 최신 게시물 리스트 상태
+  const [popularWordList, setPopularWordList] = useState<string[]>([]); // 인기 검색어 리스트 상태
+
+  // get latest board list response 처리 함수
+  const getBoardListResopnse = (
+    responseBody: GetBoardListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
+    const { productsList } = responseBody as GetBoardListResponseDto;
+    setLatestTotalList(productsList);
+    setPrice(productsList);
+    setProductCount(productsList.length);
+  };
+
+  // get popular list response 처리 함수
+  const getPopularListResponse = (
+    responseBody: GetBoardListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
+
+    const { popularWordList } = responseBody as GetPopularListResponseDto;
+    setPopularWordList(popularWordList);
+  };
+
+  // 첫 마운트시 실행될 함수
+  useEffect(() => {
+    getBoardListRequest().then(getBoardListResopnse);
+    getPopluarListRequest().then(getPopularListResponse);
+  }, []);
+
+  // 정렬 메뉴선택시 재 페이지네이션
+  useEffect(() => {
+    setTotalList(LatestTotalList);
+  }, [LatestTotalList]);
 
   // 이전 페이지 이동
   const handleBack = () => {
@@ -303,22 +345,17 @@ export function Board() {
     navigate(`/searchResult?q=${word}`);
   };
 
-  const averagePrice = // 평균거래가격
-    currentBoardList.reduce(
-      (total: any, product: any) => total + product.price,
-      0
-    ) / currentBoardList.length;
+  // 평균거래가격 함수
+  const setPrice = (productsList: { price: number }[]) => {
+    const price =
+      productsList.reduce((sum, product) => sum + product.price, 0) /
+      productsList.length;
+    setAveragePrice(Math.floor(price));
+  };
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    const selectedProduct = sortedcurrentBoardList.find(
-      (product: any) => product.boardNumber === boardNumber
-    );
-    if (selectedProduct) {
-      navigate(`/idol/${idol}/${product}/${boardNumber}`, {
-        state: { detail: selectedProduct }, // navigate 함수의 옵션으로 state를 사용하여 데이터 전달
-      });
-    }
+    navigate(`/idol/${idol}/${product}/${boardNumber}`);
   };
 
   // 상품 정렬 드롭다운 메뉴 open 유무 토글
@@ -332,23 +369,22 @@ export function Board() {
     setSelectedSort(sort); // 선택 값 저장
     setIsSorted(false); // 정렬 시작
     setIsOpen(false); // 드롭다운 닫기
+    setCurrentPage(1);
+    setCurrentSection(1);
   };
 
   // 상품 정렬
   if (isSorted === false) {
     if (selectedSort === "최신순") {
-      setSortedCurrentBoardList([...currentBoardList]);
-      setIsSorted(true); // 정렬 끝
+      LatestTotalList.sort((a: any, b: any) => b.boardNumber - a.boardNumber);
     } else if (selectedSort === "저가순") {
-      sortedcurrentBoardList.sort((a: any, b: any) => a.price - b.price);
-      setIsSorted(true); // 정렬 끝
-      console.log(sortedcurrentBoardList);
+      LatestTotalList.sort((a: any, b: any) => a.price - b.price);
     } else if (selectedSort === "찜 많은 순") {
-      sortedcurrentBoardList.sort(
+      LatestTotalList.sort(
         (a: any, b: any) => b.favoriteCount - a.favoriteCount
       );
-      setIsSorted(true); // 정렬 끝
     }
+    setIsSorted(true); // 정렬 끝
   }
 
   return (
@@ -453,12 +489,12 @@ export function Board() {
         />
         <CoverContentsBox>
           <CoverContents>
-            <CoverContentTitle>평균거래가격</CoverContentTitle>
+            <CoverContentTitle>평균상품가격</CoverContentTitle>
             <CoverContent>{averagePrice.toLocaleString()}원</CoverContent>
           </CoverContents>
           <CoverContents>
-            <CoverContentTitle>거래내역</CoverContentTitle>
-            <CoverContent>150건</CoverContent>
+            <CoverContentTitle>상품등록</CoverContentTitle>
+            <CoverContent>{productCount}건</CoverContent>
           </CoverContents>
         </CoverContentsBox>
       </CoverImgBox>
@@ -500,20 +536,20 @@ export function Board() {
         </Dropdown>
       </DropdownContent>
       <ProductList>
-        {sortedcurrentBoardList.map((item: any, index: number) => (
+        {viewList.map((item: any, index: number) => (
           <Products
             key={index}
             onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동
           >
             <ProductImg
-              src={item.image}
+              src={item.image || "/src/assets/idol/logo/default.png"}
               alt={item.name}
               onError={(e) => {
                 (
                   e.target as HTMLImageElement
                 ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
               }}
-            />{" "}
+            />
             <div>
               <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>{" "}
               <ProductTitle>{item.title}</ProductTitle>
@@ -573,6 +609,7 @@ export function Board() {
         setCurrentSection={setCurrentSection}
         viewPageList={viewPageList}
         totalSection={totalSection}
+        numberOfSection={numberOfSection}
       />
       <>
         {popularWordList.map((word) => (

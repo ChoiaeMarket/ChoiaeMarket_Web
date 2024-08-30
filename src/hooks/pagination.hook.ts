@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 // 커스텀 hook
 // countPerPage : 한 페이지 섹션의 리스트 개수
-const usePagination = <T>(countPerPage: number) => {
+// numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
+const usePagination = <T>(countPerPage: number, numberOfSection: number) => {
   // 전체 객체 리스트 상태
   const [totalList, setTotalList] = useState<T[]>([]); // 매개타입 T를 통해 이후에 타입형을 받아옴
   // 보여줄 객체 리스트 상태
@@ -32,12 +33,11 @@ const usePagination = <T>(countPerPage: number) => {
   };
 
   // 보여줄 페이지 리스트 추출 함수
-  // 5 : 한 번에 보여줄 페이지 섹션의 개수
   const setViewPage = () => {
-    const FIRST_INDEX = 5 * (currentSection - 1);
+    const FIRST_INDEX = numberOfSection * (currentSection - 1);
     const LAST_INDEX =
-      totalPageList.length > 5 * currentSection
-        ? 5 * currentSection
+      totalPageList.length > numberOfSection * currentSection
+        ? numberOfSection * currentSection
         : totalPageList.length;
     const viewPageList = totalPageList.slice(FIRST_INDEX, LAST_INDEX);
     setViewPageList(viewPageList);
@@ -50,7 +50,9 @@ const usePagination = <T>(countPerPage: number) => {
     for (let page = 1; page <= totalPage; page++) totalPageList.push(page);
     setTotalPageList(totalPageList);
 
-    const totalSection = Math.ceil(totalList.length / (countPerPage * 10));
+    const totalSection = Math.ceil(
+      totalList.length / (countPerPage * numberOfSection)
+    );
     setTotalSection(totalSection);
 
     setCurrentPage(1);

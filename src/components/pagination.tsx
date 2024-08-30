@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import styled from "styled-components";
 
 const PaginationWrapper = styled.div`
@@ -58,15 +58,21 @@ interface Props {
   currentSection: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setCurrentSection: Dispatch<SetStateAction<number>>;
-
   viewPageList: number[];
   totalSection: number;
+  numberOfSection: number;
 }
 
 // 페이지네이션 컴포넌트
 export default function Pagination(props: Props) {
   // Properties
-  const { currentPage, currentSection, viewPageList, totalSection } = props;
+  const {
+    currentPage,
+    currentSection,
+    viewPageList,
+    totalSection,
+    numberOfSection,
+  } = props;
   const { setCurrentPage, setCurrentSection } = props;
 
   // 페이지 번호 클릭 이벤트 처리
@@ -77,14 +83,14 @@ export default function Pagination(props: Props) {
   // 이전 클릭 이벤트 처리
   const onPreviousClickHandler = () => {
     if (currentSection === 1) return;
-    setCurrentPage((currentSection - 1) * 5); // 이전 섹션 마지막 페이지로 이동
+    setCurrentPage((currentSection - 1) * numberOfSection); // 이전 섹션 마지막 페이지로 이동
     setCurrentSection(currentSection - 1);
   };
 
-  // 이전 클릭 이벤트 처리
+  // 다음 클릭 이벤트 처리
   const onNextClickHandler = () => {
     if (currentSection === totalSection) return;
-    setCurrentPage(currentSection * 10 + 1); // 다음 섹션 첫번째 페이지로 이동
+    setCurrentPage(currentSection * numberOfSection + 1); // 다음 섹션 첫번째 페이지로 이동
     setCurrentSection(currentSection + 1);
   };
 
@@ -117,13 +123,6 @@ export default function Pagination(props: Props) {
           </PaginationText>
         )
       )}
-
-      {/* <PaginationTextActive>1</PaginationTextActive>
-      <PaginationText onClick={() => onPageClickHandler(2)}>2</PaginationText>
-      <PaginationText>3</PaginationText>
-      <PaginationText>4</PaginationText>
-      <PaginationText>5</PaginationText> */}
-
       <PaginationChangeLink onClick={onNextClickHandler}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

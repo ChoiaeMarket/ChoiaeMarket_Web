@@ -1,15 +1,13 @@
+import { GetPopularListResponseDto } from "apis/response/search";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { BoardListItem } from "types/interface";
+import { getBoardListRequest, getPopluarListRequest } from "../apis";
+import { ResponseDto } from "../apis/response";
+import { GetBoardListResponseDto } from "../apis/response/board";
 import Pagination from "../components/pagination";
 import { usePagination } from "../hooks";
-import { BoardListItem } from "types/interface";
-import { BoardItem } from "../components/board-item";
-import { BoardListMock } from "../mocks";
-import { getBoardListRequest, getPopluarListRequest } from "../apis";
-import { GetBoardListResponseDto } from "../apis/response/board";
-import { ResponseDto } from "../apis/response";
-import { GetPopularListResponseDto } from "apis/response/search";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -270,7 +268,8 @@ export function Board() {
     setTotalList,
   } = usePagination<BoardListItem>(countPerPage, numberOfSection);
 
-  const [LatestTotalList, setLatestTotalList] = useState<BoardListItem[]>([]); // 정렬 사용시 최신 게시물 리스트 상태
+  const [latestTotalList, setLatestTotalList] = useState<BoardListItem[]>([]); // 정렬 전 게시물 리스트 상태
+  const [sortedTotalList, setSortedTotalList] = useState<BoardListItem[]>([]); // 정렬 후 게시물 리스트 상태
   const [popularWordList, setPopularWordList] = useState<string[]>([]); // 인기 검색어 리스트 상태
 
   // get latest board list response 처리 함수
@@ -290,6 +289,7 @@ export function Board() {
     }
     const { productsList } = responseBody as GetBoardListResponseDto;
     setLatestTotalList(productsList);
+    setSortedTotalList(productsList);
     setPrice(productsList);
     setProductCount(productsList.length);
   };
@@ -322,8 +322,9 @@ export function Board() {
 
   // 정렬 메뉴선택시 재 페이지네이션
   useEffect(() => {
-    setTotalList(LatestTotalList);
-  }, [LatestTotalList]);
+    console.log("useEffect");
+    setTotalList(sortedTotalList);
+  }, [sortedTotalList]);
 
   // 이전 페이지 이동
   const handleBack = () => {
@@ -369,20 +370,26 @@ export function Board() {
     setSelectedSort(sort); // 선택 값 저장
     setIsSorted(false); // 정렬 시작
     setIsOpen(false); // 드롭다운 닫기
-    setCurrentPage(1);
-    setCurrentSection(1);
   };
 
   // 상품 정렬
   if (isSorted === false) {
     if (selectedSort === "최신순") {
-      LatestTotalList.sort((a: any, b: any) => b.boardNumber - a.boardNumber);
+      setSortedTotalList([
+        ...latestTotalList.sort(
+          (a: any, b: any) => b.boardNumber - a.boardNumber
+        ),
+      ]);
     } else if (selectedSort === "저가순") {
-      LatestTotalList.sort((a: any, b: any) => a.price - b.price);
+      setSortedTotalList([
+        ...latestTotalList.sort((a: any, b: any) => a.price - b.price),
+      ]);
     } else if (selectedSort === "찜 많은 순") {
-      LatestTotalList.sort(
-        (a: any, b: any) => b.favoriteCount - a.favoriteCount
-      );
+      setSortedTotalList([
+        ...latestTotalList.sort(
+          (a: any, b: any) => b.favoriteCount - a.favoriteCount
+        ),
+      ]);
     }
     setIsSorted(true); // 정렬 끝
   }

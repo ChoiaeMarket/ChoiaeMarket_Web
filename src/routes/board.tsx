@@ -255,7 +255,7 @@ export function Board() {
   const [sortedcurrentBoardList, setSortedCurrentBoardList] = useState<
     BoardListItem[]
   >([]); // 정렬 사용시 최신 게시물 리스트 상태
-  const [popularWordList, setPopularWordList] = useState<String[]>([]); // 인기 검색어 리스트 상태
+  const [popularWordList, setPopularWordList] = useState<string[]>([]); // 인기 검색어 리스트 상태
 
   useEffect(() => {
     // 첫 마운트시 실행될 함수
@@ -296,6 +296,11 @@ export function Board() {
   // 검색 페이지 이동
   const handleSearch = () => {
     navigate("/search");
+  };
+
+  // 인기 검색어 클릭 이벤트 처리
+  const onPopularWordClickHandeler = (word: string) => {
+    navigate(`/searchResult?q=${word}`);
   };
 
   const averagePrice = // 평균거래가격
@@ -571,7 +576,7 @@ export function Board() {
       />
       <>
         {popularWordList.map((word) => (
-          <div>{word}</div>
+          <div onClick={() => onPopularWordClickHandeler(word)}>{word}</div>
         ))}
       </>
     </Wrapper>

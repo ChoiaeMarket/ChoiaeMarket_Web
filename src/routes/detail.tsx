@@ -364,7 +364,10 @@ export function Detail() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    navigate(-1);
+    // 현재 URL에서 마지막 슬래시('/') 이후 제거
+    const currentPath = window.location.pathname;
+    const backPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+    navigate(backPath);
   };
 
   // 메인 페이지 이동
@@ -666,6 +669,11 @@ export function Detail() {
               key={image}
               style={{
                 transform: `translateX(-${currentImageIndex * 100}%)`,
+              }}
+              onError={(e) => {
+                (
+                  e.target as HTMLImageElement
+                ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
               }}
             />
           ))

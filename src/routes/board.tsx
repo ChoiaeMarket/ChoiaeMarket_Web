@@ -328,7 +328,10 @@ export function Board() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    navigate(-1);
+    // 현재 URL에서 마지막 슬래시('/') 이후 제거
+    const currentPath = window.location.pathname;
+    const backPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+    navigate(backPath);
   };
 
   // 메인 페이지 이동

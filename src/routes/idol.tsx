@@ -339,7 +339,7 @@ export default function Idol() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   // 메인 페이지 이동

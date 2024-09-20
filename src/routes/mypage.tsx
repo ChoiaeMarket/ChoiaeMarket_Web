@@ -39,11 +39,98 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
+const ProfileBox = styled.div`
+  width: 100%;
+  padding: 20px;
+  margin-top: 70px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  background-color: #252932;
+  position: relative;
+`;
+
 const ProfileImage = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
+  border: 20px solid #252932;
   object-fit: cover;
+  position: absolute;
+  top: -70px;
+  left: 30%;
+`;
+
+const ProfileNickname = styled.div`
+  padding-top: 50px;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 20px;
+  letter-spacing: -0.025em;
+`;
+
+const ProfileEmail = styled.div`
+  padding-bottom: 20px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.025em;
+`;
+
+const ProfileButton = styled.div`
+  display: flex;
+  text-align: center;
+  justify-content: space-between;
+`;
+
+const ProfileEdit = styled.div`
+  width: 135px;
+  height: 30px;
+  border-radius: 16px;
+  padding: 18px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  background-color: #f89e86;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #f9b19e;
+  }
+`;
+
+const ProfileLogout = styled.button`
+  width: 135px;
+  height: 30px;
+  border-radius: 16px;
+  border: none;
+  padding: 18px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+  background-color: #181a20;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #21242d;
+  }
 `;
 
 export default function Mypage() {
@@ -118,17 +205,29 @@ export default function Mypage() {
           </MenuItem>
         </MenuItem>
       </Menu>
-      <h1>이메일 : {loginUser ? loginUser.email : "error"}</h1>
-      <h1>아이디 : {loginUser ? loginUser.nickname : "error"}</h1>
-      <h1>
-        프로필사진 :{" "}
+      <ProfileBox>
         {loginUser ? (
-          <ProfileImage src={loginUser.profileImage!} alt="프로필 이미지" />
+          <ProfileImage
+            src={loginUser.profileImage! || "/src/assets/idol/logo/default.png"} // 대체 이미지 설정
+            alt="프로필 이미지"
+            onError={(e) => {
+              (
+                e.target as HTMLImageElement
+              ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
+            }}
+          />
         ) : (
           "error"
         )}
-      </h1>
-      <button onClick={logOut}>로그아웃</button>
+        <ProfileNickname>
+          {loginUser ? loginUser.nickname : "error"}
+        </ProfileNickname>
+        <ProfileEmail>{loginUser ? loginUser.email : "error"}</ProfileEmail>
+        <ProfileButton>
+          <ProfileEdit>프로필 편집</ProfileEdit>
+          <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
+        </ProfileButton>
+      </ProfileBox>
     </Wrapper>
   );
 }

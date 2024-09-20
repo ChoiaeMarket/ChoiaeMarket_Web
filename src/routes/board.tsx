@@ -322,7 +322,6 @@ export function Board() {
 
   // 정렬 메뉴선택시 재 페이지네이션
   useEffect(() => {
-    console.log("useEffect");
     setTotalList(sortedTotalList);
   }, [sortedTotalList]);
 

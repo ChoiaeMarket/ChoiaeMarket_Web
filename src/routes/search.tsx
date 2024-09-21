@@ -5,7 +5,7 @@ import styled from "styled-components";
 const SEARCH_HISTORY_KEY = "searchHistory"; // 로컬 스토리지를 사용하여 검색 정보 저장
 
 const Wrapper = styled.div`
-  min-height: 100vh;
+  min-height: 99vh;
   height: 100%;
   display: flex;
   flex-direction: column;

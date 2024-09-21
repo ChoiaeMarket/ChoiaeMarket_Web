@@ -158,7 +158,7 @@ export function Search() {
       // props.abc.value; // 강제 에러 발생
       const updatedHistory = [...history, searchWord]; // 검색 기록 업데이트
       saveHistory(updatedHistory);
-      navigate(`/searchResult?q=${searchWord}`); // 검색 쿼리문 페이지
+      navigate(`/search/${searchWord}`); // 검색 쿼리문 페이지
     } catch (e: any) {
       console.log("search: ", e.message);
       setError("검색 오류");
@@ -166,15 +166,15 @@ export function Search() {
     console.log("search: ", searchWord);
   };
 
-  const handleRecentWord = (searchedWord: string) => {
-    const updatedHistory = [...history, searchedWord]; // 검색 기록 업데이트
+  const handleRecentWord = (searchWord: string) => {
+    const updatedHistory = [...history, searchWord]; // 검색 기록 업데이트
     saveHistory(updatedHistory);
-    navigate(`/searchResult?q=${searchedWord}`);
+    navigate(`/search/${searchWord}`);
   };
 
   const deleteSearch = (wordToDelete: string) => {
     const updatedHistory = history.filter(
-      (searchedWord) => searchedWord !== wordToDelete
+      (searchWord) => searchWord !== wordToDelete
     );
     saveHistory(updatedHistory);
   };
@@ -239,15 +239,15 @@ export function Search() {
         {history
           .slice()
           .reverse()
-          .map((searchedWord: any) => (
+          .map((searchWord: any) => (
             <RecentWordBox>
               <RecentWord
-                key={searchedWord}
-                onClick={() => handleRecentWord(searchedWord)}
+                key={searchWord}
+                onClick={() => handleRecentWord(searchWord)}
               >
-                {searchedWord}
+                {searchWord}
               </RecentWord>
-              <DeleteWord onClick={() => deleteSearch(searchedWord)}>
+              <DeleteWord onClick={() => deleteSearch(searchWord)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"

@@ -21,7 +21,7 @@ import { Board } from "./routes/board";
 import { BoardItem } from "./components/board-item";
 import { Detail } from "./routes/detail";
 import { Search } from "./routes/search";
-import { SearchResult } from "./routes/searchResult";
+import { SearchWord } from "./routes/searchWord";
 import { BoardListMock, ProductListMock } from "./mocks";
 
 const Protect = (component: JSX.Element) => (
@@ -60,8 +60,8 @@ const router = createBrowserRouter([
         element: Protect(<Search />),
       },
       {
-        path: "searchResult",
-        element: Protect(<SearchResult />),
+        path: "search/:searchWord",
+        element: Protect(<SearchWord />),
       },
       {
         path: "profile",

@@ -1,10 +1,14 @@
-import { BoardListMock } from "../mocks";
-import Pagination from "../components/pagination";
-import { usePagination } from "../hooks";
+import { getRelationListRequest, getSearchBoardListRequest } from "../apis";
+import { ResponseDto } from "../apis/response";
+import { GetSearchBoardListResponseDto } from "../apis/response/board";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { BoardListItem } from "types/interface";
+import Pagination from "../components/pagination";
+import { usePagination } from "../hooks";
+import { GetRelationListResponseDto } from "apis/response/search";
+import { Error } from "../components/auth-comonents";
 
 const Wrapper = styled.div`
   min-height: 99vh;
@@ -18,9 +22,47 @@ const Wrapper = styled.div`
 
 const Menu = styled.div`
   width: 100%;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+`;
+
+const Form = styled.form``;
+
+const SearchInput = styled.input<{ hasValue: boolean }>`
+  width: 250px;
+  height: 56px;
+  background-color: #252932;
+  border: 0;
+  border-radius: 16px;
+  padding: 19px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  box-shadow: ${(props) =>
+    props.hasValue ? " 0 0 0 1px #9ea3b2" : " 0 0 0 1px #252932"};
+  background-color: #252932;
+  outline: none;
+  &::placeholder {
+    color: #777c89;
+  }
+  &:focus {
+    box-shadow: 0 0 0 1px #f89e86;
+    background-color: rgba(248, 158, 134, 0.1);
+  }
+  /* 자동완성이 될 때 배경색 변경 */
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #252932 inset, 0 0 0 1px #9ea3b2;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+  }
+`;
+
+const SearchSubmit = styled.input`
+  display: none;
 `;
 
 const Title = styled.h1`
@@ -194,16 +236,18 @@ function getTimeDifferenceString(previousDate: any) {
   }
 }
 
-export function SearchResult() {
+export function SearchWord() {
   const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const location = useLocation();
-  const searchQuery = new URLSearchParams(location.search).get("q");
+  const [error, setError] = useState("");
+  3;
+  const [newSearchWord, setNewSearchWord] = useState("");
 
   const { searchWord } = useParams(); // searchWord path variable 상태
+  const [preSearchWord, setPreSearchWord] = useState<string | null>(null); // 이전 검색어
   const [count, setCount] = useState<number>(0); // 검색 게시물 개수 상태
-  const [searchBoardList, setSearchBoardList] = useState<BoardListItem[]>([]); // 검색 게시물 리스트 상태(임시)
-  const [relationList, setRelationList] = useState<String[]>([]); // 관련 검색어 리스트
+  const [relativeWordList, setRelativeWordList] = useState<String[]>([]); // 관련 검색어 리스트
 
   const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
   const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
@@ -219,10 +263,78 @@ export function SearchResult() {
     setTotalList,
   } = usePagination<BoardListItem>(countPerPage, numberOfSection);
 
+  // get search board list response 처리 함수
+  const getSearchBoardListResponse = (
+    responseBody: GetSearchBoardListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
+
+    if (!searchWord) return;
+    const { searchList } = responseBody as GetSearchBoardListResponseDto;
+    setTotalList(searchList);
+    setCount(searchList.length);
+    setPreSearchWord(searchWord);
+  };
+
+  // get relation list response 처리 함수
+  const getRelationListResponse = (
+    responseBody: GetRelationListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
+
+    const { relativeWordList } = responseBody as GetRelationListResponseDto;
+    setRelativeWordList(relativeWordList);
+  };
+
+  // searchWord 상태 변경 시 실행될 함수
   useEffect(() => {
-    setSearchBoardList(BoardListMock);
-    setRelationList(["안녕", "잘가", "너는", "별을보면서", "내게말했어"]);
+    if (!searchWord) return;
+    getSearchBoardListRequest(searchWord, preSearchWord).then(
+      getSearchBoardListResponse
+    );
+    getRelationListRequest(searchWord).then(getRelationListResponse);
+    setNewSearchWord(searchWord);
   }, [searchWord]);
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { value },
+    } = e;
+    setNewSearchWord(value);
+  };
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    if (newSearchWord === "" || newSearchWord === searchWord) return; // 검색어 미입력 방지
+    try {
+      navigate(`/search/${newSearchWord}`); // 검색 쿼리문 페이지
+    } catch (e: any) {
+      console.log("search: ", e.message);
+      setError("검색 오류");
+    }
+    console.log("search: ", newSearchWord);
+  };
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
@@ -230,8 +342,8 @@ export function SearchResult() {
   };
 
   // 관련 검색어 클릭 시 관련 검색 페이지로 이동하는 함수
-  const handleRelationWordClick = (word: string) => {
-    navigate(`/searchResult?q=${word}`);
+  const handleRelationWordClick = (searchWord: string) => {
+    navigate(`/search/${searchWord}`);
   };
 
   // 이전 페이지 이동
@@ -290,61 +402,27 @@ export function SearchResult() {
             </svg>
           </MenuItem>
         </MenuItem>
-        <Title>{searchQuery}</Title>
-        <MenuItem>
-          <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M21 20L16.8033 15.8033M19 10.5C19 6.35786 15.6421 3 11.5 3C7.35786 3 4 6.35786 4 10.5C4 14.6421 7.35786 18 11.5 18C15.6421 18 19 14.6421 19 10.5Z"
-                stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </MenuItem>
-          <MenuItem style={{ marginLeft: "12px" }}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path
-                d="M5.75 17.25V8.85714C5.75 5.49919 8.534 2.75 12 2.75C15.466 2.75 18.25 5.49919 18.25 8.85714V17.25H5.75Z"
-                stroke="white"
-                stroke-width="1.5"
-              />
-              <path
-                d="M14 19C14 20.1067 13.1067 21 12 21C10.8933 21 10 20.1067 10 19H14Z"
-                fill="white"
-              />
-              <rect
-                x="2.5"
-                y="16.5"
-                width="19"
-                height="1"
-                rx="0.5"
-                stroke="white"
-              />
-            </svg>
-          </MenuItem>
-        </MenuItem>
+        <Form onSubmit={onSubmit}>
+          <SearchInput
+            onChange={onChange}
+            name="newSearchWord"
+            value={newSearchWord}
+            placeholder="검색어를 입력해 주세요"
+            type="newSearchWord"
+            required
+            hasValue={newSearchWord.length > 0}
+          />
+          <SearchSubmit type="submit" value="검색" />
+        </Form>
+        {error !== "" ? <Error>{error}</Error> : null}
       </Menu>
-      {relationList.length === 0 || count === 0 ? (
+      {relativeWordList.length === 0 || count === 0 ? (
         <></>
       ) : (
         <Relation>
           연관 검색어
           <RelationList>
-            {relationList.map((word: any) => (
+            {relativeWordList.map((word: any) => (
               <RelationWord
                 onClick={() => handleRelationWordClick(word)} // 클릭 시 관련 검색 페이지로 이동
               >
@@ -363,7 +441,7 @@ export function SearchResult() {
       ) : (
         <>
           <ProductList>
-            {searchBoardList.map((item: any, index: number) => (
+            {viewList.map((item: any, index: number) => (
               <Products
                 key={index}
                 onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동

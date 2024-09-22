@@ -8,11 +8,11 @@ import { BoardListItem } from "types/interface";
 import Pagination from "../components/pagination";
 import { usePagination } from "../hooks";
 import { GetRelationListResponseDto } from "apis/response/search";
-import { Error } from "../components/auth-comonents";
+import { Error } from "../components/auth-components";
 
 const Wrapper = styled.div`
-  min-height: 99vh;
   height: 100%;
+  min-height: 99vh;
   display: flex;
   flex-direction: column;
   align-items: center;

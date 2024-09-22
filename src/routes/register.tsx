@@ -4,7 +4,7 @@ import back from "../assets/icon/back.png";
 import profile from "../assets/icon/profile.png";
 import edit from "../assets/icon/edit.png";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Wrapper, Error, Back, Title } from "../components/auth-comonents";
+import { Wrapper, Error, Back, Title } from "../components/auth-components";
 import { SignUpRequestDto } from "../apis/request/auth";
 import { fileUploadRequest, signUpRequest } from "../apis";
 import { SignUpResponseDto } from "../apis/response/auth";

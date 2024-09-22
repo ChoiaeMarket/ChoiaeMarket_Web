@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   height: 100%;
+  min-height: 99vh;
   display: flex;
   flex-direction: column;
   align-items: center;

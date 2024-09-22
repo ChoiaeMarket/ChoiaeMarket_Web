@@ -17,7 +17,7 @@ import {
   Title,
   Menu,
   Wrapper,
-} from "../components/auth-comonents";
+} from "../components/auth-components";
 
 export default function Join() {
   const navigate = useNavigate();

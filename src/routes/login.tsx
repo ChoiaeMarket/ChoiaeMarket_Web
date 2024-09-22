@@ -20,7 +20,7 @@ import {
   Title,
   Menu,
   Wrapper,
-} from "../components/auth-comonents";
+} from "../components/auth-components";
 import { SignInRequestDto } from "../apis/request/auth";
 import { signInRequest } from "../apis";
 import { SignInResponseDto } from "../apis/response/auth";

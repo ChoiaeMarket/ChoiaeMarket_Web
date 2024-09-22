@@ -1,10 +1,18 @@
+import { ResponseDto } from "apis/response";
+import { GetFavoriteBoardListResponseDto } from "apis/response/board";
+import { useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { BoardListItem } from "types/interface";
+import { getFavoriteBoardListRequest } from "../apis";
 import logo from "../assets/logo/logoWhite.png";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import Pagination from "../components/pagination";
+import { usePagination } from "../hooks";
 
 const Wrapper = styled.div`
   height: 100%;
+  min-height: 99vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,109 +146,57 @@ function getTimeDifferenceString(previousDate: any) {
 }
 
 export default function Cart() {
+  const { idol, product } = useParams();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any>([
-    // 초기 상품 목록
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "시즈니 필수템 판매중",
-      content: "필요하시면 채팅주세요!",
-      id: "엔시티즌",
-      date: "2024-04-03T19:15:50",
-      price: 30000,
-      chats: 0,
-      likes: 2,
-      order: 5,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "응원봉 판매",
-      content: "응원봉 싸게 팝니당. 편하게 채팅해주세요.",
-      id: "시즈니",
-      date: "2024-04-03T10:15:50",
-      price: 28000,
-      chats: 1,
-      likes: 4,
-      order: 4,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "NCT 응원봉",
-      content: "채팅 부탁드려요.",
-      id: "NNNCCT",
-      date: "2024-04-03T04:35:50",
-      price: 28000,
-      chats: 1,
-      likes: 7,
-      order: 3,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티(nct) 응원봉 판매합니다~",
-      content: "하자 없습니다. 네고가능",
-      id: "오리조아",
-      date: "2024-04-01T04:35:50",
-      price: 31000,
-      chats: 0,
-      likes: 1,
-      order: 2,
-      sold: false,
-    },
-    {
-      idol: "NCT",
-      type: "MD",
-      name: "OFFICIAL FANLIGHT",
-      title: "엔시티 응원봉 택포",
-      content:
-        "딱 한 번 썼어요! 하자 전혀 없구요 배터리, 상자, 더스트백 다 포함해서 수요일에 배송 보내드려요~",
-      id: "홍튜브",
-      date: "2024-03-29T12:28:50",
-      price: 29000,
-      chats: 2,
-      likes: 13,
-      order: 1,
-      sold: false,
-    },
-  ]);
+  const [cookies, setCookies] = useCookies();
+
+  const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
+  const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
+  const {
+    // 페이지네이션 관련 상태
+    currentPage,
+    currentSection,
+    viewList,
+    viewPageList,
+    totalSection,
+    setCurrentPage,
+    setCurrentSection,
+    setTotalList,
+  } = usePagination<BoardListItem>(countPerPage, numberOfSection);
 
   const handleSearch = () => {
     navigate("/search");
   };
 
+  // get favorite board list response 처리 함수
+  const getFavoriteBoardListResponse = (
+    responseBody: GetFavoriteBoardListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
+
+    const { favoriteList } = responseBody as GetFavoriteBoardListResponseDto;
+    setTotalList(favoriteList);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`your-api-url`);
-        const data = await response.json();
-        setProducts(data.filter((product: any) => !product.sold)); // sold가 false인 제품만 필터링
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-    fetchData();
-  }, []); // 빈 배열을 전달하여 페이지가 처음 로드될 때 한 번만 호출되도록 함
+    getFavoriteBoardListRequest(cookies.accessToken).then(
+      getFavoriteBoardListResponse
+    );
+  }, []);
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
-  const handleProductClick = (idol: any, product: any, order: number) => {
-    const selectedProduct = products.find(
-      (product: any) => product.order === order
-    );
-    if (selectedProduct) {
-      navigate(`/idol/${idol}/${product}/${order}`, {
-        state: { detail: selectedProduct }, // navigate 함수의 옵션으로 state를 사용하여 데이터 전달
-      });
-    }
+  const handleProductClick = (boardNumber: number) => {
+    navigate(`/idol/${idol}/${product}/${boardNumber}`);
   };
 
   return (
@@ -298,30 +254,29 @@ export default function Cart() {
         </MenuItem>
       </Menu>
       <ProductList>
-        {products.map((item: any, index: number) => (
+        {viewList.map((item: any, index: number) => (
           <Products
             key={index}
-            onClick={() => handleProductClick(item.idol, item.name, item.order)} // 클릭 시 상세 정보 페이지로 이동
+            onClick={() => handleProductClick(item.boardNumber)} // 클릭 시 상세 정보 페이지로 이동
           >
             <ProductImg
-              src={`/src/assets/idol/product/${item.idol}/${item.name}/${item.order}.png`}
+              src={item.image || "/src/assets/idol/logo/default.png"}
               alt={item.name}
               onError={(e) => {
                 (
                   e.target as HTMLImageElement
                 ).src = `/src/assets/idol/logo/default.png`; // 대체 이미지 설정
               }}
-            />{" "}
+            />
             <div>
               <ProductPrice>{item.price.toLocaleString()}원</ProductPrice>{" "}
-              {/* 가격을 세 자리 단위로 끊어서 출력 */}
               <ProductTitle>{item.title}</ProductTitle>
               <ProductBox>
                 <ProductDate>
-                  {getTimeDifferenceString(new Date(item.date))}
+                  {getTimeDifferenceString(new Date(item.writeDatetime))}
                 </ProductDate>
                 <ProductInfos>
-                  {item.chats !== 0 && ( // item.chats가 0이 아닌 경우에만 렌더링
+                  {item.chatCount !== 0 && ( // item.chatCount가 0이 아닌 경우에만 렌더링
                     <ProductInfo>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -336,10 +291,10 @@ export default function Cart() {
                           stroke-width="1.5"
                         />
                       </svg>
-                      {item.chats}
+                      {item.chatCount}
                     </ProductInfo>
                   )}
-                  {item.likes !== 0 && ( // item.likes가 0이 아닌 경우에만 렌더링
+                  {item.favoriteCount !== 0 && ( // item.favoriteCount가 0이 아닌 경우에만 렌더링
                     <ProductInfo>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -356,7 +311,7 @@ export default function Cart() {
                           stroke-linejoin="round"
                         />
                       </svg>
-                      {item.likes}
+                      {item.favoriteCount}
                     </ProductInfo>
                   )}
                 </ProductInfos>
@@ -365,6 +320,15 @@ export default function Cart() {
           </Products>
         ))}
       </ProductList>
+      <Pagination
+        currentPage={currentPage}
+        currentSection={currentSection}
+        setCurrentPage={setCurrentPage}
+        setCurrentSection={setCurrentSection}
+        viewPageList={viewPageList}
+        totalSection={totalSection}
+        numberOfSection={numberOfSection}
+      />
     </Wrapper>
   );
 }

@@ -6,6 +6,7 @@ import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
 import {
   DeleteBoardResponseDto,
   GetBoardListResponseDto,
+  GetFavoriteBoardListResponseDto,
   GetSearchBoardListResponseDto,
   PatchBoardResponseDto,
   PostBoardResponseDto,
@@ -73,6 +74,7 @@ const GET_SEARCH_BOARD_LIST_URL = (
   `${API_DOMAIN}/board/search-list/${searchWord}${
     preSearchWord ? "/" + preSearchWord : ""
   }`;
+const GET_FAVORITE_BOARD_LIST_URL = () => `${API_DOMAIN}/board/favorite-list`;
 const GET_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
 const GET_BOARD_LIST_URL = () => `${API_DOMAIN}/board/board-list`;
@@ -107,6 +109,21 @@ export const getSearchBoardListRequest = async (
     .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
     .then((response) => {
       const responseBody: GetSearchBoardListResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};
+
+export const getFavoriteBoardListRequest = async (accessToken: string) => {
+  const result = await axios
+    .get(GET_FAVORITE_BOARD_LIST_URL(), authorization(accessToken))
+    .then((response) => {
+      const responseBody: GetFavoriteBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {

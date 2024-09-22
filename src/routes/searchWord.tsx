@@ -65,14 +65,6 @@ const SearchSubmit = styled.input`
   display: none;
 `;
 
-const Title = styled.h1`
-  height: 100%;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 56px;
-  letter-spacing: 0;
-`;
-
 const MenuItem = styled.div`
   display: flex;
   align-items: center;
@@ -239,7 +231,6 @@ function getTimeDifferenceString(previousDate: any) {
 export function SearchWord() {
   const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
-  const location = useLocation();
   const [error, setError] = useState("");
   3;
   const [newSearchWord, setNewSearchWord] = useState("");
@@ -354,11 +345,6 @@ export function SearchWord() {
   // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
-  };
-
-  // 검색 페이지 이동
-  const handleSearch = () => {
-    navigate("/search");
   };
 
   return (

@@ -1,6 +1,6 @@
 import { ResponseDto } from "apis/response";
 import { GetFavoriteBoardListResponseDto } from "apis/response/board";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -44,6 +44,20 @@ const MenuItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const FavoriteBoard = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 34px;
+  letter-spacing: -0.025em;
+`;
+
+const FavoriteBoardCount = styled.div`
+  color: #f89e86;
 `;
 
 const ProductList = styled.ul`
@@ -126,6 +140,16 @@ const ProductInfo = styled.div`
   gap: 1px;
 `;
 
+const ProductNothing = styled.div`
+  position: absolute;
+  top: 50%;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+`;
+
 function getTimeDifferenceString(previousDate: any) {
   const currentDate = new Date();
   const diff = currentDate.getTime() - previousDate.getTime();
@@ -149,6 +173,7 @@ export default function Cart() {
   const { idol, product } = useParams();
   const navigate = useNavigate();
   const [cookies, setCookies] = useCookies();
+  const [count, setCount] = useState<number>(0); // 관심 게시물 개수 상태
 
   const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
   const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
@@ -192,7 +217,8 @@ export default function Cart() {
     getFavoriteBoardListRequest(cookies.accessToken).then(
       getFavoriteBoardListResponse
     );
-  }, []);
+    setCount(viewList.length);
+  }, [viewList]);
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
@@ -253,6 +279,10 @@ export default function Cart() {
           </MenuItem>
         </MenuItem>
       </Menu>
+      <FavoriteBoard>
+        관심 상품&nbsp;
+        <FavoriteBoardCount>{count}</FavoriteBoardCount>
+      </FavoriteBoard>
       <ProductList>
         {viewList.map((item: any, index: number) => (
           <Products
@@ -320,15 +350,21 @@ export default function Cart() {
           </Products>
         ))}
       </ProductList>
-      <Pagination
-        currentPage={currentPage}
-        currentSection={currentSection}
-        setCurrentPage={setCurrentPage}
-        setCurrentSection={setCurrentSection}
-        viewPageList={viewPageList}
-        totalSection={totalSection}
-        numberOfSection={numberOfSection}
-      />
+      {count === 0 ? (
+        <ProductNothing>{"관심 상품이 없습니다."}</ProductNothing>
+      ) : count <= countPerPage ? (
+        ""
+      ) : (
+        <Pagination
+          currentPage={currentPage}
+          currentSection={currentSection}
+          setCurrentPage={setCurrentPage}
+          setCurrentSection={setCurrentSection}
+          viewPageList={viewPageList}
+          totalSection={totalSection}
+          numberOfSection={numberOfSection}
+        />
+      )}
     </Wrapper>
   );
 }

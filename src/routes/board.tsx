@@ -226,6 +226,15 @@ const ProductInfo = styled.div`
   gap: 1px;
 `;
 
+const ProductNothing = styled.div`
+  margin-top: 20px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+`;
+
 function getTimeDifferenceString(previousDate: any) {
   const currentDate = new Date();
   const diff = currentDate.getTime() - previousDate.getTime();
@@ -480,35 +489,39 @@ export function Board() {
           </CoverContents>
         </CoverContentsBox>
       </CoverImgBox>
-      <DropdownButton onClick={toggleDropdown}>
-        {selectedSort}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="10"
-          viewBox="0 0 20 10"
-          fill="none"
-        >
-          <g clip-path="url(#clip0_18_387)">
-            <path
-              d="M14 3C12.4379 4.5621 11.5621 5.4379 10 7L6 3"
-              stroke="white"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_18_387">
-              <rect
-                width="10"
-                height="20"
-                fill="white"
-                transform="translate(0 10) rotate(-90)"
+      {productCount === 0 ? (
+        ""
+      ) : (
+        <DropdownButton onClick={toggleDropdown}>
+          {selectedSort}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="10"
+            viewBox="0 0 20 10"
+            fill="none"
+          >
+            <g clip-path="url(#clip0_18_387)">
+              <path
+                d="M14 3C12.4379 4.5621 11.5621 5.4379 10 7L6 3"
+                stroke="white"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
-            </clipPath>
-          </defs>
-        </svg>
-      </DropdownButton>
+            </g>
+            <defs>
+              <clipPath id="clip0_18_387">
+                <rect
+                  width="10"
+                  height="20"
+                  fill="white"
+                  transform="translate(0 10) rotate(-90)"
+                />
+              </clipPath>
+            </defs>
+          </svg>
+        </DropdownButton>
+      )}
       <DropdownBackground isOpen={isOpen} />
       <DropdownContent isOpen={isOpen}>
         <Dropdown onClick={() => handleSortClick("최신순")}>최신순</Dropdown>
@@ -584,15 +597,21 @@ export function Board() {
           </Products>
         ))}
       </ProductList>
-      <Pagination
-        currentPage={currentPage}
-        currentSection={currentSection}
-        setCurrentPage={setCurrentPage}
-        setCurrentSection={setCurrentSection}
-        viewPageList={viewPageList}
-        totalSection={totalSection}
-        numberOfSection={numberOfSection}
-      />
+      {productCount === 0 ? (
+        <ProductNothing>{"관련 상품이 없습니다."}</ProductNothing>
+      ) : productCount <= countPerPage ? (
+        ""
+      ) : (
+        <Pagination
+          currentPage={currentPage}
+          currentSection={currentSection}
+          setCurrentPage={setCurrentPage}
+          setCurrentSection={setCurrentSection}
+          viewPageList={viewPageList}
+          totalSection={totalSection}
+          numberOfSection={numberOfSection}
+        />
+      )}
     </Wrapper>
   );
 }

@@ -14,6 +14,7 @@ import {
 } from "./response/board";
 import GetBoardResponseDto from "./response/board/get-board.response.dto";
 import GetFavoriteResponseDto from "./response/board/get-favorite.response.dto";
+import GetMyBoardListResponseDto from "./response/board/get-my-board-list.response.dto";
 import {
   GetPopularListResponseDto,
   GetRelationListResponseDto,
@@ -65,8 +66,15 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
   return result;
 };
 
+const DELETE_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
+const GET_BOARD_LIST_URL = () => `${API_DOMAIN}/board/board-list`;
 const GET_BOARD_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}`;
+const GET_FAVORITE_BOARD_LIST_URL = () => `${API_DOMAIN}/board/favorite-list`;
+const GET_FAVORITE_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}/favorite`;
+const GET_MY_BOARD_LIST_URL = () => `${API_DOMAIN}/board/my-list`;
 const GET_SEARCH_BOARD_LIST_URL = (
   searchWord: string,
   preSearchWord: string | null
@@ -74,17 +82,29 @@ const GET_SEARCH_BOARD_LIST_URL = (
   `${API_DOMAIN}/board/search-list/${searchWord}${
     preSearchWord ? "/" + preSearchWord : ""
   }`;
-const GET_FAVORITE_BOARD_LIST_URL = () => `${API_DOMAIN}/board/favorite-list`;
-const GET_FAVORITE_URL = (boardNumber: number | string) =>
-  `${API_DOMAIN}/board/${boardNumber}/favorite`;
-const GET_BOARD_LIST_URL = () => `${API_DOMAIN}/board/board-list`;
-const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
 const PATCH_BOARD_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}`;
+const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
 const PUT_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
-const DELETE_BOARD_URL = (boardNumber: number | string) =>
-  `${API_DOMAIN}/board/${boardNumber}`;
+
+export const deleteBoardRequest = async (
+  boardNumber: number | string,
+  accessToken: string
+) => {
+  const result = await axios
+    .delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
+    .then((response) => {
+      const responseBody: DeleteBoardResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.reponse.data;
+      return responseBody;
+    });
+  return result;
+};
 
 export const getBoardRequest = async (boardNumber: number | string) => {
   const result = await axios
@@ -101,14 +121,11 @@ export const getBoardRequest = async (boardNumber: number | string) => {
   return result;
 };
 
-export const getSearchBoardListRequest = async (
-  searchWord: string,
-  preSearchWord: string | null
-) => {
+export const getBoardListRequest = async () => {
   const result = await axios
-    .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
+    .get(GET_BOARD_LIST_URL())
     .then((response) => {
-      const responseBody: GetSearchBoardListResponseDto = response.data;
+      const responseBody: GetBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
@@ -152,11 +169,11 @@ export const getFavoriteRequest = async (
   return result;
 };
 
-export const getBoardListRequest = async () => {
+export const getMyBoardListRequest = async (accessToken: string) => {
   const result = await axios
-    .get(GET_BOARD_LIST_URL())
+    .get(GET_MY_BOARD_LIST_URL(), authorization(accessToken))
     .then((response) => {
-      const responseBody: GetBoardListResponseDto = response.data;
+      const responseBody: GetMyBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
@@ -167,19 +184,19 @@ export const getBoardListRequest = async () => {
   return result;
 };
 
-export const postBoardRequest = async (
-  requestBody: PostBoardRequestDto,
-  accessToken: string
+export const getSearchBoardListRequest = async (
+  searchWord: string,
+  preSearchWord: string | null
 ) => {
   const result = await axios
-    .post(POST_BOARD_URL(), requestBody, authorization(accessToken))
+    .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
     .then((response) => {
-      const responseBody: PostBoardResponseDto = response.data;
+      const responseBody: GetSearchBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
-      if (!error.reponse.data) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -208,6 +225,24 @@ export const patchBoardRequest = async (
   return result;
 };
 
+export const postBoardRequest = async (
+  requestBody: PostBoardRequestDto,
+  accessToken: string
+) => {
+  const result = await axios
+    .post(POST_BOARD_URL(), requestBody, authorization(accessToken))
+    .then((response) => {
+      const responseBody: PostBoardResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.reponse.data) return null;
+      const responseBody: ResponseDto = error.reponse.data;
+      return responseBody;
+    });
+  return result;
+};
+
 export const putFavoriteRequest = async (
   boardNumber: number | string,
   accessToken: string
@@ -216,24 +251,6 @@ export const putFavoriteRequest = async (
     .put(PUT_FAVORITE_URL(boardNumber), {}, authorization(accessToken))
     .then((response) => {
       const responseBody: PutFavoriteResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
-      return responseBody;
-    });
-  return result;
-};
-
-export const deleteBoardRequest = async (
-  boardNumber: number | string,
-  accessToken: string
-) => {
-  const result = await axios
-    .delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
-    .then((response) => {
-      const responseBody: DeleteBoardResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {

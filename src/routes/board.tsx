@@ -1,9 +1,8 @@
-import { GetPopularListResponseDto } from "apis/response/search";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { BoardListItem } from "types/interface";
-import { getBoardListRequest, getPopluarListRequest } from "../apis";
+import { getBoardListRequest } from "../apis";
 import { ResponseDto } from "../apis/response";
 import { GetBoardListResponseDto } from "../apis/response/board";
 import Pagination from "../components/pagination";
@@ -270,7 +269,6 @@ export function Board() {
 
   const [latestTotalList, setLatestTotalList] = useState<BoardListItem[]>([]); // 정렬 전 게시물 리스트 상태
   const [sortedTotalList, setSortedTotalList] = useState<BoardListItem[]>([]); // 정렬 후 게시물 리스트 상태
-  const [popularWordList, setPopularWordList] = useState<string[]>([]); // 인기 검색어 리스트 상태
 
   // get latest board list response 처리 함수
   const getBoardListResopnse = (
@@ -294,30 +292,9 @@ export function Board() {
     setProductCount(productsList.length);
   };
 
-  // get popular list response 처리 함수
-  const getPopularListResponse = (
-    responseBody: GetBoardListResponseDto | ResponseDto | null
-  ) => {
-    if (!responseBody) {
-      return;
-    }
-    const { code } = responseBody;
-    if (code === "DBE") {
-      alert("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code !== "SU") {
-      return;
-    }
-
-    const { popularWordList } = responseBody as GetPopularListResponseDto;
-    setPopularWordList(popularWordList);
-  };
-
   // 첫 마운트시 실행될 함수
   useEffect(() => {
     getBoardListRequest().then(getBoardListResopnse);
-    getPopluarListRequest().then(getPopularListResponse);
   }, []);
 
   // 정렬 메뉴선택시 재 페이지네이션
@@ -341,11 +318,6 @@ export function Board() {
   // 검색 페이지 이동
   const handleSearch = () => {
     navigate("/search");
-  };
-
-  // 인기 검색어 클릭 이벤트 처리
-  const onPopularWordClickHandeler = (word: string) => {
-    navigate(`/searchResult?q=${word}`);
   };
 
   // 평균거래가격 함수
@@ -620,11 +592,6 @@ export function Board() {
         totalSection={totalSection}
         numberOfSection={numberOfSection}
       />
-      <>
-        {popularWordList.map((word) => (
-          <div onClick={() => onPopularWordClickHandeler(word)}>{word}</div>
-        ))}
-      </>
     </Wrapper>
   );
 }

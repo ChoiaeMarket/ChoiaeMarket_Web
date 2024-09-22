@@ -303,12 +303,12 @@ export default function Mypage() {
 
     const { myList } = responseBody as GetMyBoardListResponseDto;
     setTotalList(myList);
+    setCount(myList.length);
   };
 
   useEffect(() => {
     getMyBoardListRequest(cookies.accessToken).then(getMyBoardListResponse);
-    setCount(viewList.length);
-  }, [viewList]);
+  }, [count]);
 
   const handleSearch = () => {
     navigate("/search");

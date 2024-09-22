@@ -211,14 +211,14 @@ export default function Cart() {
 
     const { favoriteList } = responseBody as GetFavoriteBoardListResponseDto;
     setTotalList(favoriteList);
+    setCount(favoriteList.length);
   };
 
   useEffect(() => {
     getFavoriteBoardListRequest(cookies.accessToken).then(
       getFavoriteBoardListResponse
     );
-    setCount(viewList.length);
-  }, [viewList]);
+  }, [count]);
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {

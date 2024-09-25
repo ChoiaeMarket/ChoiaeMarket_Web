@@ -33,6 +33,7 @@ const Title = styled.h1`
   font-size: 20px;
   line-height: 56px;
   letter-spacing: 0;
+  cursor: pointer;
 `;
 
 const MenuItem = styled.div`
@@ -314,15 +315,17 @@ export default function Board() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    // 현재 URL에서 마지막 슬래시('/') 이후 제거
-    const currentPath = window.location.pathname;
-    const backPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    navigate(backPath);
+    navigate(`/idol/${idol}`);
   };
 
   // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
+  };
+
+  // title 클릭 이벤트 처리
+  const titleClickHandler = () => {
+    navigate(`/idol/${idol}`);
   };
 
   // 검색 페이지 이동
@@ -340,7 +343,7 @@ export default function Board() {
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    navigate(`/idol/${idol}/${product}/${boardNumber}`);
+    navigate(`/board/${boardNumber}`);
   };
 
   // 상품 정렬 드롭다운 메뉴 open 유무 토글
@@ -419,7 +422,7 @@ export default function Board() {
             </svg>
           </MenuItem>
         </MenuItem>
-        <Title>{idol}</Title>
+        <Title onClick={titleClickHandler}>{idol}</Title>
         <MenuItem>
           <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
             <svg

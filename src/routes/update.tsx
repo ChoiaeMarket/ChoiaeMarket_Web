@@ -494,7 +494,7 @@ export default function Update() {
     }
 
     if (!boardNumber) return;
-    navigate(`/idol/${idol}/${name}/${boardNumber}`); // 수정된 게시물 페이지로 이동
+    navigate(`/board/${boardNumber}`); // 수정된 게시물 페이지로 이동
   };
 
   // price를 Int로 변환

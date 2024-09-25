@@ -229,7 +229,6 @@ function getTimeDifferenceString(previousDate: any) {
 }
 
 export default function SearchWord() {
-  const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [error, setError] = useState("");
   3;
@@ -329,7 +328,7 @@ export default function SearchWord() {
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    navigate(`/idol/${idol}/${product}/${boardNumber}`);
+    navigate(`/board/${boardNumber}`);
   };
 
   // 관련 검색어 클릭 시 관련 검색 페이지로 이동하는 함수
@@ -339,7 +338,7 @@ export default function SearchWord() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    navigate("/");
+    navigate(-1);
   };
 
   // 메인 페이지 이동

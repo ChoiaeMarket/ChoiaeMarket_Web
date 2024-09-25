@@ -332,7 +332,7 @@ export default function UserPage() {
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    navigate(`/idol/${idol}/${product}/${boardNumber}`);
+    navigate(`/board/${boardNumber}`);
   };
 
   const logOut = () => {

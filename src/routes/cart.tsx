@@ -170,7 +170,6 @@ function getTimeDifferenceString(previousDate: any) {
 }
 
 export default function Cart() {
-  const { idol, product } = useParams();
   const navigate = useNavigate();
   const [cookies, setCookies] = useCookies();
   const [count, setCount] = useState<number>(0); // 관심 게시물 개수 상태
@@ -222,7 +221,7 @@ export default function Cart() {
 
   // 상품 클릭 시 상세 정보 페이지로 이동하는 함수
   const handleProductClick = (boardNumber: number) => {
-    navigate(`/idol/${idol}/${product}/${boardNumber}`);
+    navigate(`/board/${boardNumber}`);
   };
 
   return (

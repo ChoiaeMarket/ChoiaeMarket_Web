@@ -43,6 +43,7 @@ const Title = styled.h1`
   font-size: 20px;
   line-height: 56px;
   letter-spacing: 0;
+  cursor: pointer;
 `;
 
 const MenuItem = styled.div`
@@ -131,6 +132,10 @@ const ContentTypeDate = styled.div`
   display: flex;
   gap: 5px;
   margin-top: 20px;
+`;
+
+const ContentName = styled.div`
+  cursor: pointer;
 `;
 
 const ContentBox = styled.div`
@@ -276,7 +281,7 @@ function getTimeDifferenceString(previousDate: any) {
 }
 
 export default function Detail() {
-  const { idol, product, boardNumber } = useParams(); // 게시물 path variable 상태
+  const { boardNumber } = useParams(); // 게시물 path variable 상태
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const { pathname } = useLocation();
   const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
@@ -365,15 +370,17 @@ export default function Detail() {
 
   // 이전 페이지 이동
   const handleBack = () => {
-    // 현재 URL에서 마지막 슬래시('/') 이후 제거
-    const currentPath = window.location.pathname;
-    const backPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    navigate(backPath);
+    navigate(-1);
   };
 
   // 메인 페이지 이동
   const handleHome = () => {
     navigate("/");
+  };
+
+  // title 클릭 이벤트 처리
+  const titleClickHandler = () => {
+    navigate(`/idol/${board!.idol}`);
   };
 
   // more 버튼 클릭 이벤트 처리
@@ -410,6 +417,11 @@ export default function Detail() {
     setCurrentImageIndex((prevIndex) =>
       prevIndex < board!.boardImageList.length - 1 ? prevIndex + 1 : 0
     );
+  };
+
+  // 상품 이름 클릭 이벤트 처리
+  const onNameClickEventHandler = () => {
+    navigate(`/idol/${board?.idol}/${board?.name}`);
   };
 
   // 닉네임 버튼 클릭 이벤트 처리
@@ -486,7 +498,7 @@ export default function Detail() {
             </svg>
           </MenuItem>
         </MenuItem>
-        <Title>{idol}</Title>
+        <Title onClick={titleClickHandler}>{board.idol}</Title>
         <MenuItem>
           {!isWriter && (
             <MenuItem style={{ width: "24px", marginRight: "12px" }}></MenuItem>
@@ -690,7 +702,9 @@ export default function Detail() {
       </CoverImgBox>
       <Contents>
         <ContentTypeDate>
-          <div>{board?.type}</div>
+          <ContentName onClick={onNameClickEventHandler}>
+            {board?.name}
+          </ContentName>
           <div>·</div>
           <div>{getTimeDifferenceString(new Date(board!.writeDatetime))}</div>
         </ContentTypeDate>
@@ -745,7 +759,6 @@ export default function Detail() {
                 ? board?.writerProfileImage
                 : `/src/assets/member/default.png` // 대체 이미지 설정
             }
-            alt={product}
           />
           <SellerIdRating>
             <SellerId>{board?.writerNickname}</SellerId>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { BoardListItem } from "types/interface";
+import { BoardListItem, User } from "types/interface";
 import { getMyBoardListRequest } from "../apis";
 import logo from "../assets/logo/logoWhite.png";
 import Pagination from "../components/pagination";
@@ -141,7 +141,7 @@ const ProfileLogout = styled.button`
   }
 `;
 
-const MyBoard = styled.div`
+const UserBoard = styled.div`
   margin-top: 20px;
   width: 100%;
   display: flex;
@@ -151,7 +151,7 @@ const MyBoard = styled.div`
   letter-spacing: -0.025em;
 `;
 
-const MyBoardCount = styled.div`
+const UserBoardCount = styled.div`
   color: #f89e86;
 `;
 
@@ -263,13 +263,16 @@ function getTimeDifferenceString(previousDate: any) {
   }
 }
 
-export default function Mypage() {
-  const { idol, product } = useParams();
+export default function UserPage() {
+  const { userEmail } = useParams();
   const navigate = useNavigate();
   const { loginUser } = useLoginUserStore();
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const { setLoginUser, resetLoginUser } = useLoginUserStore();
   const [count, setCount] = useState<number>(0); // 판매 게시물 개수 상태
+
+  const [isMyPage, setIsMyPage] = useState<boolean>(false); // 로그인 유저 페이지인지 여부
+  const [user, setUser] = useState<User | null>(null); // user 정보 상태
 
   const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
   const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
@@ -310,6 +313,19 @@ export default function Mypage() {
     getMyBoardListRequest(cookies.accessToken).then(getMyBoardListResponse);
   }, [count]);
 
+  // userEmail path variable 변경시 실행 할 함수
+  useEffect(() => {
+    if (!userEmail) return;
+    setUser({
+      email: "email@email.com",
+      nickname: "나는",
+      profileImage:
+        "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png",
+    });
+
+    if (userEmail === loginUser?.email) setIsMyPage(true);
+  }, [userEmail]);
+
   const handleSearch = () => {
     navigate("/search");
   };
@@ -326,13 +342,14 @@ export default function Mypage() {
     console.log("로그아웃");
   };
 
+  if (!user) return <></>;
   return (
     <Wrapper>
       {" "}
       <Menu>
         <MenuItem>
           <Logo src={logo} alt="로고" />
-          <Title>내 프로필</Title>
+          <Title>프로필</Title>
         </MenuItem>
         <MenuItem>
           <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
@@ -384,7 +401,7 @@ export default function Mypage() {
       <ProfileBox>
         {loginUser ? (
           <ProfileImage
-            src={loginUser.profileImage! || "/src/assets/idol/logo/default.png"} // 대체 이미지 설정
+            src={user.profileImage! || "/src/assets/idol/logo/default.png"} // 대체 이미지 설정
             alt="프로필 이미지"
             onError={(e) => {
               (
@@ -395,19 +412,21 @@ export default function Mypage() {
         ) : (
           "error"
         )}
-        <ProfileNickname>
-          {loginUser ? loginUser.nickname : "error"}
-        </ProfileNickname>
-        <ProfileEmail>{loginUser ? loginUser.email : "error"}</ProfileEmail>
-        <ProfileButton>
-          <ProfileEdit>프로필 편집</ProfileEdit>
-          <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
-        </ProfileButton>
+        <ProfileNickname>{user.nickname}</ProfileNickname>
+        <ProfileEmail>{user.email}</ProfileEmail>
+        {isMyPage ? (
+          <ProfileButton>
+            <ProfileEdit>프로필 편집</ProfileEdit>
+            <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
+          </ProfileButton>
+        ) : (
+          ""
+        )}
       </ProfileBox>
-      <MyBoard>
+      <UserBoard>
         판매 상품&nbsp;
-        <MyBoardCount>{count}</MyBoardCount>
-      </MyBoard>
+        <UserBoardCount>{count}</UserBoardCount>
+      </UserBoard>
       <ProductList>
         {viewList.map((item: any, index: number) => (
           <Products

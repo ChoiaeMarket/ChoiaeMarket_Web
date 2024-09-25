@@ -1,28 +1,28 @@
+import { useEffect, useState } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
-import { useEffect, useState } from "react";
-import NavigationBar from "./components/navigation-bar";
-import Home from "./routes/home";
-import Profile from "./routes/profile";
-import Login from "./routes/login";
-import Join from "./routes/join";
-import LoadingScreen from "./components/loading-screen";
-import Register from "./routes/register";
-import ProtectedRoute from "./components/protected-route";
-import Cart from "./routes/cart";
-import Upload from "./routes/upload";
-import Chat from "./routes/chat";
-import Mypage from "./routes/mypage";
-import Idol from "./routes/idol";
-import Update from "./routes/update";
-import { ProductItem } from "./components/product-item";
-import { Board } from "./routes/board";
 import { BoardItem } from "./components/board-item";
-import { Detail } from "./routes/detail";
-import { Search } from "./routes/search";
-import { SearchWord } from "./routes/searchWord";
+import LoadingScreen from "./components/loading-screen";
+import NavigationBar from "./components/navigation-bar";
+import { ProductItem } from "./components/product-item";
+import ProtectedRoute from "./components/protected-route";
 import { BoardListMock, ProductListMock } from "./mocks";
+import Board from "./routes/board";
+import Cart from "./routes/cart";
+import Chat from "./routes/chat";
+import Detail from "./routes/detail";
+import Home from "./routes/home";
+import Idol from "./routes/idol";
+import Join from "./routes/join";
+import Login from "./routes/login";
+import Profile from "./routes/profile";
+import Register from "./routes/register";
+import Search from "./routes/search";
+import SearchWord from "./routes/searchWord";
+import Update from "./routes/update";
+import Upload from "./routes/upload";
+import UserPage from "./routes/userPage";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -52,8 +52,8 @@ const router = createBrowserRouter([
         element: Protect(<Chat />),
       },
       {
-        path: "mypage",
-        element: Protect(<Mypage />),
+        path: "user/:userEmail",
+        element: Protect(<UserPage />),
       },
       {
         path: "search",

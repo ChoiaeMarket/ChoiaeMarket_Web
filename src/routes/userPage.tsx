@@ -271,8 +271,11 @@ export default function UserPage() {
   const { setLoginUser, resetLoginUser } = useLoginUserStore();
   const [count, setCount] = useState<number>(0); // 판매 게시물 개수 상태
 
-  const [isMyPage, setIsMyPage] = useState<boolean>(false); // 로그인 유저 페이지인지 여부
-  const [user, setUser] = useState<User | null>(null); // user 정보 상태
+  const [isMyPage, setMyPage] = useState<boolean>(false); // 로그인 유저 페이지인지 여부
+  const [isNicknameChange, setNicknameChange] = useState<boolean>(false); // 닉네임 변경 여부
+  const [nickname, setNickname] = useState<string>(""); // 닉네임
+  const [changeNickname, setChangeNickname] = useState<string>(""); // 변경 닉네임 상태
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
   const numberOfSection = 5; // numberOfSection : 한 번에 보여줄 페이지 섹션의 개수
@@ -316,14 +319,12 @@ export default function UserPage() {
   // userEmail path variable 변경시 실행 할 함수
   useEffect(() => {
     if (!userEmail) return;
-    setUser({
-      email: "email@email.com",
-      nickname: "나는",
-      profileImage:
-        "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png",
-    });
+    setNickname("나는"),
+      setProfileImage(
+        "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png"
+      );
 
-    if (userEmail === loginUser?.email) setIsMyPage(true);
+    if (userEmail === loginUser?.email) setMyPage(true);
   }, [userEmail]);
 
   const handleSearch = () => {
@@ -342,7 +343,6 @@ export default function UserPage() {
     console.log("로그아웃");
   };
 
-  if (!user) return <></>;
   return (
     <Wrapper>
       {" "}
@@ -401,7 +401,7 @@ export default function UserPage() {
       <ProfileBox>
         {loginUser ? (
           <ProfileImage
-            src={user.profileImage! || "/src/assets/idol/logo/default.png"} // 대체 이미지 설정
+            src={profileImage! || "/src/assets/idol/logo/default.png"} // 대체 이미지 설정
             alt="프로필 이미지"
             onError={(e) => {
               (
@@ -412,8 +412,8 @@ export default function UserPage() {
         ) : (
           "error"
         )}
-        <ProfileNickname>{user.nickname}</ProfileNickname>
-        <ProfileEmail>{user.email}</ProfileEmail>
+        <ProfileNickname>{nickname}</ProfileNickname>
+        <ProfileEmail>{"email@email"}</ProfileEmail>
         {isMyPage ? (
           <ProfileButton>
             <ProfileEdit>프로필 편집</ProfileEdit>

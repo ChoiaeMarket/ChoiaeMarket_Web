@@ -275,7 +275,7 @@ function getTimeDifferenceString(previousDate: any) {
   }
 }
 
-export function Detail() {
+export default function Detail() {
   const { idol, product, boardNumber } = useParams(); // 게시물 path variable 상태
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const { pathname } = useLocation();

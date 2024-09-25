@@ -108,7 +108,7 @@ const DeleteWord = styled.div`
   display: flex;
 `;
 
-export function Search() {
+export default function Search() {
   const [searchWord, setSearchWord] = useState("");
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [error, setError] = useState("");

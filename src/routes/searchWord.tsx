@@ -228,7 +228,7 @@ function getTimeDifferenceString(previousDate: any) {
   }
 }
 
-export function SearchWord() {
+export default function SearchWord() {
   const { idol, product } = useParams();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
   const [error, setError] = useState("");

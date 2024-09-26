@@ -2,11 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fileUploadRequest } from "../apis";
-import { ResponseDto } from "../apis/response";
-import { SignUpResponseDto } from "../apis/response/auth";
 import back from "../assets/icon/back.png";
 import edit from "../assets/icon/edit.png";
-import profile from "../assets/icon/profile.png";
 import { Back, Error, Title, Wrapper } from "../components/auth-components";
 import useLoginUserStore from "../stores/login-user.store";
 
@@ -209,31 +206,6 @@ export default function UserUpdate() {
     } else if (name === "tel") {
       setTel(value);
     }
-  };
-
-  // sign up response 처리 함수
-  const signUpResponse = (
-    responseBody: SignUpResponseDto | ResponseDto | null
-  ) => {
-    if (!responseBody) {
-      setError("네트워크 이상입니다.");
-      return;
-    }
-    const { code } = responseBody;
-    if (code === "DBE") {
-      setError("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code === "SF" || code === "VF") {
-      setError("정보가 일치하지 않습니다");
-      console.log(code);
-    }
-    if (code !== "SU") {
-      setLoading(false);
-      return;
-    }
-
-    navigate(`/user/${loginUser!.email}`);
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {

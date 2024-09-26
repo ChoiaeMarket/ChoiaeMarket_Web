@@ -321,7 +321,7 @@ const TextArea = styled.textarea<{ hasValue: boolean }>`
 
 const InputBox = styled.div``;
 
-export default function Update() {
+export default function BoardUpdate() {
   const MAIN_PATH = () => "/";
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);

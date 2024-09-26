@@ -9,6 +9,7 @@ import { ProductItem } from "./components/product-item";
 import ProtectedRoute from "./components/protected-route";
 import { BoardListMock, ProductListMock } from "./mocks";
 import Board from "./routes/board";
+import BoardUpdate from "./routes/boardUpdate";
 import Cart from "./routes/cart";
 import Chat from "./routes/chat";
 import Detail from "./routes/detail";
@@ -20,9 +21,9 @@ import Profile from "./routes/profile";
 import Register from "./routes/register";
 import Search from "./routes/search";
 import SearchWord from "./routes/searchWord";
-import Update from "./routes/update";
 import Upload from "./routes/upload";
 import UserPage from "./routes/userPage";
+import UserUpdate from "./routes/userUpdate";
 
 const Protect = (component: JSX.Element) => (
   <ProtectedRoute>
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "user/:userEmail",
         element: Protect(<UserPage />),
+      },
+      {
+        path: "user/:userEmail/update",
+        element: Protect(<UserUpdate />),
       },
       {
         path: "search",
@@ -103,7 +108,7 @@ const router = createBrowserRouter([
       },
       {
         path: "board/:boardNumber/update", // idol별 상품 개별 판매페이지 동적 라우팅
-        element: Protect(<Update />),
+        element: Protect(<BoardUpdate />),
       },
     ],
   },

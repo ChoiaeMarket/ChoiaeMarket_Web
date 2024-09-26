@@ -164,7 +164,7 @@ export default function Register() {
   // const [name, setName] = useState("");
   // const [email, setEmail] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
-  const [profileImage, setProgileImage] = useState(profile);
+  const [profileImage, setProfileImage] = useState(profile);
   const [nickname, setNickname] = useState("");
   const [tel, setTel] = useState("");
   const [gender, setGender] = useState("1"); // 0: male, 1: female
@@ -192,7 +192,7 @@ export default function Register() {
       data.append("file", selectedFile);
 
       const url = await fileUploadRequest(data);
-      setProgileImage(url!);
+      setProfileImage(url!);
       console.log(url);
     }
   };

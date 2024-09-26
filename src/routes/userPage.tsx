@@ -319,10 +319,10 @@ export default function UserPage() {
   // userEmail path variable 변경시 실행 할 함수
   useEffect(() => {
     if (!userEmail) return;
-    setNickname("나는"),
-      setProfileImage(
-        "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png"
-      );
+    setNickname("나는");
+    setProfileImage(
+      "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png"
+    );
 
     if (userEmail === loginUser?.email) setMyPage(true);
   }, [userEmail]);
@@ -336,8 +336,13 @@ export default function UserPage() {
     navigate(`/board/${boardNumber}`);
   };
 
+  // 프로필 편집 페이지
+  const handleUpdateProfileClick = () => {
+    navigate(`update`);
+  };
+
+  // 로그아웃
   const logOut = () => {
-    // 로그아웃
     removeCookie("accessToken"); // 쿠키에서 accessToken 삭제
     resetLoginUser(); // 상태 초기화
     console.log("로그아웃");
@@ -416,7 +421,9 @@ export default function UserPage() {
         <ProfileEmail>{"email@email"}</ProfileEmail>
         {isMyPage ? (
           <ProfileButton>
-            <ProfileEdit>프로필 편집</ProfileEdit>
+            <ProfileEdit onClick={handleUpdateProfileClick}>
+              프로필 편집
+            </ProfileEdit>
             <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
           </ProfileButton>
         ) : (

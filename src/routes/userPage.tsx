@@ -307,7 +307,6 @@ export default function UserPage() {
       return;
     }
     const { userBoardList } = responseBody as GetUserBoardListResponseDto;
-    console.log(userBoardList);
     setTotalList(userBoardList);
     setCount(userBoardList.length);
   };

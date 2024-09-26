@@ -1,11 +1,11 @@
 import { ResponseDto } from "apis/response";
-import GetMyBoardListResponseDto from "apis/response/board/get-my-board-list.response.dto";
+import GetUserBoardListResponseDto from "apis/response/board/get-user-board-list.response.dto";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { BoardListItem, User } from "types/interface";
-import { getMyBoardListRequest } from "../apis";
+import { BoardListItem } from "types/interface";
+import { getUserBoardListRequest } from "../apis";
 import logo from "../assets/logo/logoWhite.png";
 import Pagination from "../components/pagination";
 import { usePagination } from "../hooks";
@@ -291,9 +291,9 @@ export default function UserPage() {
     setTotalList,
   } = usePagination<BoardListItem>(countPerPage, numberOfSection);
 
-  // get my board list response 처리 함수
-  const getMyBoardListResponse = (
-    responseBody: GetMyBoardListResponseDto | ResponseDto | null
+  // get board list response 처리 함수
+  const getUserBoardListResponse = (
+    responseBody: GetUserBoardListResponseDto | ResponseDto | null
   ) => {
     if (!responseBody) {
       return;
@@ -306,14 +306,14 @@ export default function UserPage() {
     if (code !== "SU") {
       return;
     }
-
-    const { myList } = responseBody as GetMyBoardListResponseDto;
-    setTotalList(myList);
-    setCount(myList.length);
+    const { userBoardList } = responseBody as GetUserBoardListResponseDto;
+    console.log(userBoardList);
+    setTotalList(userBoardList);
+    setCount(userBoardList.length);
   };
 
   useEffect(() => {
-    getMyBoardListRequest(cookies.accessToken).then(getMyBoardListResponse);
+    getUserBoardListRequest(userEmail!).then(getUserBoardListResponse);
   }, [count]);
 
   // userEmail path variable 변경시 실행 할 함수

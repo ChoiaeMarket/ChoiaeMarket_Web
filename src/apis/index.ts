@@ -14,12 +14,12 @@ import {
 } from "./response/board";
 import GetBoardResponseDto from "./response/board/get-board.response.dto";
 import GetFavoriteResponseDto from "./response/board/get-favorite.response.dto";
-import GetMyBoardListResponseDto from "./response/board/get-my-board-list.response.dto";
 import {
   GetPopularListResponseDto,
   GetRelationListResponseDto,
 } from "./response/search";
 import { GetSignInUserResponseDto } from "./response/user";
+import GetUserBoardListResponseDto from "./response/board/get-user-board-list.response.dto";
 
 const DOMAIN = "http://localhost:4000";
 
@@ -74,7 +74,6 @@ const GET_BOARD_URL = (boardNumber: number | string) =>
 const GET_FAVORITE_BOARD_LIST_URL = () => `${API_DOMAIN}/board/favorite-list`;
 const GET_FAVORITE_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}/favorite`;
-const GET_MY_BOARD_LIST_URL = () => `${API_DOMAIN}/board/my-list`;
 const GET_SEARCH_BOARD_LIST_URL = (
   searchWord: string,
   preSearchWord: string | null
@@ -82,6 +81,8 @@ const GET_SEARCH_BOARD_LIST_URL = (
   `${API_DOMAIN}/board/search-list/${searchWord}${
     preSearchWord ? "/" + preSearchWord : ""
   }`;
+const GET_USER_BOARD_LIST_URL = (email: string) =>
+  `${API_DOMAIN}/board/user-board-list/${email}`;
 const PATCH_BOARD_URL = (boardNumber: number | string) =>
   `${API_DOMAIN}/board/${boardNumber}`;
 const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
@@ -169,11 +170,14 @@ export const getFavoriteRequest = async (
   return result;
 };
 
-export const getMyBoardListRequest = async (accessToken: string) => {
+export const getSearchBoardListRequest = async (
+  searchWord: string,
+  preSearchWord: string | null
+) => {
   const result = await axios
-    .get(GET_MY_BOARD_LIST_URL(), authorization(accessToken))
+    .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
     .then((response) => {
-      const responseBody: GetMyBoardListResponseDto = response.data;
+      const responseBody: GetSearchBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {
@@ -184,14 +188,11 @@ export const getMyBoardListRequest = async (accessToken: string) => {
   return result;
 };
 
-export const getSearchBoardListRequest = async (
-  searchWord: string,
-  preSearchWord: string | null
-) => {
+export const getUserBoardListRequest = async (email: string) => {
   const result = await axios
-    .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
+    .get(GET_USER_BOARD_LIST_URL(email))
     .then((response) => {
-      const responseBody: GetSearchBoardListResponseDto = response.data;
+      const responseBody: GetUserBoardListResponseDto = response.data;
       return responseBody;
     })
     .catch((error) => {

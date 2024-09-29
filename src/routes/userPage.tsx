@@ -5,11 +5,12 @@ import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { BoardListItem } from "types/interface";
-import { getUserBoardListRequest } from "../apis";
+import { getUserBoardListRequest, getUserRequest } from "../apis";
 import logo from "../assets/logo/logoWhite.png";
 import Pagination from "../components/pagination";
 import { usePagination } from "../hooks";
 import useLoginUserStore from "../stores/login-user.store";
+import { GetUserResponseDto } from "apis/response/user";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -268,13 +269,12 @@ export default function UserPage() {
   const navigate = useNavigate();
   const { loginUser } = useLoginUserStore();
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
-  const { setLoginUser, resetLoginUser } = useLoginUserStore();
+  const { resetLoginUser } = useLoginUserStore();
   const [count, setCount] = useState<number>(0); // 판매 게시물 개수 상태
 
   const [isMyPage, setMyPage] = useState<boolean>(false); // 로그인 유저 페이지인지 여부
-  const [isNicknameChange, setNicknameChange] = useState<boolean>(false); // 닉네임 변경 여부
+  const [email, setEmail] = useState<string>(""); // 이메일
   const [nickname, setNickname] = useState<string>(""); // 닉네임
-  const [changeNickname, setChangeNickname] = useState<string>(""); // 변경 닉네임 상태
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const countPerPage = 5; // countPerPage : 한 페이지 섹션의 리스트 개수
@@ -290,6 +290,34 @@ export default function UserPage() {
     setCurrentSection,
     setTotalList,
   } = usePagination<BoardListItem>(countPerPage, numberOfSection);
+
+  // get user response 처리함수
+  const getUserResponse = (
+    responseBody: GetUserResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "NU") {
+      alert("존재하지 않는 유저입니다.");
+      console.log(code);
+    }
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      navigate("/");
+      return;
+    }
+
+    const { email, nickname, profileImage } =
+      responseBody as GetUserResponseDto;
+    setEmail(email);
+    setNickname(nickname);
+    setProfileImage(profileImage);
+  };
 
   // get board list response 처리 함수
   const getUserBoardListResponse = (
@@ -311,20 +339,14 @@ export default function UserPage() {
     setCount(userBoardList.length);
   };
 
-  useEffect(() => {
-    getUserBoardListRequest(userEmail!).then(getUserBoardListResponse);
-  }, [count]);
-
   // userEmail path variable 변경시 실행 할 함수
   useEffect(() => {
     if (!userEmail) return;
-    setNickname("나는");
-    setProfileImage(
-      "http://localhost:4000/file/75d38715-9a70-48ca-9fe9-5ae3a5856cc6.png"
-    );
-
+    getUserRequest(userEmail).then(getUserResponse);
     if (userEmail === loginUser?.email) setMyPage(true);
-  }, [userEmail]);
+
+    getUserBoardListRequest(userEmail!).then(getUserBoardListResponse);
+  }, [userEmail, count]);
 
   const handleSearch = () => {
     navigate("/search");
@@ -417,7 +439,7 @@ export default function UserPage() {
           "error"
         )}
         <ProfileNickname>{nickname}</ProfileNickname>
-        <ProfileEmail>{"email@email"}</ProfileEmail>
+        <ProfileEmail>{email}</ProfileEmail>
         {isMyPage ? (
           <ProfileButton>
             <ProfileEdit onClick={handleUpdateProfileClick}>

@@ -125,36 +125,6 @@ const Input = styled.input<{ hasValue: boolean }>`
   }
 `;
 
-const GenderBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Gender = styled.label<{
-  isFemale?: boolean;
-  isMale?: boolean;
-  isSelected: boolean;
-}>`
-  width: 50%;
-  height: 60px;
-  border: 1px solid #252932;
-  border-radius: ${(props) =>
-    props.isFemale ? "16px 0 0 16px" : props.isMale ? "0 16px 16px 0" : "16px"};
-  padding: 19px;
-  margin: 8px 0;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  letter-spacing: -0.025em;
-  color: ${(props) => (props.isSelected ? "#ffffff" : "#777c89")};
-  background-color: #252932;
-  box-shadow: ${(props) =>
-    props.isSelected ? "0 0 0 1px #9ea3b2 inset" : "none"};
-  cursor: pointer;
-  text-align: center;
-`;
-
 const InputBox = styled.div`
   display: flex;
   justify-content: space-between;

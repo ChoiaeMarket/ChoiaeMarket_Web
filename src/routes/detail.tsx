@@ -187,6 +187,8 @@ const Content = styled.div`
 
 const Seller = styled.div`
   display: flex;
+  width: fit-content;
+  cursor: pointer;
 `;
 
 const Sellerimg = styled.img`
@@ -197,6 +199,9 @@ const Sellerimg = styled.img`
 `;
 
 const SellerIdRating = styled.div`
+  display: flex;
+  align-items: center;
+  /* flex-direction: column; */
   margin: 5px 0 5px 10px;
 `;
 
@@ -425,7 +430,7 @@ export default function Detail() {
   };
 
   // 닉네임 버튼 클릭 이벤트 처리
-  const onNicknameClickHandler = () => {
+  const onSellerClickHandler = () => {
     if (!board) return;
     navigate(`/user/${board.writerEmail}`);
   };
@@ -752,7 +757,7 @@ export default function Detail() {
           </ContentChatLikes>
         </ContentBox>
         <Content>{board!.content}</Content>
-        <Seller>
+        <Seller onClick={onSellerClickHandler}>
           <Sellerimg
             src={
               board?.writerProfileImage
@@ -762,7 +767,7 @@ export default function Detail() {
           />
           <SellerIdRating>
             <SellerId>{board?.writerNickname}</SellerId>
-            <SellerRating>
+            {/* <SellerRating>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -776,7 +781,7 @@ export default function Detail() {
                 />
               </svg>
               4.8
-            </SellerRating>
+            </SellerRating> */}
           </SellerIdRating>
         </Seller>
       </Contents>

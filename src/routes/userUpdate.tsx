@@ -1,7 +1,23 @@
+import {
+  PatchNicknameRequestDto,
+  PatchProfileImageRequestDto,
+} from "apis/request/user";
+import { ResponseDto } from "apis/response";
+import {
+  GetSignInUserResponseDto,
+  PatchNicknameResponseDto,
+  PatchProfileImageResponseDto,
+} from "apis/response/user";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { fileUploadRequest } from "../apis";
+import {
+  fileUploadRequest,
+  getSignInUserRequest,
+  patchNicknameRequest,
+  patchProfileImageRequest,
+} from "../apis";
 import back from "../assets/icon/back.png";
 import edit from "../assets/icon/edit.png";
 import { Back, Error, Title, Wrapper } from "../components/auth-components";
@@ -145,6 +161,7 @@ const InputBox = styled.div`
 `;
 
 export default function UserUpdate() {
+  const { userEmail } = useParams();
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
@@ -152,29 +169,128 @@ export default function UserUpdate() {
   const [profileImage, setProfileImage] = useState<string | null>("");
   const [nickname, setNickname] = useState("");
   const [tel, setTel] = useState("");
-  const [isNicknameChange, setNicknameChange] = useState<boolean>(false); // 닉네임 변경 여부
-  const [changeNickname, setChangeNickname] = useState<string>(""); // 변경 닉네임 상태
   const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
-  const agreedPersonal = true;
   const [error, setError] = useState("");
-  const { loginUser } = useLoginUserStore();
+  const { loginUser, resetLoginUser } = useLoginUserStore();
+  const [cookies, setCookie] = useCookies();
+
+  // get sign in user response 처리함수
+  const getSignInUserResponse = (
+    responseBody: GetSignInUserResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "NU") {
+      alert("존재하지 않는 유저입니다.");
+      console.log(code);
+    }
+    if (code === "AF") {
+      alert("인증에 실패했습니다.");
+      console.log(code);
+    }
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      navigate("/");
+      return;
+    }
+
+    const { email, name, nickname, tel, profileImage } =
+      responseBody as GetSignInUserResponseDto;
+    setEmail(email);
+    setName(name);
+    setNickname(nickname);
+    setTel(tel);
+    setProfileImage(profileImage);
+  };
 
   useEffect(() => {
-    setName(loginUser!.name);
-    setEmail(loginUser!.email);
-    setNickname(loginUser!.nickname);
-    setProfileImage(loginUser!.profileImage);
-    setTel(loginUser!.tel);
-  }, []);
+    if (!userEmail) return;
+    if (userEmail !== loginUser?.email) {
+      navigate("/");
+    }
+    getSignInUserRequest(cookies.accessToken).then(getSignInUserResponse);
+  }, [userEmail]);
 
   const goBack = () => {
     window.history.back(); // 뒤로 가는 동작을 수행
+  };
+
+  // patch nickname response 처리 함수
+  const patchNicknameResponse = (
+    responseBody: PatchNicknameResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      return;
+    }
+    const { code } = responseBody;
+    if (code === "VF") {
+      alert("닉네임은 필수입니다.");
+      console.log(code);
+    }
+    if (code === "AF") {
+      alert("인증에 실패했습니다.");
+      console.log(code);
+    }
+    if (code === "DN") {
+      alert("중복되는 닉네임입니다.");
+      console.log(code);
+    }
+    if (code === "NU") {
+      alert("존재하지 않는 유저입니다.");
+      console.log(code);
+    }
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
+    }
   };
 
   // EditIcon 사진 추가 이벤트
   const handleImageBoxClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  // file upload response 처리 함수
+  const fileUploadResponse = (profileImage: string | null) => {
+    if (!profileImage) return;
+    if (!cookies.accessToken) return;
+
+    const requestBody: PatchProfileImageRequestDto = { profileImage };
+    patchProfileImageRequest(requestBody, cookies.accessToken).then(
+      patchProfileImageResponse
+    );
+  };
+
+  // patch profile image response 처리 함수
+  const patchProfileImageResponse = (
+    responseBody: PatchProfileImageResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "AF") {
+      alert("인증에 실패했습니다.");
+      console.log(code);
+    }
+    if (code === "NU") {
+      alert("존재하지 않는 유저입니다.");
+      console.log(code);
+    }
+    if (code === "DBE") {
+      alert("데이터베이스 오류입니다.");
+      console.log(code);
+    }
+    if (code !== "SU") {
+      return;
     }
   };
 
@@ -212,7 +328,18 @@ export default function UserUpdate() {
     e.preventDefault();
     setError("");
     if (isLoading || name === "" || email === "" || tel === "") return; // 미입력 방지
+    if (!cookies.accessToken) return;
+    const requestBody: PatchNicknameRequestDto = {
+      nickname: nickname,
+    };
+    // 닉네임 변경
+    patchNicknameRequest(requestBody, cookies.accessToken).then(
+      patchNicknameResponse
+    );
+    // 사진 변경
+    fileUploadResponse(profileImage);
     console.log("update: ", nickname, tel, profileImage);
+    navigate(`/user/${email}`);
   };
 
   return (

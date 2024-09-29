@@ -168,6 +168,7 @@ export default function UserUpdate() {
   const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>("");
   const [nickname, setNickname] = useState("");
+  const [changedNickname, setChangedNickname] = useState("");
   const [tel, setTel] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
   const [error, setError] = useState("");
@@ -204,6 +205,7 @@ export default function UserUpdate() {
     setEmail(email);
     setName(name);
     setNickname(nickname);
+    setChangedNickname(nickname);
     setTel(tel);
     setProfileImage(profileImage);
   };
@@ -227,30 +229,33 @@ export default function UserUpdate() {
     if (!responseBody) {
       return;
     }
-    const { code } = responseBody;
-    if (code === "VF") {
-      alert("닉네임은 필수입니다.");
-      console.log(code);
+    if (changedNickname !== nickname) {
+      const { code } = responseBody;
+      if (code === "VF") {
+        alert("닉네임은 필수입니다.");
+        console.log(code);
+      }
+      if (code === "AF") {
+        alert("인증에 실패했습니다.");
+        console.log(code);
+      }
+      if (code === "DN") {
+        alert("중복되는 닉네임입니다.");
+        console.log(code);
+      }
+      if (code === "NU") {
+        alert("존재하지 않는 유저입니다.");
+        console.log(code);
+      }
+      if (code === "DBE") {
+        alert("데이터베이스 오류입니다.");
+        console.log(code);
+      }
+      if (code !== "SU") {
+        return;
+      }
     }
-    if (code === "AF") {
-      alert("인증에 실패했습니다.");
-      console.log(code);
-    }
-    if (code === "DN") {
-      alert("중복되는 닉네임입니다.");
-      console.log(code);
-    }
-    if (code === "NU") {
-      alert("존재하지 않는 유저입니다.");
-      console.log(code);
-    }
-    if (code === "DBE") {
-      alert("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code !== "SU") {
-      return;
-    }
+    navigate(`/user/${email}`);
   };
 
   // EditIcon 사진 추가 이벤트
@@ -318,7 +323,7 @@ export default function UserUpdate() {
     // } else if (name === "email") {
     //   setEmail(value);
     if (name === "nickname") {
-      setNickname(value);
+      setChangedNickname(value);
     } else if (name === "tel") {
       setTel(value);
     }
@@ -329,17 +334,16 @@ export default function UserUpdate() {
     setError("");
     if (isLoading || name === "" || email === "" || tel === "") return; // 미입력 방지
     if (!cookies.accessToken) return;
-    const requestBody: PatchNicknameRequestDto = {
-      nickname: nickname,
-    };
+    // 사진 변경
+    fileUploadResponse(profileImage);
     // 닉네임 변경
+    const requestBody: PatchNicknameRequestDto = {
+      nickname: changedNickname,
+    };
     patchNicknameRequest(requestBody, cookies.accessToken).then(
       patchNicknameResponse
     );
-    // 사진 변경
-    fileUploadResponse(profileImage);
     console.log("update: ", nickname, tel, profileImage);
-    navigate(`/user/${email}`);
   };
 
   return (
@@ -364,7 +368,7 @@ export default function UserUpdate() {
         <Input
           onChange={onChange}
           name="nickname"
-          value={nickname}
+          value={changedNickname}
           placeholder="프로필명을 입력해 주세요"
           type="text"
           required

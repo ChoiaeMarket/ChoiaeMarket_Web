@@ -301,6 +301,7 @@ export default function UserPage() {
     const { code } = responseBody;
     if (code === "NU") {
       alert("존재하지 않는 유저입니다.");
+      navigate("/");
       console.log(code);
     }
     if (code === "DBE") {
@@ -327,6 +328,10 @@ export default function UserPage() {
       return;
     }
     const { code } = responseBody;
+    if (code === "NU") {
+      // alert("존재하지 않는 유저입니다.");
+      console.log(code);
+    }
     if (code === "DBE") {
       alert("데이터베이스 오류입니다.");
       console.log(code);
@@ -436,7 +441,7 @@ export default function UserPage() {
             }}
           />
         ) : (
-          "error"
+          ""
         )}
         <ProfileNickname>{nickname}</ProfileNickname>
         <ProfileEmail>{email}</ProfileEmail>

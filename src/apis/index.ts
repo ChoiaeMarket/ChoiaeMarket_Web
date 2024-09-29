@@ -110,7 +110,7 @@ export const deleteBoardRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -229,7 +229,7 @@ export const patchBoardRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -246,8 +246,8 @@ export const postBoardRequest = async (
       return responseBody;
     })
     .catch((error) => {
-      if (!error.reponse.data) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      if (!error.response.data) return null;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -265,7 +265,7 @@ export const putFavoriteRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -319,7 +319,7 @@ export const getSignInUserRequest = async (accessToken: string) => {
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -334,7 +334,7 @@ export const getUserRequest = async (email: string) => {
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -352,7 +352,7 @@ export const patchNicknameRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;
@@ -370,7 +370,7 @@ export const patchProfileImageRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
-      const responseBody: ResponseDto = error.reponse.data;
+      const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });
   return result;

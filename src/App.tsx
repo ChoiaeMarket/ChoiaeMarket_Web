@@ -12,6 +12,7 @@ import Board from "./routes/board";
 import BoardUpdate from "./routes/boardUpdate";
 import Cart from "./routes/cart";
 import Chat from "./routes/chat";
+import ChatRoom from "./routes/chatRoom";
 import Detail from "./routes/detail";
 import Home from "./routes/home";
 import Idol from "./routes/idol";
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "chat",
         element: Protect(<Chat />),
+      },
+      {
+        path: "chat/:userEmail",
+        element: Protect(<ChatRoom />),
       },
       {
         path: "user/:userEmail",

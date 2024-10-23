@@ -444,6 +444,13 @@ export default function Detail() {
     setIsFavorite(!isFavorite);
   };
 
+  // 채팅하기 버튼 클릭 이벤트 처리
+  const handleChatClick = () => {
+    if (!loginUser || !board || loginUser.email === board.writerEmail) return;
+    // 게시물 작성자와 현재 로그인된 유저 간 채팅방으로 이동
+    navigate(`/chat/${board.writerEmail}`);
+  };
+
   // 게시물 번호 path variavle이 바뀔때 마다 게시물 불러오기
   useEffect(() => {
     if (!boardNumber) {
@@ -804,7 +811,7 @@ export default function Detail() {
             />
           </svg>
         </LikeButton>
-        <ChatButton>채팅하기</ChatButton>
+        <ChatButton onClick={handleChatClick}>채팅하기</ChatButton>
       </LikeChatBox>
       <div>{board.sold}</div>
     </Wrapper>

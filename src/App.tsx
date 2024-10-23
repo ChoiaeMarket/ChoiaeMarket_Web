@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         element: Protect(<Chat />),
       },
       {
-        path: "chat/:userEmail",
+        path: "chat/:roomId/:userEmail",
         element: Protect(<ChatRoom />),
       },
       {

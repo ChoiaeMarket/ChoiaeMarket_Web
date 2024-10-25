@@ -7,4 +7,14 @@ export default defineConfig({
   define: {
     global: {},
   },
+  server: {
+    port: 5173,
+    proxy: {
+      "/ws": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+  },
 });

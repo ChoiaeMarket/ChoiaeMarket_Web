@@ -1,6 +1,14 @@
-import styled from "styled-components";
-import logo from "../assets/logo/logoWhite.png";
+import { ResponseDto } from "../apis/response";
+import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import useLoginUserStore from "../stores/login-user.store";
+import styled from "styled-components";
+import ChatRoomListItem from "types/interface/chatroom-list-item.interface";
+import { getChatRoomListRequest } from "../apis";
+import { GetChatRoomListResponseDto } from "../apis/response/chat";
+import logo from "../assets/logo/logoWhite.png";
+import { User } from "types/interface";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -38,16 +46,124 @@ const MenuItem = styled.div`
   justify-content: center;
 `;
 
+const ChatBoard = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 34px;
+  letter-spacing: -0.025em;
+`;
+
+const ChatList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const Seller = styled.div`
+  width: 390px;
+  height: 140px;
+  padding: 20px 32px;
+  border-bottom: 1px solid #252932;
+  display: flex;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.2s;
+`;
+
+const Sellerimg = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const SellerNickname = styled.div`
+  width: 214px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: 0;
+  margin: 0 0 8px 12px;
+`;
+
+const SellerLast = styled.div`
+  width: 214px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+  margin: 0 0 24px 12px;
+  overflow: hidden; /* 텍스트가 넘칠 경우 생략 */
+  white-space: nowrap; /* 텍스트가 한 줄을 넘어갈 때 줄 바꿈 방지 */
+  text-overflow: ellipsis; /* 생략 부분에 ellipsis(...) 표시 */
+`;
+
 export default function Chat() {
   const navigate = useNavigate();
+  const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+  const [chatRoomList] = useState<ChatRoomListItem[]>([]);
+  const [chatRoomUserList, setChatRoomUserList] = useState<
+    {
+      id: number;
+      email: string;
+      nickname: string;
+      profileImage: string | null;
+    }[]
+  >([]);
+  const [cookies, setCookies] = useCookies();
+  const [count, setCount] = useState<number>(0); // 관심 게시물 개수 상태
+
+  const getChatRoomListResponse = (
+    responseBody: GetChatRoomListResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      console.error("네트워크 이상입니다.");
+      return;
+    }
+    const { code } = responseBody;
+    if (code !== "SU") {
+      console.error("Failed to fetch messages:", responseBody);
+      return;
+    }
+
+    const { chatRoomList } = responseBody as GetChatRoomListResponseDto;
+    const updatedChatRoomList = chatRoomList.map((chatRoom) => {
+      const user =
+        chatRoom.user1.email === loginUser!.email
+          ? chatRoom.user2
+          : chatRoom.user1; // 로그인된 유저와 다른 유저 선택
+      return {
+        id: chatRoom.id,
+        email: user.email,
+        nickname: user.nickname,
+        profileImage: user.profileImage,
+      };
+    });
+    setChatRoomUserList(updatedChatRoomList);
+    setCount(chatRoomUserList.length);
+  };
+
+  useEffect(() => {
+    if (loginUser) {
+      getChatRoomListRequest(loginUser.email, cookies.accessToken).then(
+        getChatRoomListResponse
+      );
+    }
+  }, [loginUser, cookies.accessToken]);
 
   const handleSearch = () => {
     navigate("/search");
   };
 
+  const handleRoomClick = (roomId: number) => {
+    navigate(`/chat/${roomId}`);
+  };
+
   return (
     <Wrapper>
-      {" "}
       <Menu>
         <MenuItem>
           <Logo src={logo} alt="로고" />
@@ -100,6 +216,24 @@ export default function Chat() {
           </MenuItem>
         </MenuItem>
       </Menu>
+      <ChatBoard>채팅 목록</ChatBoard>
+      <ChatList>
+        {chatRoomUserList.map((room) => (
+          <Seller key={room.id} onClick={() => handleRoomClick(room.id)}>
+            <Sellerimg
+              src={
+                room.profileImage
+                  ? room.profileImage
+                  : `/src/assets/member/default.png` // 대체 이미지 설정
+              }
+            />
+            <div>
+              <SellerNickname>{room.nickname}</SellerNickname>
+              <SellerLast></SellerLast>
+            </div>
+          </Seller>
+        ))}
+      </ChatList>
     </Wrapper>
   );
 }

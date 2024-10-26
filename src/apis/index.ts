@@ -20,7 +20,10 @@ import {
 import GetBoardResponseDto from "./response/board/get-board.response.dto";
 import GetFavoriteResponseDto from "./response/board/get-favorite.response.dto";
 import GetUserBoardListResponseDto from "./response/board/get-user-board-list.response.dto";
-import { GetMessageResponseDto } from "./response/chat";
+import {
+  GetChatRoomListResponseDto,
+  GetMessageResponseDto,
+} from "./response/chat";
 import PostChatRoomResponseDto from "./response/chat/post-chat.response.dto";
 import {
   GetPopularListResponseDto,
@@ -274,9 +277,29 @@ export const putFavoriteRequest = async (
   return result;
 };
 
+const GET_CHAT_ROOM_LIST_URL = (email: string) =>
+  `${API_DOMAIN}/chat/room-list/${email}`;
 const GET_MESSAGES_URL = (roomId: string) =>
   `${API_DOMAIN}/chat/room/${roomId}/messages`;
 const POST_CHAT_ROOM_URL = () => `${API_DOMAIN}/chat/room`;
+
+export const getChatRoomListRequest = async (
+  email: string,
+  accessToken: string
+) => {
+  const result = await axios
+    .get(GET_CHAT_ROOM_LIST_URL(email), authorization(accessToken))
+    .then((response) => {
+      const responseBody: GetChatRoomListResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};
 
 export const getMessagesRequest = async (
   roomId: string,

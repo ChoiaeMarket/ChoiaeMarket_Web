@@ -1,6 +1,11 @@
 import axios from "axios";
 import { SignInRequestDto, SignUpRequestDto } from "./request/auth";
 import { PatchBoardRequestDto, PostBoardRequestDto } from "./request/board";
+import PostChatRoomRequestDto from "./request/chat/post-chat-room.request.dto";
+import {
+  PatchNicknameRequestDto,
+  PatchProfileImageRequestDto,
+} from "./request/user";
 import { ResponseDto } from "./response";
 import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
 import {
@@ -14,6 +19,9 @@ import {
 } from "./response/board";
 import GetBoardResponseDto from "./response/board/get-board.response.dto";
 import GetFavoriteResponseDto from "./response/board/get-favorite.response.dto";
+import GetUserBoardListResponseDto from "./response/board/get-user-board-list.response.dto";
+import { GetMessageResponseDto } from "./response/chat";
+import PostChatRoomResponseDto from "./response/chat/post-chat.response.dto";
 import {
   GetPopularListResponseDto,
   GetRelationListResponseDto,
@@ -24,11 +32,6 @@ import {
   PatchNicknameResponseDto,
   PatchProfileImageResponseDto,
 } from "./response/user";
-import GetUserBoardListResponseDto from "./response/board/get-user-board-list.response.dto";
-import {
-  PatchNicknameRequestDto,
-  PatchProfileImageRequestDto,
-} from "./request/user";
 
 const DOMAIN = "http://localhost:4000";
 
@@ -265,6 +268,46 @@ export const putFavoriteRequest = async (
     })
     .catch((error) => {
       if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};
+
+const GET_MESSAGES_URL = (roomId: string) =>
+  `${API_DOMAIN}/chat/room/${roomId}/messages`;
+const POST_CHAT_ROOM_URL = () => `${API_DOMAIN}/chat/room`;
+
+export const getMessagesRequest = async (
+  roomId: string,
+  accessToken: string
+) => {
+  const result = await axios
+    .get(GET_MESSAGES_URL(roomId), authorization(accessToken))
+    .then((response) => {
+      const responseBody: GetMessageResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response) return null;
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
+  return result;
+};
+
+export const postChatRoomRequest = async (
+  requestBody: PostChatRoomRequestDto,
+  accessToken: string
+) => {
+  const result = await axios
+    .post(POST_CHAT_ROOM_URL(), requestBody, authorization(accessToken))
+    .then((response) => {
+      const responseBody: PostChatRoomResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      if (!error.response.data) return null;
       const responseBody: ResponseDto = error.response.data;
       return responseBody;
     });

@@ -1,100 +1,92 @@
-import { Stomp } from "@stomp/stompjs";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import SockJS from "sockjs-client";
+import { useChatService } from "../services/ChatService";
+import useLoginUserStore from "../stores/login-user.store";
+import { getMessagesRequest } from "../apis";
+import { useCookies } from "react-cookie";
 
-// 채팅 메시지 인터페이스 정의
-interface ChatMessage {
-  senderEmail: string;
-  content: string;
-  roomId: string;
-}
-
-export default function ChatRoom() {
-  const { userEmail, roomId } = useParams<{
-    userEmail: string;
+const ChatRoom = () => {
+  const { roomId } = useParams<{
     roomId: string;
-  }>(); // URL에서 파라미터 추출
-  const [stompClient, setStompClient] = useState<any>(null); // STOMP 클라이언트 상태
-  const [messages, setMessages] = useState<ChatMessage[]>([]); // 채팅 메시지 배열
-  const [message, setMessage] = useState<string>(""); // 입력 메시지 상태
+  }>();
+  const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
+  const [messages, setMessages] = useState<
+    { senderEmail: string; content: string; timestamp: string }[]
+  >([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [cookies, setCookies] = useCookies();
 
-  // WebSocket 연결 설정
+  // WebSocket을 통해 메시지를 수신
+  const { sendMessage } = useChatService(roomId as string, (message) => {
+    message.timestamp = new Date().toISOString();
+    const formattedMessages = formatMessage(message);
+    message.timestamp = formattedMessages.timestamp;
+    setMessages((prev) => [...prev, message]);
+  });
+
+  // 메시지를 가져오는 useEffect
   useEffect(() => {
-    const socket = new SockJS("http://localhost:4000/ws"); // 서버의 WebSocket 엔드포인트에 연결
-    const stompClient = Stomp.over(() => socket); // STOMP를 사용해 SockJS로 WebSocket 연결
-    console.log(socket);
-    console.log(stompClient);
-
-    console.log("0");
-    // STOMP 클라이언트 연결
-    stompClient.connect(
-      {},
-      () => {
-        console.log("Connected to WebSocket");
-        // 특정 채팅방(roomId)에 대한 구독 설정
-        // stompClient.subscribe(`/topic/${roomId}`, (msg: any) => {
-        //   const receivedMessage: ChatMessage = JSON.parse(msg.body); // 수신한 메시지를 파싱
-        //   setMessages((prevMessages) => [...prevMessages, receivedMessage]); // 수신한 메시지를 메시지 배열에 추가
-        // });
-      },
-      (error: any) => {
-        console.error("WebSocket connection error:", error);
-      }
-    );
-
-    setStompClient(stompClient); // STOMP 클라이언트를 상태로 저장
-
-    // 컴포넌트 언마운트 시 WebSocket 연결 해제
-    return () => {
-      console.log("4");
-      // 연결 상태를 확인한 후 disconnect 호출
-      if (stompClient && stompClient.connected) {
-        stompClient.disconnect(() => {
-          console.log("Disconnected from WebSocket");
-        });
+    const fetchMessages = async () => {
+      if (loginUser && roomId) {
+        const response = await getMessagesRequest(roomId, cookies.accessToken);
+        if (response && response.code === "SU") {
+          const formattedMessages = response.messages.map((msg) =>
+            formatMessage(msg)
+          );
+          setMessages(formattedMessages);
+        } else {
+          console.error("Failed to fetch messages:", response);
+        }
       }
     };
-  }, [roomId]);
+    fetchMessages();
+  }, [roomId, loginUser]);
 
-  // 메시지 전송 함수
-  const sendMessage = () => {
-    // userEmail과 roomId가 없으면 메시지 전송하지 않음
-    if (!stompClient || !message.trim() || !roomId || !userEmail) {
-      console.error("Cannot send message: missing roomId or userEmail");
-      return;
+  // 타임스탬프를 포맷팅
+  const formatMessage = (msg: any) => {
+    const date = new Date(msg.timestamp);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "오후" : "오전";
+    const formattedHour = hours % 12 || 12; // 12시간제로 변환
+    const formattedMinute = String(minutes).padStart(2, "0"); // 2자리로 포맷
+    const timeString = `${ampm} ${formattedHour}:${formattedMinute}`;
+
+    return {
+      senderEmail: msg.senderEmail,
+      content: msg.message,
+      timestamp: timeString,
+    };
+  };
+
+  const handleSendMessage = () => {
+    if (inputMessage.trim() && loginUser!.email) {
+      sendMessage(loginUser!.email, inputMessage);
+      setInputMessage(""); // 메시지 보낸후 비우기
+    } else if (!loginUser!.email) {
+      console.error("User email is undefined.");
     }
-
-    const chatMessage: ChatMessage = {
-      senderEmail: userEmail, // 발신자 이메일
-      content: message, // 메시지 내용
-      roomId: roomId, // 채팅방 ID
-    };
-
-    stompClient.send(
-      `/app/chat.sendMessage/${roomId}`,
-      {},
-      JSON.stringify(chatMessage)
-    ); // 서버로 메시지 전송
-    setMessage(""); // 메시지 입력창 초기화
   };
 
   return (
     <div>
-      <div className="chat-messages">
+      <h1>Chat Room {roomId}</h1>
+      <div>
         {messages.map((msg, index) => (
           <div key={index}>
-            <strong>{msg.senderEmail}</strong>: {msg.content}
+            {msg.senderEmail} {msg.timestamp} {msg.content}
           </div>
         ))}
       </div>
       <input
         type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type your message here..."
+        value={inputMessage}
+        onChange={(e) => setInputMessage(e.target.value)}
+        placeholder=""
       />
-      <button onClick={sendMessage}>Send</button>
+      <button onClick={handleSendMessage}>Send</button>
     </div>
   );
-}
+};
+
+export default ChatRoom;

@@ -1,22 +1,24 @@
+import { PostChatResponseDto } from "apis/response/chat";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import useLoginUserStore from "../stores/login-user.store";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Board } from "types/interface";
 import {
+  postChatRoomRequest,
   deleteBoardRequest,
   getBoardRequest,
   getFavoriteRequest,
   putFavoriteRequest,
 } from "../apis";
 import { ResponseDto } from "../apis/response";
-import GetBoardResponseDto from "../apis/response/board/get-board.response.dto";
 import {
   DeleteBoardResponseDto,
   GetFavoriteResponseDto,
   PutFavoriteResponseDto,
 } from "../apis/response/board";
+import GetBoardResponseDto from "../apis/response/board/get-board.response.dto";
+import useLoginUserStore from "../stores/login-user.store";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -318,7 +320,7 @@ export default function Detail() {
       return;
     }
 
-    // 사용자의 이미일과 게시물 작성자 이메일이 동일 여부 확인
+    // 사용자의 이메일과 게시물 작성자 이메일이 동일 여부 확인
     const isWriter = loginUser.email === board.writerEmail;
     setWriter(isWriter);
     console.log("loginUser: " + loginUser.email);
@@ -371,6 +373,24 @@ export default function Detail() {
     if (code !== "SU") return;
 
     navigate("/");
+  };
+
+  // 채팅방 생성 응답 처리 함수
+  const postChatRoomResponse = (
+    responseBody: PostChatResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "VF") alert("잘못된 접근입니다.");
+    if (code === "NU") alert("존재하지 않는 유저입니다.");
+    if (code === "NB") alert("존재하지 않는 게시물입니다.");
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "NP") alert("권한이 없습니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
+
+    const { chatRoomId } = responseBody as PostChatResponseDto;
+    navigate(`/chat/${chatRoomId}`); // 생성된 채팅방으로 이동
   };
 
   // 이전 페이지 이동
@@ -445,10 +465,15 @@ export default function Detail() {
   };
 
   // 채팅하기 버튼 클릭 이벤트 처리
-  const handleChatClick = () => {
+  const handleChatClick = async () => {
     if (!loginUser || !board || loginUser.email === board.writerEmail) return;
-    // 게시물 작성자와 현재 로그인된 유저 간 채팅방으로 이동
-    navigate(`/chat/${board.writerEmail}`);
+
+    const requestBody = {
+      user2Email: board.writerEmail, // 게시물 작성자의 이메일 사용
+    };
+    postChatRoomRequest(requestBody, cookies.accessToken).then(
+      postChatRoomResponse
+    );
   };
 
   // 게시물 번호 path variavle이 바뀔때 마다 게시물 불러오기

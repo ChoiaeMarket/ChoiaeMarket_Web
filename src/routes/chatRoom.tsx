@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useChatService } from "../services/ChatService";
 import useLoginUserStore from "../stores/login-user.store";
-import { getMessagesRequest } from "../apis";
+import { getMessagesRequest as getMessageRequest } from "../apis";
 import { useCookies } from "react-cookie";
+import { GetMessageResponseDto } from "apis/response/chat";
+import { ResponseDto } from "apis/response";
 
 const ChatRoom = () => {
   const { roomId } = useParams<{
@@ -24,22 +26,30 @@ const ChatRoom = () => {
     setMessages((prev) => [...prev, message]);
   });
 
+  // 메시지 가져오기 응답 처리 함수
+  const getMessageResponse = (
+    responseBody: GetMessageResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) {
+      console.error("네트워크 이상입니다.");
+      return;
+    }
+    const { code } = responseBody;
+    if (code !== "SU") {
+      console.error("Failed to fetch messages:", responseBody);
+      return;
+    }
+
+    const { messages } = responseBody as GetMessageResponseDto;
+    const formattedMessages = messages.map((msg: any) => formatMessage(msg));
+    setMessages(formattedMessages);
+  };
+
   // 메시지를 가져오는 useEffect
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (loginUser && roomId) {
-        const response = await getMessagesRequest(roomId, cookies.accessToken);
-        if (response && response.code === "SU") {
-          const formattedMessages = response.messages.map((msg) =>
-            formatMessage(msg)
-          );
-          setMessages(formattedMessages);
-        } else {
-          console.error("Failed to fetch messages:", response);
-        }
-      }
-    };
-    fetchMessages();
+    if (loginUser && roomId) {
+      getMessageRequest(roomId, cookies.accessToken).then(getMessageResponse);
+    }
   }, [roomId, loginUser]);
 
   // 타임스탬프를 포맷팅

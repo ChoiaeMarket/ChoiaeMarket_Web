@@ -26,10 +26,10 @@ import Upload from "./routes/upload";
 import UserPage from "./routes/userPage";
 import UserUpdate from "./routes/userUpdate";
 
-const Protect = (component: JSX.Element) => (
+const Protect = (component: JSX.Element, hideNav?: boolean) => (
   <ProtectedRoute>
     {component}
-    <NavigationBar />
+    {!hideNav && <NavigationBar />}
   </ProtectedRoute>
 );
 
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "chat/:roomId",
-        element: Protect(<ChatRoom />),
+        element: Protect(<ChatRoom />, true),
       },
       {
         path: "user/:userEmail",

@@ -8,7 +8,6 @@ import ChatRoomListItem from "types/interface/chatroom-list-item.interface";
 import { getChatRoomListRequest } from "../apis";
 import { GetChatRoomListResponseDto } from "../apis/response/chat";
 import logo from "../assets/logo/logoWhite.png";
-import { User } from "types/interface";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -104,7 +103,6 @@ const SellerLast = styled.div`
 export default function Chat() {
   const navigate = useNavigate();
   const { loginUser } = useLoginUserStore(); // 로그인 유저 상태
-  const [chatRoomList] = useState<ChatRoomListItem[]>([]);
   const [chatRoomUserList, setChatRoomUserList] = useState<
     {
       id: number;
@@ -114,7 +112,6 @@ export default function Chat() {
     }[]
   >([]);
   const [cookies, setCookies] = useCookies();
-  const [count, setCount] = useState<number>(0); // 관심 게시물 개수 상태
 
   const getChatRoomListResponse = (
     responseBody: GetChatRoomListResponseDto | ResponseDto | null
@@ -130,6 +127,7 @@ export default function Chat() {
     }
 
     const { chatRoomList } = responseBody as GetChatRoomListResponseDto;
+    console.log(chatRoomList);
     const updatedChatRoomList = chatRoomList.map((chatRoom) => {
       const user =
         chatRoom.user1.email === loginUser!.email
@@ -143,7 +141,6 @@ export default function Chat() {
       };
     });
     setChatRoomUserList(updatedChatRoomList);
-    setCount(chatRoomUserList.length);
   };
 
   useEffect(() => {

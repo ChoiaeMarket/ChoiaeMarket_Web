@@ -49,7 +49,7 @@ const Form = styled.form`
   gap: 10px;
   width: 100%;
   & > div > input[type="submit"] {
-    width: 159px;
+    /* width: 159px; */
     margin: 12px 0 48px;
     font-weight: 600;
     font-size: 18px;
@@ -355,7 +355,7 @@ export default function Register() {
           </Gender>
         </GenderBox>
         <InputBox>
-          <HomeButton href="/">다음에</HomeButton>
+          {/* <HomeButton href="/">다음에</HomeButton> */}
           <Input type="submit" value="입력완료" hasValue={false} />
         </InputBox>
       </Form>

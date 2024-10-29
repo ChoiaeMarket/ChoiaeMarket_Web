@@ -143,12 +143,8 @@ export default function Login() {
     if (isLoading || email === "" || password === "") return; // 미입력 방지
     try {
       setLoading(true);
-      // await(email, password); // 로그인 요청
-      // props.abc.value; // 강제 에러 발생
-      // 로그인 버튼 클릭 이벤트 처리
       const requestBody: SignInRequestDto = { email, password };
       signInRequest(requestBody).then(signInResponse);
-      // navigate("/");
     } catch (e: any) {
       console.log("login: ", e.message);
       setError("정보가 일치하지 않습니다");

@@ -55,6 +55,10 @@ const ChatBoard = styled.div`
   letter-spacing: -0.025em;
 `;
 
+const ChatBoardCount = styled.div`
+  color: #f89e86;
+`;
+
 const ChatList = styled.ul`
   display: flex;
   flex-wrap: wrap;
@@ -116,6 +120,16 @@ const ChatUserLastMessage = styled.div`
   text-overflow: ellipsis; /* 생략 부분에 ellipsis(...) 표시 */
 `;
 
+const ChatNothing = styled.div`
+  position: absolute;
+  top: 50%;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: #9ea3b2;
+`;
+
 function getTimeDifferenceString(previousDate: any) {
   const currentDate = new Date();
   const diff = currentDate.getTime() - previousDate.getTime();
@@ -148,6 +162,7 @@ export default function Chat() {
       profileImage: string | null;
     }[]
   >([]);
+  const [count, setCount] = useState<number>(0); // 관심 게시물 개수 상태
   const [cookies, setCookies] = useCookies();
 
   const getChatRoomListResponse = (
@@ -189,6 +204,7 @@ export default function Chat() {
     });
 
     setChatRoomUserList(updatedChatRoomList);
+    setCount(updatedChatRoomList.length);
   };
 
   useEffect(() => {
@@ -212,7 +228,7 @@ export default function Chat() {
       <Menu>
         <MenuItem>
           <Logo src={logo} alt="로고" />
-          <Title>채팅</Title>
+          <Title>채팅방</Title>
         </MenuItem>
         <MenuItem>
           <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
@@ -261,7 +277,10 @@ export default function Chat() {
           </MenuItem>
         </MenuItem>
       </Menu>
-      <ChatBoard>채팅 목록</ChatBoard>
+      <ChatBoard>
+        채팅 목록&nbsp;
+        <ChatBoardCount>{count}</ChatBoardCount>
+      </ChatBoard>
       <ChatList>
         {chatRoomUserList.map((room) => (
           <ChatUser key={room.id} onClick={() => handleRoomClick(room.id)}>
@@ -286,6 +305,7 @@ export default function Chat() {
           </ChatUser>
         ))}
       </ChatList>
+      {count === 0 ? <ChatNothing>{"채팅방이 없습니다."}</ChatNothing> : ""}
     </Wrapper>
   );
 }

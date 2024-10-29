@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
-import styled from "styled-components";
-import back from "../assets/icon/back.png";
-import profile from "../assets/icon/profile.png";
-import edit from "../assets/icon/edit.png";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Wrapper, Error, Back, Title } from "../components/auth-components";
-import { SignUpRequestDto } from "../apis/request/auth";
+import styled from "styled-components";
 import { fileUploadRequest, signUpRequest } from "../apis";
-import { SignUpResponseDto } from "../apis/response/auth";
+import { SignUpRequestDto } from "../apis/request/auth";
 import { ResponseDto } from "../apis/response";
+import { SignUpResponseDto } from "../apis/response/auth";
+import back from "../assets/icon/back.png";
+import edit from "../assets/icon/edit.png";
+import profile from "../assets/icon/profile.png";
+import { Back, Error, Title, Wrapper } from "../components/auth-components";
 
 const TitleBox = styled.div`
   width: 100%;
@@ -132,47 +132,23 @@ const InputBox = styled.div`
   justify-content: space-between;
 `;
 
-const HomeButton = styled.a`
-  width: 159px;
-  height: 60px;
-  margin: 12px 0 48px;
-  border-radius: 16px;
-  padding: 18px;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 34px;
-  letter-spacing: -0.025em;
-  color: #9ea3b2;
-  background-color: #252932;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #21242d;
-  }
-`;
-
 export default function Register() {
   const LOGIN_PATH = () => "/login";
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setLoading] = useState(false);
-  const { name, email, password } = location.state;
-  // const [name, setName] = useState("");
-  // const [email, setEmail] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
+  const { email } = location.state;
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState(profile);
   const [nickname, setNickname] = useState("");
   const [tel, setTel] = useState("");
   const [gender, setGender] = useState("1"); // 0: male, 1: female
   const agreedPersonal = true;
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
 
   const goBack = () => {
-    window.history.back(); // 뒤로 가는 동작을 수행
+    navigate(-1); // 뒤로 가는 동작을 수행
   };
 
   // EditIcon 사진 추가 이벤트
@@ -191,9 +167,8 @@ export default function Register() {
       const data = new FormData();
       data.append("file", selectedFile);
 
-      const url = await fileUploadRequest(data);
-      setProfileImage(url!);
-      console.log(url);
+      const url = (await fileUploadRequest(data)) as string; // 강제로 string 타입으로 변환
+      setProfileImage(url);
     }
   };
 
@@ -201,11 +176,11 @@ export default function Register() {
     const {
       target: { name, value },
     } = e;
-    // if (name === "name") {
-    //   setName(value);
-    // } else if (name === "email") {
-    //   setEmail(value);
-    if (name === "nickname") {
+    if (name === "password") {
+      setPassword(value);
+    } else if (name === "name") {
+      setName(value);
+    } else if (name === "nickname") {
       setNickname(value);
     } else if (name === "tel") {
       setTel(value);
@@ -223,18 +198,12 @@ export default function Register() {
       return;
     }
     const { code } = responseBody;
-    if (code === "DBE") {
-      setError("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code === "SF" || code === "VF") {
-      setError("정보가 일치하지 않습니다");
-      console.log(code);
-    }
-    if (code !== "SU") {
-      setLoading(false);
-      return;
-    }
+    if (code === "VF") setError("정보가 일치하지 않습니다.");
+    if (code === "DE") setError("중복된 이메일입니다.");
+    if (code === "DN") setError("중복된 닉네임입니다.");
+    if (code === "DT") setError("중복된 전화번호입니다.");
+    if (code === "DBE") setError("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
 
     navigate(LOGIN_PATH());
   };
@@ -242,29 +211,26 @@ export default function Register() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    if (isLoading || name === "" || email === "" || tel === "") return; // 미입력 방지
-    try {
-      // props.abc.value; // 강제 에러 발생
-      // 계정 생성
-      const requestBody: SignUpRequestDto = {
-        name,
-        password,
-        email,
-        nickname,
-        tel,
-        gender,
-        agreedPersonal,
-        profileImage,
-      };
-      signUpRequest(requestBody).then(signUpResponse);
-      // 유저 이름 생성
-      // 메인 리디렉션
-      // navigate("/");
-    } catch (e: any) {
-      console.log("register: ", e.message);
-      setError("다른 이메일을 입력해 주세요");
-    }
-    console.log("register: ", name, nickname, email, tel, gender, profileImage);
+    if (
+      email === "" ||
+      password === "" ||
+      name === "" ||
+      profile === "" ||
+      tel === ""
+    )
+      return; // 미입력 방지
+
+    const requestBody: SignUpRequestDto = {
+      name,
+      password,
+      email,
+      nickname,
+      tel,
+      gender,
+      agreedPersonal,
+      profileImage,
+    };
+    signUpRequest(requestBody).then(signUpResponse);
   };
 
   return (
@@ -286,21 +252,32 @@ export default function Register() {
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}
-          name="name"
-          value={name}
-          placeholder="이름을 입력해 주세요"
-          type="text"
-          required
-          hasValue={name.length > 0}
-        />
-        <Input
-          onChange={onChange}
           name="email"
           value={email}
           placeholder="이메일을 입력해 주세요"
           type="email"
           required
           hasValue={email.length > 0}
+          disabled={true}
+        />
+        <Input
+          onChange={onChange}
+          name="password"
+          value={password}
+          placeholder="비밀번호를 입력해 주세요"
+          type="password"
+          required
+          hasValue={password.length > 0}
+          maxLength={20}
+        />
+        <Input
+          onChange={onChange}
+          name="name"
+          value={name}
+          placeholder="이름을 입력해 주세요"
+          type="text"
+          required
+          hasValue={name.length > 0}
         />
         <Input
           onChange={onChange}
@@ -355,7 +332,6 @@ export default function Register() {
           </Gender>
         </GenderBox>
         <InputBox>
-          {/* <HomeButton href="/">다음에</HomeButton> */}
           <Input type="submit" value="입력완료" hasValue={false} />
         </InputBox>
       </Form>

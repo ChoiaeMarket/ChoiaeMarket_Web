@@ -60,9 +60,9 @@ const ChatList = styled.ul`
   flex-wrap: wrap;
 `;
 
-const Seller = styled.div`
+const ChatUser = styled.div`
   width: 390px;
-  height: 140px;
+  height: 110px;
   padding: 20px 32px;
   border-bottom: 1px solid #252932;
   display: flex;
@@ -71,34 +71,69 @@ const Seller = styled.div`
   transition: background-color 0.2s;
 `;
 
-const Sellerimg = styled.img`
-  width: 100px;
-  height: 100px;
+const ChatUserImg = styled.img`
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
 `;
 
-const SellerNickname = styled.div`
-  width: 214px;
+const ChatUserNicknameLastTime = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const ChatUserNickname = styled.div`
+  width: 200px;
   font-weight: 600;
   font-size: 18px;
   line-height: 26px;
   letter-spacing: 0;
-  margin: 0 0 8px 12px;
+  padding: 0 0 8px 12px;
 `;
 
-const SellerLast = styled.div`
-  width: 214px;
+const ChatUserLastTime = styled.div`
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+  color: #777c89;
+  overflow: hidden; /* 텍스트가 넘칠 경우 생략 */
+  white-space: nowrap; /* 텍스트가 한 줄을 넘어갈 때 줄 바꿈 방지 */
+  text-overflow: ellipsis; /* 생략 부분에 ellipsis(...) 표시 */
+`;
+
+const ChatUserLastMessage = styled.div`
+  width: 256px;
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: -0.025em;
   color: #9ea3b2;
-  margin: 0 0 24px 12px;
+  padding: 0 0 24px 12px;
   overflow: hidden; /* 텍스트가 넘칠 경우 생략 */
   white-space: nowrap; /* 텍스트가 한 줄을 넘어갈 때 줄 바꿈 방지 */
   text-overflow: ellipsis; /* 생략 부분에 ellipsis(...) 표시 */
 `;
+
+function getTimeDifferenceString(previousDate: any) {
+  const currentDate = new Date();
+  const diff = currentDate.getTime() - previousDate.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return `${days}일 전`;
+  } else if (hours > 0) {
+    return `${hours}시간 전`;
+  } else if (minutes > 0) {
+    return `${minutes}분 전`;
+  } else {
+    return `${seconds}초 전`;
+  }
+}
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -106,6 +141,8 @@ export default function Chat() {
   const [chatRoomUserList, setChatRoomUserList] = useState<
     {
       id: number;
+      lastMessage: string;
+      lastTimestamp: string;
       email: string;
       nickname: string;
       profileImage: string | null;
@@ -127,7 +164,6 @@ export default function Chat() {
     }
 
     const { chatRoomList } = responseBody as GetChatRoomListResponseDto;
-    console.log(chatRoomList);
     const updatedChatRoomList = chatRoomList.map((chatRoom) => {
       const user =
         chatRoom.user1.email === loginUser!.email
@@ -135,6 +171,8 @@ export default function Chat() {
           : chatRoom.user1; // 로그인된 유저와 다른 유저 선택
       return {
         id: chatRoom.id,
+        lastMessage: chatRoom.lastMessage,
+        lastTimestamp: chatRoom.lastTimestamp,
         email: user.email,
         nickname: user.nickname,
         profileImage: user.profileImage,
@@ -216,8 +254,8 @@ export default function Chat() {
       <ChatBoard>채팅 목록</ChatBoard>
       <ChatList>
         {chatRoomUserList.map((room) => (
-          <Seller key={room.id} onClick={() => handleRoomClick(room.id)}>
-            <Sellerimg
+          <ChatUser key={room.id} onClick={() => handleRoomClick(room.id)}>
+            <ChatUserImg
               src={
                 room.profileImage
                   ? room.profileImage
@@ -225,10 +263,17 @@ export default function Chat() {
               }
             />
             <div>
-              <SellerNickname>{room.nickname}</SellerNickname>
-              <SellerLast></SellerLast>
+              <ChatUserNicknameLastTime>
+                <ChatUserNickname>{room.nickname}</ChatUserNickname>
+                <ChatUserLastTime>
+                  {room.lastTimestamp
+                    ? getTimeDifferenceString(new Date(room.lastTimestamp))
+                    : ""}
+                </ChatUserLastTime>
+              </ChatUserNicknameLastTime>
+              <ChatUserLastMessage>{room.lastMessage}</ChatUserLastMessage>
             </div>
-          </Seller>
+          </ChatUser>
         ))}
       </ChatList>
     </Wrapper>

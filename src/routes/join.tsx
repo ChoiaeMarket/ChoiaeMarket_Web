@@ -34,7 +34,6 @@ import {
   Title,
   Wrapper,
 } from "../components/auth-components";
-import { ResponseCode } from "../types/enum";
 
 const DivBox = styled(Div)`
   margin-top: 24px;
@@ -72,9 +71,8 @@ export default function Join() {
     if (!responseBody) return;
     const { code } = responseBody;
 
-    if (code === ResponseCode.DUPLICATE_EMAIL)
-      setEmailMessage("중복된 이메일입니다.");
-    if (code !== ResponseCode.SUCCESS) return;
+    if (code === "DE") setEmailMessage("중복된 이메일입니다.");
+    if (code !== "SU") return;
 
     setEmailMessage("인증번호 전송중...");
     const requestBody: EmailCertificationRequestDto = { email };
@@ -87,13 +85,10 @@ export default function Join() {
     if (!responseBody) return;
     const { code } = responseBody;
 
-    if (code === ResponseCode.VALIDATION_FALIED)
-      setEmailMessage("이메일을 입력하세요.");
-    if (code === ResponseCode.MAIL_FAIL)
-      setEmailMessage("이메일 전송에 실패했습니다.");
-    if (code === ResponseCode.DATABASE_ERROR)
-      setEmailMessage("데이터베이스 오류입니다.");
-    if (code !== ResponseCode.SUCCESS) return;
+    if (code === "VF") setEmailMessage("이메일을 입력하세요.");
+    if (code === "MF") setEmailMessage("이메일 전송에 실패했습니다.");
+    if (code === "DBE") setEmailMessage("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
 
     setEmailError(false);
     setEmailMessage("인증번호가 전송되었습니다.");
@@ -105,13 +100,10 @@ export default function Join() {
     if (!responseBody) return;
     const { code } = responseBody;
 
-    if (code === ResponseCode.VALIDATION_FALIED)
-      setEmailMessage("이메일, 인증번호를 모두 입력하세요.");
-    if (code === ResponseCode.CERTIFICATION_FAIL)
-      setEmailMessage("인증번호가 일치하지 않습니다.");
-    if (code === ResponseCode.DATABASE_ERROR)
-      setEmailMessage("데이터베이스 오류입니다.");
-    if (code !== ResponseCode.SUCCESS) return;
+    if (code === "VF") setEmailMessage("이메일, 인증번호를 모두 입력하세요.");
+    if (code === "CF") setEmailMessage("인증번호가 일치하지 않습니다.");
+    if (code === "DBE") setEmailMessage("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
 
     navigate("/register", { state: { email } });
   };

@@ -229,7 +229,7 @@ export default function Cart() {
       <Menu>
         <MenuItem>
           <Logo src={logo} alt="로고" />
-          <Title>관심목록</Title>
+          <Title>관심 상품</Title>
         </MenuItem>
         <MenuItem>
           <MenuItem onClick={handleSearch} style={{ cursor: "pointer" }}>
@@ -279,7 +279,7 @@ export default function Cart() {
         </MenuItem>
       </Menu>
       <FavoriteBoard>
-        관심 상품&nbsp;
+        관심 목록&nbsp;
         <FavoriteBoardCount>{count}</FavoriteBoardCount>
       </FavoriteBoard>
       <ProductList>

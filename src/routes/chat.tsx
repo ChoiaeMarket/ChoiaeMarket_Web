@@ -164,20 +164,30 @@ export default function Chat() {
     }
 
     const { chatRoomList } = responseBody as GetChatRoomListResponseDto;
-    const updatedChatRoomList = chatRoomList.map((chatRoom) => {
-      const user =
-        chatRoom.user1.email === loginUser!.email
-          ? chatRoom.user2
-          : chatRoom.user1; // 로그인된 유저와 다른 유저 선택
-      return {
-        id: chatRoom.id,
-        lastMessage: chatRoom.lastMessage,
-        lastTimestamp: chatRoom.lastTimestamp,
-        email: user.email,
-        nickname: user.nickname,
-        profileImage: user.profileImage,
-      };
+    const updatedChatRoomList = chatRoomList
+      .map((chatRoom) => {
+        const user =
+          chatRoom.user1.email === loginUser!.email
+            ? chatRoom.user2
+            : chatRoom.user1; // 로그인된 유저와 다른 유저 선택
+        return {
+          id: chatRoom.id,
+          lastMessage: chatRoom.lastMessage,
+          lastTimestamp: chatRoom.lastTimestamp,
+          email: user.email,
+          nickname: user.nickname,
+          profileImage: user.profileImage,
+        };
+      })
+      .filter((room) => room.lastMessage); // lastMessage가 있는 방만 표시
+
+    // lastTimestamp를 기준으로 정렬 (최신 순)
+    updatedChatRoomList.sort((a, b) => {
+      const timestampA = new Date(a.lastTimestamp).getTime();
+      const timestampB = new Date(b.lastTimestamp).getTime();
+      return timestampB - timestampA; // 내림차순 정렬
     });
+
     setChatRoomUserList(updatedChatRoomList);
   };
 

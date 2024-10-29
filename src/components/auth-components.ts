@@ -43,7 +43,22 @@ export const Form = styled.form`
   gap: 10px;
   width: 100%;
   & > input[type="submit"] {
-    margin: 12px 0 48px;
+    margin: 12px 0 12px;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: -0.025em;
+    box-shadow: 0 0 0 1px #252932;
+    background-color: #f89e86;
+    color: #ffffff;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    &:hover {
+      background-color: #f9b19e;
+    }
+  }
+  & > div > input[type="submit"] {
+    margin: 12px 0 12px;
     font-weight: 600;
     font-size: 18px;
     line-height: 26px;
@@ -106,8 +121,9 @@ export const Error = styled.span`
 `;
 
 export const SocialLoginBox = styled.div`
-  display: flex;
   width: 264px;
+  margin-top: 24px;
+  display: flex;
   justify-content: space-between;
 `;
 

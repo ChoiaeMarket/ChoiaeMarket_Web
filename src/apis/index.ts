@@ -1,5 +1,9 @@
-import axios from "axios";
-import { SignInRequestDto, SignUpRequestDto } from "./request/auth";
+import axios, { AxiosResponse } from "axios";
+import {
+  EmailCertificationRequestDto,
+  SignInRequestDto,
+  SignUpRequestDto,
+} from "./request/auth";
 import { PatchBoardRequestDto, PostBoardRequestDto } from "./request/board";
 import PostChatRoomRequestDto from "./request/chat/post-chat-room.request.dto";
 import {
@@ -7,7 +11,11 @@ import {
   PatchProfileImageRequestDto,
 } from "./request/user";
 import { ResponseDto } from "./response";
-import { SignInResponseDto, SignUpResponseDto } from "./response/auth";
+import {
+  EmailCertificationResponseDto,
+  SignInResponseDto,
+  SignUpResponseDto,
+} from "./response/auth";
 import {
   DeleteBoardResponseDto,
   GetBoardListResponseDto,
@@ -36,29 +44,43 @@ import {
   PatchProfileImageResponseDto,
 } from "./response/user";
 
-const DOMAIN = "http://localhost:4000";
+const responseHandler = <T>(response: AxiosResponse<any, any>) => {
+  const responseBody: T = response.data;
+  return responseBody;
+};
 
+const errorHandler = (error: any) => {
+  if (!error.response.data) return null;
+  const responseBody: ResponseDto = error.response.data;
+  return responseBody;
+};
+
+const DOMAIN = "http://localhost:4000";
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
 const authorization = (accessToken: string) => {
   return { headers: { Authorization: `Bearer ${accessToken}` } };
 };
 
+const EMAIL_CERTIFICATION_URL = () => `${API_DOMAIN}/auth/email-certification`;
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
+
+export const emailCertificationRequest = async (
+  requestBody: EmailCertificationRequestDto
+) => {
+  const result = await axios
+    .post(EMAIL_CERTIFICATION_URL(), requestBody)
+    .then(responseHandler<EmailCertificationResponseDto>)
+    .catch(errorHandler);
+  return result;
+};
 
 export const signInRequest = async (requestBody: SignInRequestDto) => {
   const result = await axios
     .post(SIGN_IN_URL(), requestBody)
-    .then((response) => {
-      const responseBody: SignInResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response.data) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<SignInResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -69,15 +91,8 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
       gender: requestBody.gender === "0" ? 0 : 1, // 성별 → 숫자
       agreed_personal: requestBody.agreedPersonal ? 1 : 0, // 개인정보 동의 여부 → 숫자
     })
-    .then((response) => {
-      const responseBody: SignUpResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response.data) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<SignUpResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -110,60 +125,32 @@ export const deleteBoardRequest = async (
 ) => {
   const result = await axios
     .delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
-    .then((response) => {
-      const responseBody: DeleteBoardResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<DeleteBoardResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getBoardRequest = async (boardNumber: number | string) => {
   const result = await axios
     .get(GET_BOARD_URL(boardNumber))
-    .then((response) => {
-      const responseBody: GetBoardResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetBoardResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getBoardListRequest = async () => {
   const result = await axios
     .get(GET_BOARD_LIST_URL())
-    .then((response) => {
-      const responseBody: GetBoardListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetBoardListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getFavoriteBoardListRequest = async (accessToken: string) => {
   const result = await axios
     .get(GET_FAVORITE_BOARD_LIST_URL(), authorization(accessToken))
-    .then((response) => {
-      const responseBody: GetFavoriteBoardListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetFavoriteBoardListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -173,15 +160,8 @@ export const getFavoriteRequest = async (
 ) => {
   const result = await axios
     .get(GET_FAVORITE_URL(boardNumber), authorization(accessToken))
-    .then((response) => {
-      const responseBody: GetFavoriteResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetFavoriteResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -191,30 +171,16 @@ export const getSearchBoardListRequest = async (
 ) => {
   const result = await axios
     .get(GET_SEARCH_BOARD_LIST_URL(searchWord, preSearchWord))
-    .then((response) => {
-      const responseBody: GetSearchBoardListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetSearchBoardListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getUserBoardListRequest = async (email: string) => {
   const result = await axios
     .get(GET_USER_BOARD_LIST_URL(email))
-    .then((response) => {
-      const responseBody: GetUserBoardListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetUserBoardListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -229,15 +195,8 @@ export const patchBoardRequest = async (
       requestBody,
       authorization(accessToken)
     )
-    .then((response) => {
-      const responseBody: PatchBoardResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PatchBoardResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -247,15 +206,8 @@ export const postBoardRequest = async (
 ) => {
   const result = await axios
     .post(POST_BOARD_URL(), requestBody, authorization(accessToken))
-    .then((response) => {
-      const responseBody: PostBoardResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response.data) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PostBoardResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -265,15 +217,8 @@ export const putFavoriteRequest = async (
 ) => {
   const result = await axios
     .put(PUT_FAVORITE_URL(boardNumber), {}, authorization(accessToken))
-    .then((response) => {
-      const responseBody: PutFavoriteResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PutFavoriteResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -289,15 +234,8 @@ export const getChatRoomListRequest = async (
 ) => {
   const result = await axios
     .get(GET_CHAT_ROOM_LIST_URL(email), authorization(accessToken))
-    .then((response) => {
-      const responseBody: GetChatRoomListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetChatRoomListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -307,15 +245,8 @@ export const getMessagesRequest = async (
 ) => {
   const result = await axios
     .get(GET_MESSAGES_URL(roomId), authorization(accessToken))
-    .then((response) => {
-      const responseBody: GetMessageResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetMessageResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -325,15 +256,8 @@ export const postChatRoomRequest = async (
 ) => {
   const result = await axios
     .post(POST_CHAT_ROOM_URL(), requestBody, authorization(accessToken))
-    .then((response) => {
-      const responseBody: PostChatRoomResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response.data) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PostChatRoomResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -344,30 +268,16 @@ const GET_RELATION_LIST_URL = (searchWord: string) =>
 export const getPopluarListRequest = async () => {
   const result = await axios
     .get(GET_POPULAR_LIST_URL())
-    .then((response) => {
-      const responseBody: GetPopularListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetPopularListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getRelationListRequest = async (searchWord: string) => {
   const result = await axios
     .get(GET_RELATION_LIST_URL(searchWord))
-    .then((response) => {
-      const responseBody: GetRelationListResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetRelationListResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -379,30 +289,16 @@ const PATCH_PROFILE_IMAGE_URL = () => `${API_DOMAIN}/user/profile-image`;
 export const getSignInUserRequest = async (accessToken: string) => {
   const result = await axios
     .get(GET_SIGN_IN_USER_URL(), authorization(accessToken))
-    .then((response) => {
-      const responseBody: GetSignInUserResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetSignInUserResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
 export const getUserRequest = async (email: string) => {
   const result = await axios
     .get(GET_USER_URL(email))
-    .then((response) => {
-      const responseBody: GetUserResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<GetUserResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -412,15 +308,8 @@ export const patchNicknameRequest = async (
 ) => {
   const result = await axios
     .patch(PATCH_NICKNAME_URL(), requestBody, authorization(accessToken))
-    .then((response) => {
-      const responseBody: PatchNicknameResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PatchNicknameResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -430,15 +319,8 @@ export const patchProfileImageRequest = async (
 ) => {
   const result = await axios
     .patch(PATCH_PROFILE_IMAGE_URL(), requestBody, authorization(accessToken))
-    .then((response) => {
-      const responseBody: PatchProfileImageResponseDto = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      if (!error.response) return null;
-      const responseBody: ResponseDto = error.response.data;
-      return responseBody;
-    });
+    .then(responseHandler<PatchProfileImageResponseDto>)
+    .catch(errorHandler);
   return result;
 };
 
@@ -454,12 +336,7 @@ const multipartFormData = {
 export const fileUploadRequest = async (data: FormData) => {
   const result = await axios
     .post(FILE_UPLOAD_URL(), data, multipartFormData)
-    .then((response) => {
-      const responseBody: string = response.data;
-      return responseBody;
-    })
-    .catch((error) => {
-      return null;
-    });
+    .then(responseHandler<string>)
+    .catch(errorHandler);
   return result;
 };

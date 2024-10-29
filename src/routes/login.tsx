@@ -116,14 +116,10 @@ export default function Login() {
       return;
     }
     const { code } = responseBody;
-    if (code === "DBE") {
-      setError("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code === "SF" || code === "VF") {
-      setError("정보가 일치하지 않습니다");
-      console.log(code);
-    }
+
+    if (code === "DBE") setError("데이터베이스 오류입니다.");
+    if (code === "SF" || code === "VF") setError("정보가 일치하지 않습니다");
+
     if (code !== "SU") {
       setLoading(false);
       return;
@@ -146,10 +142,8 @@ export default function Login() {
       const requestBody: SignInRequestDto = { email, password };
       signInRequest(requestBody).then(signInResponse);
     } catch (e: any) {
-      console.log("login: ", e.message);
       setError("정보가 일치하지 않습니다");
     }
-    console.log("login: ", email, password, isChecked);
 
     // setChecked(false); // 체크 초기화
   };

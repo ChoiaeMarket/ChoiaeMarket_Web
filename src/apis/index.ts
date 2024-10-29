@@ -16,6 +16,7 @@ import {
   SignInResponseDto,
   SignUpResponseDto,
 } from "./response/auth";
+import EmailCheckResponseDto from "./response/auth/email-check.response.dto";
 import {
   DeleteBoardResponseDto,
   GetBoardListResponseDto,
@@ -63,6 +64,8 @@ const authorization = (accessToken: string) => {
 };
 
 const EMAIL_CERTIFICATION_URL = () => `${API_DOMAIN}/auth/email-certification`;
+const EMAIL_CHECK_URL = (email: string) =>
+  `${API_DOMAIN}/auth/email-check/${email}`;
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 
@@ -72,6 +75,14 @@ export const emailCertificationRequest = async (
   const result = await axios
     .post(EMAIL_CERTIFICATION_URL(), requestBody)
     .then(responseHandler<EmailCertificationResponseDto>)
+    .catch(errorHandler);
+  return result;
+};
+
+export const emailCheckRequest = async (email: string) => {
+  const result = await axios
+    .get(EMAIL_CHECK_URL(email))
+    .then(responseHandler<EmailCheckResponseDto>)
     .catch(errorHandler);
   return result;
 };
@@ -130,18 +141,18 @@ export const deleteBoardRequest = async (
   return result;
 };
 
-export const getBoardRequest = async (boardNumber: number | string) => {
-  const result = await axios
-    .get(GET_BOARD_URL(boardNumber))
-    .then(responseHandler<GetBoardResponseDto>)
-    .catch(errorHandler);
-  return result;
-};
-
 export const getBoardListRequest = async () => {
   const result = await axios
     .get(GET_BOARD_LIST_URL())
     .then(responseHandler<GetBoardListResponseDto>)
+    .catch(errorHandler);
+  return result;
+};
+
+export const getBoardRequest = async (boardNumber: number | string) => {
+  const result = await axios
+    .get(GET_BOARD_URL(boardNumber))
+    .then(responseHandler<GetBoardResponseDto>)
     .catch(errorHandler);
   return result;
 };

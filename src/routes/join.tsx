@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { emailCertificationRequest, emailCheckRequest } from "../apis";
-import { EmailCertificationRequestDto } from "../apis/request/auth";
+import {
+  checkCertificationRequest,
+  emailCertificationRequest,
+  emailCheckRequest,
+} from "../apis";
+import {
+  CheckCertificationRequestDto,
+  EmailCertificationRequestDto,
+} from "../apis/request/auth";
 import { ResponseDto } from "../apis/response";
 import {
+  CheckCertificationResponseDto,
   EmailCertificationResponseDto,
   EmailCheckResponseDto,
 } from "../apis/response/auth";
@@ -42,18 +50,18 @@ const EmailInput = styled(Input)`
 
 const EmailInputButton = styled(Input)``;
 
-const Form2 = styled(Form)`
+const FormCertification = styled(Form)`
   margin-top: 0;
 `;
 
 export default function Join() {
   const navigate = useNavigate();
-  const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [certificationNumber, setCertificationNumber] = useState("");
   const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
   const [emailMessage, setEmailMessage] = useState<String>("");
   const [emailError, setEmailError] = useState<boolean>(true);
+
   const goBack = () => {
     navigate(-1); // 뒤로 가는 동작을 수행
   };
@@ -79,13 +87,33 @@ export default function Join() {
     if (!responseBody) return;
     const { code } = responseBody;
 
-    if (code === ResponseCode.VALIDATION_FALIED) alert("이메일을 입력하세요.");
-    if (code === ResponseCode.MAIL_FAIL) alert("이메일 전송에 실패했습니다.");
-    if (code === ResponseCode.DATABASE_ERROR) alert("데이터베이스 오류입니다.");
+    if (code === ResponseCode.VALIDATION_FALIED)
+      setEmailMessage("이메일을 입력하세요.");
+    if (code === ResponseCode.MAIL_FAIL)
+      setEmailMessage("이메일 전송에 실패했습니다.");
+    if (code === ResponseCode.DATABASE_ERROR)
+      setEmailMessage("데이터베이스 오류입니다.");
     if (code !== ResponseCode.SUCCESS) return;
 
     setEmailError(false);
     setEmailMessage("인증번호가 전송되었습니다.");
+  };
+
+  const checkCertificationResponse = (
+    responseBody: CheckCertificationResponseDto | ResponseDto | null
+  ) => {
+    if (!responseBody) return;
+    const { code } = responseBody;
+
+    if (code === ResponseCode.VALIDATION_FALIED)
+      setEmailMessage("이메일, 인증번호를 모두 입력하세요.");
+    if (code === ResponseCode.CERTIFICATION_FAIL)
+      setEmailMessage("인증번호가 일치하지 않습니다.");
+    if (code === ResponseCode.DATABASE_ERROR)
+      setEmailMessage("데이터베이스 오류입니다.");
+    if (code !== ResponseCode.SUCCESS) return;
+
+    navigate("/register", { state: { email } });
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +130,7 @@ export default function Join() {
   const onEmailButtonHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmailMessage("");
-    if (isLoading || email === "") return; // 미입력 방지
+    if (email === "") return; // 미입력 방지
     const checkedEmail = emailPattern.test(email);
     if (!checkedEmail) {
       setEmailError(true);
@@ -117,15 +145,14 @@ export default function Join() {
   ) => {
     e.preventDefault();
     setEmailMessage("");
-    if (isLoading || email === "" || certificationNumber === "") return; // 미입력 방지
-    try {
-      navigate("/register", { state: { email } });
-    } catch (e: any) {
-      console.log("join: ", e.message);
-      setEmailMessage("오류가 발생하였습니다.");
-    }
-    console.log("join: ", email, certificationNumber);
+    if (email === "" || certificationNumber === "") return; // 미입력 방지
+
     setEmailMessage("인증번호 확인중...");
+    const requestBody: CheckCertificationRequestDto = {
+      email,
+      certificationNumber,
+    };
+    checkCertificationRequest(requestBody).then(checkCertificationResponse);
   };
 
   return (
@@ -165,22 +192,24 @@ export default function Join() {
             hasValue={false}
             disabled={!emailError}
           />
-        ) : (
-          <Form2 onSubmit={onCertificationButtonHandler}>
-            <Div>인증번호</Div>
-            <Input
-              onChange={onChange}
-              name="certificationNumber"
-              value={certificationNumber}
-              placeholder="인증번호 4자리를 입력해주세요"
-              type="certificationNumber"
-              required
-              hasValue={certificationNumber.length > 0}
-            />
-            <Input type="submit" value="인증 확인" hasValue={false} />
-          </Form2>
-        )}
+        ) : null}
       </Form>
+      {emailError ? null : (
+        <FormCertification onSubmit={onCertificationButtonHandler}>
+          <Div>인증번호</Div>
+          <Input
+            onChange={onChange}
+            name="certificationNumber"
+            value={certificationNumber}
+            placeholder="인증번호 4자리를 입력해주세요"
+            type="text"
+            required
+            maxLength={4}
+            hasValue={certificationNumber.length > 0}
+          />
+          <Input type="submit" value="인증 확인" hasValue={false} />
+        </FormCertification>
+      )}
       {emailMessage !== "" ? <Error>{emailMessage}</Error> : null}
       <Switcher>
         이미 계정이 있으신가요?

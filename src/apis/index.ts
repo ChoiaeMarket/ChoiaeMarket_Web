@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import {
+  CheckCertificationRequestDto,
   EmailCertificationRequestDto,
   SignInRequestDto,
   SignUpRequestDto,
@@ -12,6 +13,7 @@ import {
 } from "./request/user";
 import { ResponseDto } from "./response";
 import {
+  CheckCertificationResponseDto,
   EmailCertificationResponseDto,
   SignInResponseDto,
   SignUpResponseDto,
@@ -63,11 +65,22 @@ const authorization = (accessToken: string) => {
   return { headers: { Authorization: `Bearer ${accessToken}` } };
 };
 
+const CHECK_CERTIFICATION_URL = () => `${API_DOMAIN}/auth/check-certification`;
 const EMAIL_CERTIFICATION_URL = () => `${API_DOMAIN}/auth/email-certification`;
 const EMAIL_CHECK_URL = (email: string) =>
   `${API_DOMAIN}/auth/email-check/${email}`;
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
+
+export const checkCertificationRequest = async (
+  requestBody: CheckCertificationRequestDto
+) => {
+  const result = await axios
+    .post(CHECK_CERTIFICATION_URL(), requestBody)
+    .then(responseHandler<CheckCertificationResponseDto>)
+    .catch(errorHandler);
+  return result;
+};
 
 export const emailCertificationRequest = async (
   requestBody: EmailCertificationRequestDto

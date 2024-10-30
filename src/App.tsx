@@ -18,7 +18,6 @@ import Home from "./routes/home";
 import Idol from "./routes/idol";
 import Join from "./routes/join";
 import Login from "./routes/login";
-import Profile from "./routes/profile";
 import Register from "./routes/register";
 import Search from "./routes/search";
 import SearchWord from "./routes/searchWord";
@@ -72,10 +71,6 @@ const router = createBrowserRouter([
       {
         path: "search/:searchWord",
         element: Protect(<SearchWord />),
-      },
-      {
-        path: "profile",
-        element: Protect(<Profile />),
       },
       {
         path: "idol/:idol", // idol별 메인페이지 동적 라우팅

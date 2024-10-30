@@ -279,7 +279,7 @@ export default function UserUpdate() {
       data.append("file", selectedFile);
 
       const url = await fileUploadRequest(data);
-      setProfileImage(url!);
+      setProfileImage(url as string);
       console.log(url);
     }
   };
@@ -288,10 +288,6 @@ export default function UserUpdate() {
     const {
       target: { name, value },
     } = e;
-    // if (name === "name") {
-    //   setName(value);
-    // } else if (name === "email") {
-    //   setEmail(value);
     if (name === "nickname") {
       setChangedNickname(value);
     } else if (name === "tel") {
@@ -323,7 +319,11 @@ export default function UserUpdate() {
         <Title>프로필 수정</Title>
       </TitleBox>
       <ProfileBox>
-        <ProfileImage src={profileImage} />
+        <ProfileImage
+          src={
+            profileImage ? profileImage : `/src/assets/member/default.png` // 대체 이미지 설정
+          }
+        />
         <EditIcon onClick={handleImageBoxClick} />
         <input
           type="file"

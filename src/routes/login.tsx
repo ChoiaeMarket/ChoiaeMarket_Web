@@ -22,7 +22,7 @@ import {
   Wrapper,
 } from "../components/auth-components";
 import { SignInRequestDto } from "../apis/request/auth";
-import { signInRequest } from "../apis";
+import { SNS_SIGN_IN_URL, signInRequest } from "../apis";
 import { SignInResponseDto } from "../apis/response/auth";
 import { ResponseDto } from "../apis/response";
 import { useCookies } from "react-cookie";
@@ -144,9 +144,13 @@ export default function Login() {
     } catch (e: any) {
       setError("정보가 일치하지 않습니다");
     }
-
     // setChecked(false); // 체크 초기화
   };
+
+  const onSnsSignInButtonClickHandler = (type: "kakao" | "naver") => {
+    window.location.href = SNS_SIGN_IN_URL(type);
+  };
+
   return (
     <Wrapper>
       <Menu>
@@ -189,11 +193,11 @@ export default function Login() {
         <FindAccount href="/">아이디/비밀번호 찾기</FindAccount>
       </Div2>
       <SocialLoginBox>
-        <SocialLogin>
-          <img src={kakaoLogo} alt="Kakao" />
+        <SocialLogin onClick={() => onSnsSignInButtonClickHandler("kakao")}>
+          <img src={kakaoLogo} alt="kakao" />
         </SocialLogin>
-        <SocialLogin>
-          <img src={naverLogo} alt="Naver" />
+        <SocialLogin onClick={() => onSnsSignInButtonClickHandler("naver")}>
+          <img src={naverLogo} alt="naver" />
         </SocialLogin>
         <SocialLogin>
           <img src={googleLogo} alt="Google" />

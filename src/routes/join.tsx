@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
+  SNS_SIGN_IN_URL,
   checkCertificationRequest,
   emailCertificationRequest,
   emailCheckRequest,
@@ -147,6 +148,10 @@ export default function Join() {
     checkCertificationRequest(requestBody).then(checkCertificationResponse);
   };
 
+  const onSnsSignInButtonClickHandler = (type: "kakao" | "naver") => {
+    window.location.href = SNS_SIGN_IN_URL(type);
+  };
+
   return (
     <Wrapper>
       <Menu>
@@ -155,11 +160,11 @@ export default function Join() {
       </Menu>
       <DivBox>SNS 회원가입</DivBox>
       <SocialLoginBox>
-        <SocialLogin>
-          <img src={kakaoLogo} alt="Kakao" />
+        <SocialLogin onClick={() => onSnsSignInButtonClickHandler("kakao")}>
+          <img src={kakaoLogo} alt="kakao" />
         </SocialLogin>
-        <SocialLogin>
-          <img src={naverLogo} alt="Naver" />
+        <SocialLogin onClick={() => onSnsSignInButtonClickHandler("naver")}>
+          <img src={naverLogo} alt="naver" />
         </SocialLogin>
         <SocialLogin>
           <img src={googleLogo} alt="Google" />

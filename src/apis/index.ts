@@ -71,6 +71,8 @@ const EMAIL_CHECK_URL = (email: string) =>
   `${API_DOMAIN}/auth/email-check/${email}`;
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
+export const SNS_SIGN_IN_URL = (type: "kakao" | "naver") =>
+  `${API_DOMAIN}/auth/oauth2/${type}`;
 
 export const checkCertificationRequest = async (
   requestBody: CheckCertificationRequestDto

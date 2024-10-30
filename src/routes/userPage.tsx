@@ -75,12 +75,13 @@ const ProfileImage = styled.img`
   left: 30%;
 `;
 
-const ProfileNickname = styled.div`
+const ProfileNickname = styled.div<{ isMyPage: boolean }>`
   padding-top: 50px;
   font-weight: 600;
   font-size: 20px;
   line-height: 20px;
   letter-spacing: -0.025em;
+  text-align: ${({ isMyPage }) => (isMyPage ? "left" : "center")};
 `;
 
 const ProfileEmail = styled.div`
@@ -443,15 +444,17 @@ export default function UserPage() {
         ) : (
           ""
         )}
-        <ProfileNickname>{nickname}</ProfileNickname>
-        <ProfileEmail>{email}</ProfileEmail>
+        <ProfileNickname isMyPage={isMyPage}>{nickname}</ProfileNickname>
         {isMyPage ? (
-          <ProfileButton>
-            <ProfileEdit onClick={handleUpdateProfileClick}>
-              프로필 편집
-            </ProfileEdit>
-            <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
-          </ProfileButton>
+          <>
+            <ProfileEmail>{email}</ProfileEmail>
+            <ProfileButton>
+              <ProfileEdit onClick={handleUpdateProfileClick}>
+                프로필 편집
+              </ProfileEdit>
+              <ProfileLogout onClick={logOut}>로그아웃</ProfileLogout>
+            </ProfileButton>
+          </>
         ) : (
           ""
         )}

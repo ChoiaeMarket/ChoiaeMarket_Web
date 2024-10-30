@@ -394,7 +394,7 @@ export default function Upload() {
       const data = new FormData();
       data.append("file", selectedFile);
 
-      const url = await fileUploadRequest(data);
+      const url = (await fileUploadRequest(data)) as string;
       if (url) {
         setBoardImageList((prevUrls) => [...prevUrls, url]);
         setImageCount((prevCount) => prevCount + 1);

@@ -138,6 +138,7 @@ export default function Register() {
   const location = useLocation();
   const { email } = location.state;
   const [password, setPassword] = useState("");
+  const [type] = useState("app");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState(profile);
   const [nickname, setNickname] = useState("");
@@ -221,9 +222,10 @@ export default function Register() {
       return; // 미입력 방지
 
     const requestBody: SignUpRequestDto = {
-      name,
-      password,
       email,
+      password,
+      type,
+      name,
       nickname,
       tel,
       gender,

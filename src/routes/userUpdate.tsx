@@ -1,11 +1,11 @@
 import {
-  PatchNicknameRequestDto,
   PatchProfileImageRequestDto,
+  PatchProfileRequestDto,
 } from "apis/request/user";
 import { ResponseDto } from "apis/response";
 import {
   GetSignInUserResponseDto,
-  PatchNicknameResponseDto,
+  PatchProfileResponseDto,
   PatchProfileImageResponseDto,
 } from "apis/response/user";
 import { useEffect, useRef, useState } from "react";
@@ -15,7 +15,7 @@ import styled from "styled-components";
 import {
   fileUploadRequest,
   getSignInUserRequest,
-  patchNicknameRequest,
+  patchProfileRequest,
   patchProfileImageRequest,
 } from "../apis";
 import back from "../assets/icon/back.png";
@@ -140,6 +140,7 @@ export default function UserUpdate() {
   const [nickname, setNickname] = useState("");
   const [changedNickname, setChangedNickname] = useState("");
   const [tel, setTel] = useState("");
+  const [changedTel, setChangedTel] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null); // 사진 추가 이벤트
   const [error, setError] = useState("");
   const { loginUser, resetLoginUser } = useLoginUserStore();
@@ -149,22 +150,11 @@ export default function UserUpdate() {
   const getSignInUserResponse = (
     responseBody: GetSignInUserResponseDto | ResponseDto | null
   ) => {
-    if (!responseBody) {
-      return;
-    }
+    if (!responseBody) return;
     const { code } = responseBody;
-    if (code === "NU") {
-      alert("존재하지 않는 유저입니다.");
-      console.log(code);
-    }
-    if (code === "AF") {
-      alert("인증에 실패했습니다.");
-      console.log(code);
-    }
-    if (code === "DBE") {
-      alert("데이터베이스 오류입니다.");
-      console.log(code);
-    }
+    if (code === "NU") alert("존재하지 않는 유저입니다.");
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
     if (code !== "SU") {
       navigate("/");
       return;
@@ -177,6 +167,7 @@ export default function UserUpdate() {
     setNickname(nickname);
     setChangedNickname(nickname);
     setTel(tel);
+    setChangedTel(tel);
     setProfileImage(profileImage);
   };
 
@@ -193,38 +184,18 @@ export default function UserUpdate() {
   };
 
   // patch nickname response 처리 함수
-  const patchNicknameResponse = (
-    responseBody: PatchNicknameResponseDto | ResponseDto | null
+  const patchProfileResponse = (
+    responseBody: PatchProfileResponseDto | ResponseDto | null
   ) => {
-    if (!responseBody) {
-      return;
-    }
-    if (changedNickname !== nickname) {
-      const { code } = responseBody;
-      if (code === "VF") {
-        alert("닉네임은 필수입니다.");
-        console.log(code);
-      }
-      if (code === "AF") {
-        alert("인증에 실패했습니다.");
-        console.log(code);
-      }
-      if (code === "DN") {
-        alert("중복되는 닉네임입니다.");
-        console.log(code);
-      }
-      if (code === "NU") {
-        alert("존재하지 않는 유저입니다.");
-        console.log(code);
-      }
-      if (code === "DBE") {
-        alert("데이터베이스 오류입니다.");
-        console.log(code);
-      }
-      if (code !== "SU") {
-        return;
-      }
-    }
+    if (!responseBody) return;
+    const { code } = responseBody;
+    if (code === "VF") setError("닉네임은 필수입니다.");
+    if (code === "AF") setError("인증에 실패했습니다.");
+    if (code === "DN") setError("중복되는 닉네임입니다.");
+    if (code === "NU") setError("존재하지 않는 유저입니다.");
+    if (code === "DBE") setError("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
+
     navigate(`/user/${email}`);
   };
 
@@ -252,21 +223,10 @@ export default function UserUpdate() {
   ) => {
     if (!responseBody) return;
     const { code } = responseBody;
-    if (code === "AF") {
-      alert("인증에 실패했습니다.");
-      console.log(code);
-    }
-    if (code === "NU") {
-      alert("존재하지 않는 유저입니다.");
-      console.log(code);
-    }
-    if (code === "DBE") {
-      alert("데이터베이스 오류입니다.");
-      console.log(code);
-    }
-    if (code !== "SU") {
-      return;
-    }
+    if (code === "AF") alert("인증에 실패했습니다.");
+    if (code === "NU") alert("존재하지 않는 유저입니다.");
+    if (code === "DBE") alert("데이터베이스 오류입니다.");
+    if (code !== "SU") return;
   };
 
   // handleFileChange 함수에서 URL 생성 및 상태 업데이트
@@ -280,7 +240,6 @@ export default function UserUpdate() {
 
       const url = await fileUploadRequest(data);
       setProfileImage(url as string);
-      console.log(url);
     }
   };
 
@@ -291,7 +250,7 @@ export default function UserUpdate() {
     if (name === "nickname") {
       setChangedNickname(value);
     } else if (name === "tel") {
-      setTel(value);
+      setChangedTel(value);
     }
   };
 
@@ -302,14 +261,14 @@ export default function UserUpdate() {
     if (!cookies.accessToken) return;
     // 사진 변경
     fileUploadResponse(profileImage);
-    // 닉네임 변경
-    const requestBody: PatchNicknameRequestDto = {
+    // 닉네임, 전화번호 변경
+    const requestBody: PatchProfileRequestDto = {
       nickname: changedNickname,
+      tel: changedTel,
     };
-    patchNicknameRequest(requestBody, cookies.accessToken).then(
-      patchNicknameResponse
+    patchProfileRequest(requestBody, cookies.accessToken).then(
+      patchProfileResponse
     );
-    console.log("update: ", nickname, tel, profileImage);
   };
 
   return (
@@ -347,7 +306,7 @@ export default function UserUpdate() {
         <Input
           onChange={onChange}
           name="tel"
-          value={tel}
+          value={changedTel}
           placeholder="전화번호를 입력해 주세요"
           type="tel"
           required

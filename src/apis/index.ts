@@ -8,8 +8,8 @@ import {
 import { PatchBoardRequestDto, PostBoardRequestDto } from "./request/board";
 import PostChatRoomRequestDto from "./request/chat/post-chat-room.request.dto";
 import {
-  PatchNicknameRequestDto,
   PatchProfileImageRequestDto,
+  PatchProfileRequestDto,
 } from "./request/user";
 import { ResponseDto } from "./response";
 import {
@@ -43,8 +43,8 @@ import {
 import {
   GetSignInUserResponseDto,
   GetUserResponseDto,
-  PatchNicknameResponseDto,
   PatchProfileImageResponseDto,
+  PatchProfileResponseDto,
 } from "./response/user";
 
 const responseHandler = <T>(response: AxiosResponse<any, any>) => {
@@ -309,7 +309,7 @@ export const getRelationListRequest = async (searchWord: string) => {
 
 const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
 const GET_USER_URL = (email: string) => `${API_DOMAIN}/user/${email}`;
-const PATCH_NICKNAME_URL = () => `${API_DOMAIN}/user/nickname`;
+const PATCH_PROFILE_URL = () => `${API_DOMAIN}/user/profile`;
 const PATCH_PROFILE_IMAGE_URL = () => `${API_DOMAIN}/user/profile-image`;
 
 export const getSignInUserRequest = async (accessToken: string) => {
@@ -328,13 +328,13 @@ export const getUserRequest = async (email: string) => {
   return result;
 };
 
-export const patchNicknameRequest = async (
-  requestBody: PatchNicknameRequestDto,
+export const patchProfileRequest = async (
+  requestBody: PatchProfileRequestDto,
   accessToken: string
 ) => {
   const result = await axios
-    .patch(PATCH_NICKNAME_URL(), requestBody, authorization(accessToken))
-    .then(responseHandler<PatchNicknameResponseDto>)
+    .patch(PATCH_PROFILE_URL(), requestBody, authorization(accessToken))
+    .then(responseHandler<PatchProfileResponseDto>)
     .catch(errorHandler);
   return result;
 };

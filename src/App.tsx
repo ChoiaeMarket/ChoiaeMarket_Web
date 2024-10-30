@@ -18,6 +18,7 @@ import Home from "./routes/home";
 import Idol from "./routes/idol";
 import Join from "./routes/join";
 import Login from "./routes/login";
+import OAuth from "./routes/oauth";
 import Register from "./routes/register";
 import Search from "./routes/search";
 import SearchWord from "./routes/searchWord";
@@ -123,6 +124,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/auth/oauth-response/:token/:expirationTime",
+    element: <OAuth />,
   },
   // 404 페이지 라우팅 설정
   {

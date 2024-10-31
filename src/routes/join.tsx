@@ -18,7 +18,6 @@ import {
   EmailCheckResponseDto,
 } from "../apis/response/auth";
 import back from "../assets/icon/back.png";
-import googleLogo from "../assets/icon/google.png";
 import kakaoLogo from "../assets/icon/kakao.png";
 import naverLogo from "../assets/icon/naver.png";
 import {
@@ -165,9 +164,6 @@ export default function Join() {
         </SocialLogin>
         <SocialLogin onClick={() => onSnsSignInButtonClickHandler("naver")}>
           <img src={naverLogo} alt="naver" />
-        </SocialLogin>
-        <SocialLogin>
-          <img src={googleLogo} alt="Google" />
         </SocialLogin>
       </SocialLoginBox>
       <Form onSubmit={onEmailButtonHandler}>

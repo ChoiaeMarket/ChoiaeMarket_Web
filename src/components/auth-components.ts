@@ -121,7 +121,7 @@ export const Error = styled.span`
 `;
 
 export const SocialLoginBox = styled.div`
-  width: 264px;
+  width: 170px;
   margin-top: 24px;
   display: flex;
   justify-content: space-between;

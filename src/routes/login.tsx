@@ -4,9 +4,8 @@ import { styled } from "styled-components";
 import back from "../assets/icon/back.png";
 import check from "../assets/icon/check.png";
 import checkWhite from "../assets/icon/checkWhite.png";
-import kakaoLogo from "../assets/icon/kakaoColor.png";
-import naverLogo from "../assets/icon/naverColor.png";
-import googleLogo from "../assets/icon/googleColor.png";
+import kakaoLogo from "../assets/icon/kakao.png";
+import naverLogo from "../assets/icon/naver.png";
 import {
   Back,
   Div,
@@ -198,9 +197,6 @@ export default function Login() {
         </SocialLogin>
         <SocialLogin onClick={() => onSnsSignInButtonClickHandler("naver")}>
           <img src={naverLogo} alt="naver" />
-        </SocialLogin>
-        <SocialLogin>
-          <img src={googleLogo} alt="Google" />
         </SocialLogin>
       </SocialLoginBox>
       <Switcher>

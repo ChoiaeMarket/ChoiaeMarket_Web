@@ -204,6 +204,8 @@ erDiagram
 
 ### 프론트엔드 프로젝트 구조
 
+[프론트엔드 깃허브](https://github.com/ChoiaeMarket/ChoiaeMarket_Web)
+
 ```
 ├── .eslintrc.cjs
 ├── .gitignore
@@ -368,6 +370,8 @@ erDiagram
 ```
 
 ### 백엔드 프로젝트 구조
+
+[백엔드 깃허브](https://github.com/ChoiaeMarket/ChoiaeMarket_Server)
 
 ```
 ├── .gitignore

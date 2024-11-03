@@ -516,7 +516,7 @@ erDiagram
         │               │   ├── MessageRepository.java
         │               │   ├── ProductRepository.java
         │               │   ├── SearchLogRepository.java
-        │               │   ├─── UserRepository.java
+        │               │   ├── UserRepository.java
         │               │   │
         │               │   └── resultSet
         │               │       ├── GetPopularListResultSet.java

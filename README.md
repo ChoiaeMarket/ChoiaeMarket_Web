@@ -2,9 +2,7 @@
 
 K-pop 아이돌 팬들을 위한 **굿즈 중고거래 플랫폼**
 
-## 목표와 기능
-
-### 목표
+## 목표
 
 - 아이돌 굿즈를 사고파는 중고거래 플랫폼
 - 팬덤과의 소통과 상호작용을 위한, 팬들을 위한 플랫폼
@@ -12,7 +10,7 @@ K-pop 아이돌 팬들을 위한 **굿즈 중고거래 플랫폼**
 - 팬들이 직접 참여하고 키워가는 플랫폼
 - 자신의 아이돌에 대한 애정과 가치를 다른 팬들과 공유하는 플랫폼
 
-### 기능
+## 기능
 
 - 아이돌 팬덤별 굿즈 분류를 통한 맞춤형 서비스
 - 굿즈 실시간 판매 시세 제공
@@ -21,15 +19,15 @@ K-pop 아이돌 팬들을 위한 **굿즈 중고거래 플랫폼**
   - 판매자와 구매자의 1대1 매칭
 - SNS 계정을 통한 간단한 회원가입
 
-## 기술 스택 및 의존성
-
-### 기술 스택
+## 기술 스택
 
 - **UI/UX**: Figma
 - **Frontend**: React
 - **Backend**: Spring Boot
 - **Database**: MySQL
 - **Deployment**: AWS EC2 (예정)
+
+## 의존성
 
 ### 프론트엔드 의존성
 
@@ -60,8 +58,6 @@ io.jsonwebtoken:jjwt-api     0.11.2
 io.jsonwebtoken:jjwt-impl    0.11.2
 io.jsonwebtoken:jjwt-jackson 0.11.2
 ```
-
-## ERD 및 API 명세서
 
 ## ERD
 
@@ -178,7 +174,7 @@ erDiagram
     board_list_view ||--o| image : "대표 이미지"
 ```
 
-### REST API 명세서
+## REST API 명세서
 
 [최애마켓 REST API 명세서 - Notion 링크](https://nodb.notion.site/REST-API-59bcb52995f6445eb16b824847a8ae64?pvs=4)
 
@@ -204,9 +200,9 @@ erDiagram
 | /board/{boardNumber}/update | 상품 게시물 수정 페이지   |        ✅        |
 | \*                          | 404 페이지                |                  |
 
-## 프로젝트 구조와 개발 일정
+## 프로젝트 구조
 
-### 프로젝트 구조
+### 프론트엔드 프로젝트 구조
 
 ```
 ├── .eslintrc.cjs
@@ -288,7 +284,7 @@ erDiagram
     │   ├── icon
     │   │   ├── back.png
     │   │   └── check.png
-	│   │        .
+    │   │        .
     │   │        .
     │   ├── idol
     │   │   ├── cover
@@ -371,7 +367,185 @@ erDiagram
 
 ```
 
-### 개발 일정
+### 백엔드 프로젝트 구조
+
+```
+├── .gitignore
+├── build.gradle
+├── gradlew
+├── gradlew.bat
+├── README.md
+├── settings.gradle
+│
+├── .gradle
+│    .
+│    .
+│
+├── .vscode
+│   └── settings.json
+│
+└── src─
+    └── main
+        ├── java
+        │   └── com
+        │       └── choiaemarket
+        │           └── choiaemarket_server
+        │               ├── ChoiaemarketServerApplication.java
+        │               │
+        │               ├── common
+        │               │   ├── CertificationNumber.java
+        │               │   ├── ResponseCode.java
+        │               │   └── ResponseMessage.java
+        │               │
+        │               ├── config
+        │               │   ├── WebSecurityConfig.java
+        │               │   └── WebSocketConfig.java
+        │               │
+        │               ├── controller
+        │               │   ├── AuthController.java
+        │               │   ├── BoardController.java
+        │               │   ├── ChatController.java
+        │               │   ├── FileController.java
+        │               │   ├── SearchController.java
+        │               │   └── UserController.java
+        │               │
+        │               ├── dto
+        │               │   ├── message
+        │               │   │   └── ChatMessage.java
+        │               │   │
+        │               │   ├── object
+        │               │   │   ├── BoardListItem.java
+        │               │   │   ├── FavoriteListItem.java
+        │               │   │   └── ProductListItem.java
+        │               │   │
+        │               │   ├── request
+        │               │   │   ├── auth
+        │               │   │   │   ├── CheckCertificationRequestDto.java
+        │               │   │   │   ├── EmailCertificationRequestDto.java
+        │               │   │   │   ├── SignInRequestDto.java
+        │               │   │   │   └── SignUpRequestDto.java
+        │               │   │   │
+        │               │   │   ├── board
+        │               │   │   │   ├── PatchBoardRequestDto.java
+        │               │   │   │   └── PostBoardRequestDto.java
+        │               │   │   │
+        │               │   │   ├── chat
+        │               │   │   │   └── PostChatRoomRequestDto.java
+        │               │   │   │
+        │               │   │   └── user
+        │               │   │       ├── PatchProfileImageRequestDto.java
+        │               │   │       └── PatchProfileRequestDto.java
+        │               │   │
+        │               │   └── response
+        │               │       ├── ResponseDto.java
+        │               │       │
+        │               │       ├── auth
+        │               │       │   ├── CheckCertificationResponseDto.java
+        │               │       │   ├── EmailCertificationResponseDto.java
+        │               │       │   ├── EmailCheckResponseDto.java
+        │               │       │   ├── SignInResponseDto.java
+        │               │       │   └── SignUpResponseDto.java
+        │               │       │
+        │               │       ├── board
+        │               │       │   ├── DeleteBoardResponseDto.java
+        │               │       │   ├── GetBoardResponseDto.java
+        │               │       │   ├── GetFavoriteBoardListResponseDto.java
+        │               │       │   ├── GetFavoriteResponseDto.java
+        │               │       │   ├── GetLatestBoardListResponseDto.java
+        │               │       │   ├── GetSearchBoardListResponseDto.java
+        │               │       │   ├── GetUserBoardListResponseDto.java
+        │               │       │   ├── PatchBoardResponseDto.java
+        │               │       │   ├── PostBoardResponseDto.java
+        │               │       │   └── PutFavoriteResopnseDto.java
+        │               │       │
+        │               │       ├── chat
+        │               │       │   ├── GetChatRoomListResponseDto.java
+        │               │       │   ├── GetMessageResponseDto.java
+        │               │       │   └── PostChatRoomResponseDto.java
+        │               │       │
+        │               │       ├── search
+        │               │       │   ├── GetPopularListResponseDto.java
+        │               │       │   └── GetRelationListResponseDto.java
+        │               │       │
+        │               │       └── user
+        │               │           ├── GetSignInUserResponseDto.java
+        │               │           ├── GetUserResponseDto.java
+        │               │           ├── PatchProfileImageResponseDto.java
+        │               │           └── PatchProfileResponseDto.java
+        │               │
+        │               ├── entity
+        │               │   ├── BoardEntity.java
+        │               │   ├── BoardListViewEntity.java
+        │               │   ├── CertificationEntity.java
+        │               │   ├── ChatEntity.java
+        │               │   ├── ChatRoomEntity.java
+        │               │   ├── CustomOAuth2User.java
+        │               │   ├── FavoriteEntity.java
+        │               │   ├── ImageEntity.java
+        │               │   ├── MessageEntity.java
+        │               │   ├── ProductEntity.java
+        │               │   ├── SearchLogEntity.java
+        │               │   ├── UserEntity.java
+        │               │   │
+        │               │   └── primaryKey
+        │               │       ├── ChatPk.java
+        │               │       └── FavoritePk.java
+        │               │
+        │               ├── exception
+        │               │   └── BadRequestExceptionHandler.java
+        │               │
+        │               ├── filter
+        │               │   └── JwtAuthenticationFilter.java
+        │               │
+        │               ├── handler
+        │               │   ├── OAuth2SuccessHandler.java
+        │               │   └── ValidationExceptionHandler.java
+        │               │
+        │               ├── provider
+        │               │   ├── EmailProvider.java
+        │               │   └── JwtProvider.java
+        │               │
+        │               ├── repository
+        │               │   ├── BoardListViewRepository.java
+        │               │   ├── BoardRepository.java
+        │               │   ├── CertificationRepository.java
+        │               │   ├── ChatRepository.java
+        │               │   ├── ChatRoomRepository.java
+        │               │   ├── FavoriteRepository.java
+        │               │   ├── ImageRepository.java
+        │               │   ├── MessageRepository.java
+        │               │   ├── ProductRepository.java
+        │               │   ├── SearchLogRepository.java
+        │               │   ├─── UserRepository.java
+        │               │   │
+        │               │   └── resultSet
+        │               │       ├── GetPopularListResultSet.java
+        │               │       └── GetRelationListResultSet.java
+        │               │
+        │               └── service
+        │                   ├── AuthService.java
+        │                   ├── BoardService.java
+        │                   ├── ChatRoomService.java
+        │                   ├── FileService.java
+        │                   ├── MessageService.java
+        │                   ├── SearchService.java
+        │                   ├── UserService.java
+        │                   │
+        │                   └── implement
+        │                       ├── AuthServiceImplement.java
+        │                       ├── BoardServiceImplement.java
+        │                       ├── ChatRoomServiceImplement.java
+        │                       ├── FileServiceImplement.java
+        │                       ├── MessageServiceImplement.java
+        │                       ├── OAuth2UserServiceImplement.java
+        │                       ├── SearchServiceImplement.java
+        │                       └── UserServiceImplement.java
+        │
+        └── resources
+            └── application.properties
+```
+
+## 개발 일정
 
 ```mermaid
 gantt
@@ -452,6 +626,10 @@ gantt
 - 인증 번호를 입력 후 인증 확인을 클릭하면 유효성 검사 진행
   - 통과하지 못하면 경고 문구 출력
 
+| 회원가입                                                                                                    |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/bebe8738-6916-49c8-a29b-799674bcb93a" width="400px" /> |
+
 ### [프로필 설정]
 
 - 비밀번호, 이름, 프로필명, 전화번호, 성별, 프로필 사진 입력
@@ -461,11 +639,19 @@ gantt
 - 프로필명과 전화번호은 유효성 검사 진행(중복 불가)
   - 통과하지 못하면 경고 문구 출력
 
+| 프로필 설정                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/b5486266-8633-4c82-8d67-86229dddf7ee" width="400px" /> |
+
 ### [로그인]
 
 - 이메일과 비밀번호를 입력하고 로그인 버튼을 클릭하면 유효성 검사 진행
   - 통과하지 못하면 경고 문구 출력
   - 로그인에 성공하면 메인 화면으로 이동
+
+| 로그인                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/3c995795-9e63-427f-a028-0492038ffd91" width="400px" /> |
 
 ### [카카오 로그인]
 
@@ -475,6 +661,10 @@ gantt
   - 이메일은 “kakao\_이메일 앞 부분”의 형태로 저장
 - 이후 프로필 수정에서 변경 가능
 
+| 카카오 로그인                                                                                               |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/1eaa1581-feaa-49fc-9896-5dd5ef41def6" width="400px" /> |
+
 ### [네이버 로그인]
 
 - 네이버 버튼을 클릭하면 네이버 로그인에 진입
@@ -483,11 +673,19 @@ gantt
   - 이메일은 “naver\_이메일 앞 부분”의 형태로 저장
 - 이후 프로필 수정에서 변경 가능
 
+| 네이버 로그인                                                                                               |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/634fb963-a902-42a1-802d-2bbec38f4e63" width="400px" /> |
+
 ### [메인]
 
 - 로그인 성공시 가장 처음에 뜨는 화면
 - 상하단 네이게이션바와 아이돌 로고로 구성
 - 아이돌 로고 및 이름 클릭시 해당 아이돌 페이지로 진입
+
+| 메인                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/3964fb90-3e6f-431b-8ae7-04a880e08e99" width="400px" /> |
 
 ### [네비게이션바]
 
@@ -504,12 +702,20 @@ gantt
   - 채팅 목록
   - 프로필
 
+| 네비게이션바                                                                                                |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/78af709d-cc1a-4ca1-9267-48b155c02bdf" width="400px" /> |
+
 ### [아이돌 메인]
 
 - 상품 목록
   - 종류에 따른 필터
   - 정렬(최신, 저가, 찜)
 - 상품 목록 클릭시 해당 상품 페이지로 진입
+
+| 아이돌 메인                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/a03b2a83-93a8-441b-8c28-f369e10a8e23" width="400px" /> |
 
 ### [아이돌 상품 목록]
 
@@ -518,6 +724,10 @@ gantt
   - 상품 등록 개수
   - 정렬(최신, 저가, 찜)
 - 게시물 클릭시 해당 상품 게시물 페이지로 진입
+
+| 아이돌 상품 목록                                                                                            |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/5b321047-a155-4349-a98e-81cd87bab7a3" width="400px" /> |
 
 ### [상품 게시물]
 
@@ -534,10 +744,18 @@ gantt
 - 채팅 버튼 클릭시 채팅방 생성 및 진입
   - 기존에 있는 방일 경우 해당 방으로 진입
 
+| 상품 게시물                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/ed412afa-4a3f-4e17-be34-f440c76864dd" width="400px" /> |
+
 ### [관심 목록]
 
 - 좋아요 누른 상품 게시물 목록
 - 게시물 클릭시 해당 상품 게시물 페이지로 진입
+
+| 관심 목록                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/2eaff364-ceac-4bd9-9e7d-709ef660e324" width="400px" /> |
 
 ### [상품 등록]
 
@@ -551,15 +769,27 @@ gantt
   - 가격
 - 등록하기 버튼 클릭시 등록 후 해당 상품 목록 페이지로 진입
 
+| 상품 등록                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/9347b99b-52ab-4940-a414-378591ee766d" width="400px" /> |
+
 ### [상품 수정]
 
 - 로그인된 이메일과 상품 게시물 등록한 이메일을 통해 유효성 검사 진행 후 상단 네비게이션 바에 수정/삭제 목록 표시
 - 상품 등록 페이지와 동일하게 필수 입력
 - 수정하기 버튼 클릭시 수정 후 해당 상세 페이지로 진입
 
+| 상품 수정                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/34c3ef85-9adf-46a0-9f0a-4586521cc75d" width="400px" /> |
+
 ### [상품 삭제]
 
 - 게시물을 삭제 후 메인 페이지로 진입
+
+| 상품 삭제                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/a2b6cfb9-db2f-41f6-9093-e0b92f81fae8" width="400px" /> |
 
 ### [채팅방]
 
@@ -568,10 +798,18 @@ gantt
   - 채팅 목록에 방 생성
 - 채팅을 치지 않고 나올 경우 채팅 목록에서 삭제
 
+| 채팅방                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/1cf14614-6c68-4da3-8739-427806a16914" width="400px" /> |
+
 ### [채팅 목록]
 
 - 생성된 채팅방 목록
 - 채팅방 클릭시 해당 채팅방에서의 기존 채팅 불러오기
+
+| 채팅 목록                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/1ef504b2-9178-4466-8068-3d1790aa3541" width="400px" /> |
 
 ### [프로필]
 
@@ -583,9 +821,17 @@ gantt
   - 프로필 사진 수정 가능, 중복 가능
   - 통과하지 못하면 경고 문구 출력
 
+| 프로필                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/2a15c9f9-7441-428c-97c2-1a702d389296" width="400px" /> |
+
 ### [다른 유저 프로필]
 
 - 해당 유저의 판매 상품 목록 출력
+
+| 다른 유저 프로필                                                                                            |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/b3ebc545-c994-4846-b460-57f8959c847a" width="400px" /> |
 
 ### [검색]
 
@@ -597,6 +843,10 @@ gantt
   - (검색어가 포함된 아이돌, 카테고리, 상품명, 제목, 상세 내용)
 - 검색시 최근 검색어에 추가
 - 연달아 검색시 연관 검색어 데이터베이스에 저장
+
+| 검색                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/f721ad81-a1d2-41e8-9391-b0fef41a0d6d" width="400px" /> |
 
 ## 개발자
 

@@ -1,4 +1,5 @@
 # 최애마켓 | ChoiaeMarket
+![최애마켓 배너](https://github.com/user-attachments/assets/d0245fa9-d04e-41f0-a1b7-ad3addf276f7)
 
 K-pop 아이돌 팬들을 위한 **굿즈 중고거래 플랫폼**
 
